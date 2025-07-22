@@ -12,7 +12,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(20), default='user')  # user, admin
     is_verified = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True)  # Renamed from is_active to avoid UserMixin conflict
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Profile fields

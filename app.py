@@ -20,7 +20,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///marketplace.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -36,7 +36,7 @@ db.init_app(app)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.login'  # type: ignore
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
 
@@ -76,7 +76,7 @@ with app.app_context():
             password_hash=generate_password_hash('admin123'),
             role='admin',
             is_verified=True,
-            is_active=True
+            active=True
         )
         db.session.add(admin_user)
         db.session.commit()
@@ -269,12 +269,11 @@ with app.app_context():
     for page_data in default_pages:
         existing_page = FooterPage.query.filter_by(slug=page_data['slug']).first()
         if not existing_page:
-            page = FooterPage(
-                title=page_data['title'],
-                slug=page_data['slug'],
-                content=page_data['content'],
-                is_active=page_data['is_active']
-            )
+            page = FooterPage()
+            page.title = page_data['title']
+            page.slug = page_data['slug']
+            page.content = page_data['content']
+            page.is_active = page_data['is_active']
             db.session.add(page)
     
     db.session.commit()

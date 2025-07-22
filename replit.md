@@ -4,6 +4,15 @@
 
 SocialMarket is a comprehensive web application built with Flask that serves as a marketplace for buying and selling social media accounts. The platform connects sellers who want to monetize their established social media presence with buyers looking to acquire accounts with existing followers and engagement.
 
+## Recent Changes
+
+### Database Migration to PostgreSQL (July 22, 2025)
+- Migrated from SQLite to PostgreSQL for production compatibility
+- Fixed Flask-Login UserMixin conflicts by renaming `is_active` field to `active`
+- Resolved LSP diagnostics and type conflicts
+- Updated database configuration to use environment-based DATABASE_URL
+- Successfully tested admin user creation and application startup
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
