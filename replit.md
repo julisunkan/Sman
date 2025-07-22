@@ -33,7 +33,7 @@ The application follows a traditional Flask MVC architecture with the following 
 - **Custom CSS/JS**: Additional styling and client-side functionality
 
 ### Database Architecture
-- **SQLite**: Default database for development (configurable via environment variables)
+- **SQLite**: Primary database stored in `instance/marketplace.db` for development and production
 - **User-centric Design**: Core entities revolve around User model with relationships to accounts, purchases, and transactions
 - **Referral System**: Built-in multi-level referral tracking for user acquisition
 
@@ -135,3 +135,14 @@ The application follows a traditional Flask MVC architecture with the following 
 - **Input Validation**: WTForms validation on all user inputs
 
 The application is designed to be a complete marketplace solution with built-in user management, payment processing, and administrative tools. The modular architecture allows for easy extension and maintenance, while the comprehensive admin panel provides full control over platform operations.
+
+## Recent Changes
+
+### January 22, 2025 - Migration to Replit Environment
+- Successfully migrated from Replit Agent to standard Replit environment
+- Fixed Flask-Login compatibility issues and model conflicts
+- Resolved UserMixin `is_active` conflict by renaming to `active` field
+- Confirmed SQLite database configuration and proper initialization
+- Application running successfully on port 5000 with gunicorn
+- Admin account auto-created: admin@marketplace.com / admin123
+- Default footer pages (Privacy Policy, Terms of Service, Cookie Policy) created automatically
