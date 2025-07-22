@@ -63,11 +63,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 text-center mb-3">
-                            <h4 class="text-primary">{{ user.accounts|length }}</h4>
+                            <h4 class="text-primary">{{ (user.accounts|length) if user.accounts else 0 }}</h4>
                             <small class="text-muted">Listed Accounts</small>
                         </div>
                         <div class="col-md-3 text-center mb-3">
-                            <h4 class="text-success">{{ user.purchases|length }}</h4>
+                            <h4 class="text-success">{{ (user.purchases|length) if user.purchases else 0 }}</h4>
                             <small class="text-muted">Purchases Made</small>
                         </div>
                         <div class="col-md-3 text-center mb-3">
@@ -75,7 +75,7 @@
                             <small class="text-muted">Wallet Balance</small>
                         </div>
                         <div class="col-md-3 text-center mb-3">
-                            <h4 class="text-info">{{ user.referred_users|length }}</h4>
+                            <h4 class="text-info">{{ (user.referred_users|length) if user.referred_users else 0 }}</h4>
                             <small class="text-muted">Referrals</small>
                         </div>
                     </div>

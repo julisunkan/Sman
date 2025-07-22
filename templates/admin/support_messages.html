@@ -179,8 +179,8 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <strong>Wallet Balance:</strong> ${{ "%.2f"|format(message.user.balance) }}<br>
-                                                        <strong>Total Purchases:</strong> {{ message.user.purchases|length }}<br>
-                                                        <strong>Total Listings:</strong> {{ message.user.accounts|length }}
+                                                        <strong>Total Purchases:</strong> {{ (message.user.purchases|length) if message.user.purchases else 0 }}<br>
+                                                        <strong>Total Listings:</strong> {{ (message.user.accounts|length) if message.user.accounts else 0 }}
                                                     </div>
                                                 </div>
                                             </div>

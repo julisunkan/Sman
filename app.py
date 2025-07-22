@@ -45,6 +45,15 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
+# Add custom Jinja2 filters
+@app.template_filter('nl2br')
+def nl2br_filter(text):
+    """Convert newlines to HTML line breaks"""
+    if text is None:
+        return ''
+    from markupsafe import Markup
+    return Markup(str(text).replace('\n', '<br>\n'))
+
 # Register blueprints
 from auth import auth_bp
 from admin import admin_bp
