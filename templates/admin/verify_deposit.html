@@ -33,7 +33,7 @@
                                 {% if transaction.user.kyc_status == 'verified' %}
                                 <span class="badge bg-info">KYC Verified</span>
                                 {% endif %}
-                                {% if transaction.user.is_active %}
+                                {% if transaction.user.active %}
                                 <span class="badge bg-primary">Active</span>
                                 {% else %}
                                 <span class="badge bg-danger">Inactive</span>

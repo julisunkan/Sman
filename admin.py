@@ -24,7 +24,7 @@ def dashboard():
     # Get statistics
     stats = {
         'total_users': User.query.count(),
-        'active_users': User.query.filter_by(is_active=True).count(),
+        'active_users': User.query.filter_by(active=True).count(),
         'verified_users': User.query.filter_by(is_verified=True).count(),
         'total_accounts': SocialMediaAccount.query.count(),
         'pending_accounts': SocialMediaAccount.query.filter_by(status='pending').count(),
@@ -66,12 +66,12 @@ def manage_user(user_id):
     form = AdminUserManagementForm(obj=user)
     
     if form.validate_on_submit():
-        user.is_active = form.is_active.data
+        user.active = form.active.data
         user.kyc_status = form.kyc_status.data
         db.session.commit()
         
         # Send notification to user
-        status_message = 'activated' if user.is_active else 'deactivated'
+        status_message = 'activated' if user.active else 'deactivated'
         send_email_notification(
             user.email,
             'Account Status Update',
@@ -247,7 +247,7 @@ def create_footer_page():
             title=form.title.data,
             slug=form.slug.data,
             content=form.content.data,
-            is_active=form.is_active.data
+            active=form.active.data
         )
         db.session.add(page)
         db.session.commit()
@@ -268,7 +268,7 @@ def edit_footer_page(page_id):
         page.title = form.title.data
         page.slug = form.slug.data
         page.content = form.content.data
-        page.is_active = form.is_active.data
+        page.is_active = form.active.data
         db.session.commit()
         
         flash('Footer page updated successfully.', 'success')

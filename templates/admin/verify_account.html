@@ -95,8 +95,8 @@
                         <div>
                             <h6 class="mb-1">{{ account.seller.username }}</h6>
                             <div>
-                                <span class="badge bg-{% if account.seller.is_active %}success{% else %}danger{% endif %}">
-                                    {% if account.seller.is_active %}Active{% else %}Inactive{% endif %}
+                                <span class="badge bg-{% if account.seller.active %}success{% else %}danger{% endif %}">
+                                    {% if account.seller.active %}Active{% else %}Inactive{% endif %}
                                 </span>
                                 {% if account.seller.is_verified %}
                                 <span class="badge bg-success">Email Verified</span>

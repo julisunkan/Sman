@@ -17,7 +17,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         
         if user and check_password_hash(user.password_hash, form.password.data):
-            if not user.is_active:
+            if not user.active:
                 flash('Your account has been deactivated. Please contact support.', 'danger')
                 return render_template('auth/login.html', form=form)
             

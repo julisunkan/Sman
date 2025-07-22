@@ -27,8 +27,8 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Account Status</label>
                                     <div class="form-check form-switch">
-                                        {{ form.is_active(class="form-check-input") }}
-                                        {{ form.is_active.label(class="form-check-label") }}
+                                        {{ form.active(class="form-check-input") }}
+                                        {{ form.active.label(class="form-check-label") }}
                                     </div>
                                     <div class="form-text">
                                         Inactive users cannot login or perform actions
@@ -182,10 +182,10 @@
                         </button>
                         
                         {% if user.role != 'admin' %}
-                        <button class="btn btn-{% if user.is_active %}danger{% else %}success{% endif %} btn-sm" 
-                                onclick="toggleUserStatus({{ user.id }}, {{ user.is_active|lower }})">
-                            <i class="fas fa-{% if user.is_active %}ban{% else %}check{% endif %} me-2"></i>
-                            {% if user.is_active %}Deactivate{% else %}Activate{% endif %} User
+                        <button class="btn btn-{% if user.active %}danger{% else %}success{% endif %} btn-sm" 
+                                onclick="toggleUserStatus({{ user.id }}, {{ user.active|lower }})">
+                            <i class="fas fa-{% if user.active %}ban{% else %}check{% endif %} me-2"></i>
+                            {% if user.active %}Deactivate{% else %}Activate{% endif %} User
                         </button>
                         {% endif %}
                     </div>

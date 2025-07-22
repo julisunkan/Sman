@@ -107,7 +107,7 @@ class AdminPaymentVerificationForm(FlaskForm):
     admin_notes = TextAreaField('Admin Notes', validators=[Optional()])
 
 class AdminUserManagementForm(FlaskForm):
-    is_active = BooleanField('Active')
+    active = BooleanField('Active')
     kyc_status = SelectField('KYC Status', choices=[
         ('pending', 'Pending'),
         ('verified', 'Verified'),
@@ -118,7 +118,7 @@ class FooterPageForm(FlaskForm):
     title = StringField('Page Title', validators=[DataRequired(), Length(max=100)])
     slug = StringField('URL Slug', validators=[DataRequired(), Length(max=100)])
     content = TextAreaField('Content (HTML)', validators=[DataRequired()])
-    is_active = BooleanField('Active')
+    active = BooleanField('Active')
 
 class SupportMessageForm(FlaskForm):
     subject = StringField('Subject', validators=[DataRequired(), Length(max=200)])
