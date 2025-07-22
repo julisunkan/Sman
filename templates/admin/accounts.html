@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Accounts - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-store me-2"></i>Account Management</h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filter Options -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <select class="form-select" onchange="filterAccounts('status', this.value)">
+                        <option value="">All Status</option>
+                        <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+                        <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
+                        <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+                        <option value="sold" {{ 'selected' if status_filter == 'sold' }}>Sold</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" onchange="filterAccounts('platform', this.value)">
+                        <option value="">All Platforms</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="twitter">Twitter/X</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="snapchat">Snapchat</option>
+                        <option value="telegram">Telegram</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Search username..." onchange="filterAccounts('search', this.value)">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                        <i class="fas fa-times me-1"></i>Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accounts Table -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Social Media Accounts ({{ accounts.total }} total)</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-warning" onclick="bulkAction('pending')">
+                        <i class="fas fa-clock me-1"></i>Pending ({{ accounts.items|selectattr('status', 'equalto', 'pending')|list|length }})
+                    </button>
+                    <button class="btn btn-outline-success" onclick="bulkAction('approved')">
+                        <i class="fas fa-check me-1"></i>Approved ({{ accounts.items|selectattr('status', 'equalto', 'approved')|list|length }})
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if accounts.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Account</th>
+                            <th>Seller</th>
+                            <th>Followers</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Listed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in accounts.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if account.platform == 'instagram' %}
+                                    <i class="fab fa-instagram text-danger fs-4 me-3"></i>
+                                    {% elif account.platform == 'tiktok' %}
+                                    <i class="fab fa-tiktok text-dark fs-4 me-3"></i>
+                                    {% elif account.platform == 'youtube' %}
+                                    <i class="fab fa-youtube text-danger fs-4 me-3"></i>
+                                    {% elif account.platform == 'twitter' %}
+                                    <i class="fab fa-twitter text-info fs-4 me-3"></i>
+                                    {% elif account.platform == 'facebook' %}
+                                    <i class="fab fa-facebook text-primary fs-4 me-3"></i>
+                                    {% elif account.platform == 'linkedin' %}
+                                    <i class="fab fa-linkedin text-primary fs-4 me-3"></i>
+                                    {% elif account.platform == 'snapchat' %}
+                                    <i class="fab fa-snapchat text-warning fs-4 me-3"></i>
+                                    {% elif account.platform == 'telegram' %}
+                                    <i class="fab fa-telegram text-info fs-4 me-3"></i>
+                                    {% else %}
+                                    <i class="fas fa-share-alt text-secondary fs-4 me-3"></i>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold">@{{ account.username }}</div>
+                                        <small class="text-muted">{{ account.platform.title() }} • {{ account.category.title() }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                        <i class="fas fa-user text-white small"></i>
+                                    </div>
+                                    <div>
+                                        <div>{{ account.seller.username }}</div>
+                                        {% if account.seller.kyc_status == 'verified' %}
+                                        <small class="text-success"><i class="fas fa-check-circle me-1"></i>KYC Verified</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold">{{ "{:,}".format(account.followers_count) }}</span>
+                                {% if account.engagement_rate %}
+                                <br><small class="text-muted">{{ "%.1f"|format(account.engagement_rate) }}% eng.</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success">${{ "%.2f"|format(account.price) }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if account.status == 'approved' %}success{% elif account.status == 'pending' %}warning{% elif account.status == 'sold' %}info{% else %}danger{% endif %}">
+                                    {{ account.status.title() }}
+                                </span>
+                                {% if account.is_verified %}
+                                <br><span class="badge bg-success mt-1">Verified</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span>{{ account.created_at.strftime('%m/%d/%Y') }}</span>
+                                <br><small class="text-muted">{{ account.created_at.strftime('%I:%M %p') }}</small>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{{ url_for('main.account_detail', account_id=account.id) }}" 
+                                       class="btn btn-outline-info btn-sm" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if account.status == 'pending' %}
+                                    <a href="{{ url_for('admin.verify_account', account_id=account.id) }}" 
+                                       class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-gavel"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if account.screenshot_path %}
+                                    <a href="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
+                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-image"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-store fs-1 text-muted mb-4"></i>
+                <h4>No accounts found</h4>
+                <p class="text-muted">No accounts match your current filters.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <!-- Pagination -->
+            {% if accounts.pages > 1 %}
+            <nav aria-label="Accounts pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if accounts.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.accounts', page=accounts.prev_num, status=status_filter) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in accounts.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != accounts.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.accounts', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if accounts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.accounts', page=accounts.next_num, status=status_filter) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterAccounts(filterType, value) {
+    let url = new URL(window.location);
+    if (value) {
+        url.searchParams.set(filterType, value);
+    } else {
+        url.searchParams.delete(filterType);
+    }
+    window.location.href = url.toString();
+}
+
+function clearFilters() {
+    window.location.href = "{{ url_for('admin.accounts') }}";
+}
+
+function bulkAction(status) {
+    const checkboxes = document.querySelectorAll('input[name="account_ids"]:checked');
+    if (checkboxes.length === 0) {
+        alert('Please select accounts to perform bulk action');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to ${status} ${checkboxes.length} selected accounts?`)) {
+        // Implementation would go here
+        alert(`Bulk ${status} action would be performed`);
+    }
+}
+</script>
+{% endblock %}

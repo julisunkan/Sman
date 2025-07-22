@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Deposit Funds - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Deposit Funds</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Bank Transfer Instructions</h5>
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-university me-2"></i>Bank Details</h6>
+                                <div class="mb-2">
+                                    <strong>Bank Name:</strong> SocialMarket Bank<br>
+                                    <strong>Account Number:</strong> 1234567890<br>
+                                    <strong>Routing Number:</strong> 123456789<br>
+                                    <strong>Account Holder:</strong> SocialMarket LLC
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Important:</strong>
+                                <ul class="mb-0">
+                                    <li>Make sure to include your username in the transfer memo</li>
+                                    <li>Keep your receipt/proof of payment</li>
+                                    <li>Upload clear photo/scan of payment proof</li>
+                                    <li>Processing time: 1-3 business days</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <form method="POST" enctype="multipart/form-data">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="mb-4">
+                                    {{ form.amount.label(class="form-label fw-bold") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.amount(class="form-control form-control-lg", placeholder="0.00", min="10", step="0.01") }}
+                                    </div>
+                                    {% if form.amount.errors %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.amount.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Minimum deposit: $10.00</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    {{ form.payment_proof.label(class="form-label fw-bold") }}
+                                    {{ form.payment_proof(class="form-control", accept=".jpg,.jpeg,.png,.pdf") }}
+                                    {% if form.payment_proof.errors %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.payment_proof.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        Upload bank receipt, screenshot, or PDF statement. Max file size: 15KB
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-secondary">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>Processing Time:</strong> Your deposit will be reviewed and credited to your account within 1-3 business days after verification.
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('main.wallet') }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Wallet
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Deposit Request
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('amount').addEventListener('input', function(e) {
+    let value = parseFloat(e.target.value);
+    if (value < 10) {
+        e.target.setCustomValidity('Minimum deposit amount is $10.00');
+    } else {
+        e.target.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

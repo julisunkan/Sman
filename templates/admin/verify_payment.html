@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Purchase Payment - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-gavel me-2"></i>Verify Purchase Payment</h2>
+        <a href="{{ url_for('admin.payments', type='purchases') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Payments
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Purchase Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Purchase Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-user me-2"></i>Buyer Information</h6>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">{{ purchase.buyer.username }}</h6>
+                                    <small class="text-muted">{{ purchase.buyer.email }}</small>
+                                    <div class="mt-1">
+                                        {% if purchase.buyer.is_verified %}
+                                        <span class="badge bg-success">Email Verified</span>
+                                        {% endif %}
+                                        {% if purchase.buyer.kyc_status == 'verified' %}
+                                        <span class="badge bg-info">KYC Verified</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2"><strong>Member Since:</strong> {{ purchase.buyer.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="mb-2"><strong>Total Purchases:</strong> {{ purchase.buyer.purchases|length }}</div>
+                            <div class="mb-2"><strong>Wallet Balance:</strong> ${{ "%.2f"|format(purchase.buyer.balance) }}</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-share-alt me-2"></i>Account Being Purchased</h6>
+                            <div class="d-flex align-items-center mb-3">
+                                {% if purchase.account.platform == 'instagram' %}
+                                <i class="fab fa-instagram text-danger fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'tiktok' %}
+                                <i class="fab fa-tiktok text-dark fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'youtube' %}
+                                <i class="fab fa-youtube text-danger fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'twitter' %}
+                                <i class="fab fa-twitter text-info fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'facebook' %}
+                                <i class="fab fa-facebook text-primary fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'linkedin' %}
+                                <i class="fab fa-linkedin text-primary fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'snapchat' %}
+                                <i class="fab fa-snapchat text-warning fs-2 me-3"></i>
+                                {% elif purchase.account.platform == 'telegram' %}
+                                <i class="fab fa-telegram text-info fs-2 me-3"></i>
+                                {% else %}
+                                <i class="fas fa-share-alt text-secondary fs-2 me-3"></i>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-1">@{{ purchase.account.username }}</h6>
+                                    <small class="text-muted">{{ purchase.account.platform.title() }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2"><strong>Followers:</strong> {{ "{:,}".format(purchase.account.followers_count) }}</div>
+                            <div class="mb-2"><strong>Category:</strong> {{ purchase.account.category.title() }}</div>
+                            <div class="mb-2"><strong>Seller:</strong> {{ purchase.account.seller.username }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-credit-card me-2"></i>Payment Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Purchase Amount:</strong>
+                                <h4 class="text-success">${{ "%.2f"|format(purchase.amount) }}</h4>
+                            </div>
+                            <div class="mb-2"><strong>Payment Method:</strong> {{ purchase.payment_method.replace('_', ' ').title() }}</div>
+                            <div class="mb-2"><strong>Purchase Date:</strong> {{ purchase.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                            <div class="mb-2"><strong>Current Status:</strong> 
+                                <span class="badge bg-{% if purchase.status == 'completed' %}success{% elif purchase.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                    {{ purchase.status.title() }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if purchase.payment_proof_path %}
+                            <div class="mb-3">
+                                <strong>Payment Proof:</strong>
+                                <div class="mt-2">
+                                    <img src="{{ url_for('main.uploaded_file', filename=purchase.payment_proof_path) }}" 
+                                         class="img-fluid rounded shadow" 
+                                         alt="Payment Proof"
+                                         style="max-height: 200px;">
+                                </div>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('main.uploaded_file', filename=purchase.payment_proof_path) }}" 
+                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-external-link-alt me-1"></i>View Full Size
+                                    </a>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>No payment proof uploaded
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if purchase.admin_notes %}
+                    <hr>
+                    <div class="alert alert-info">
+                        <strong>Previous Admin Notes:</strong>
+                        <p class="mb-0 mt-2">{{ purchase.admin_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Bank Transfer Verification -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-university me-2"></i>Bank Transfer Verification</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Expected Bank Transfer Details:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Amount:</strong> ${{ "%.2f"|format(purchase.amount) }}<br>
+                                <strong>Memo/Reference:</strong> "Purchase #{{ purchase.id }}"<br>
+                                <strong>Expected From:</strong> {{ purchase.buyer.username }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Our Bank Account:</strong><br>
+                                Account: 1234567890<br>
+                                Routing: 123456789<br>
+                                Bank: SocialMarket Bank
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-list-check me-2"></i>Verification Checklist:</h6>
+                        <ul class="mb-0">
+                            <li>Verify transfer amount matches exactly: ${{ "%.2f"|format(purchase.amount) }}</li>
+                            <li>Check transfer memo contains "Purchase #{{ purchase.id }}"</li>
+                            <li>Confirm sender information matches buyer details</li>
+                            <li>Validate payment proof authenticity</li>
+                            <li>Ensure transfer was received in our account</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Verification Form -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-gavel me-2"></i>Payment Verification</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.status.label(class="form-label fw-bold") }}
+                            {{ form.status(class="form-select") }}
+                            {% if form.status.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.status.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.admin_notes.label(class="form-label fw-bold") }}
+                            {{ form.admin_notes(class="form-control", rows="4", placeholder="Add verification notes...") }}
+                            {% if form.admin_notes.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.admin_notes.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">These notes will be sent to the buyer</div>
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>If Approved:</strong>
+                            <ul class="mb-0 mt-2 small">
+                                <li>Account login details will be released to buyer</li>
+                                <li>Account status will be marked as "sold"</li>
+                                <li>Seller will be notified of successful sale</li>
+                                <li>Referral commission will be processed if applicable</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <strong>If Rejected:</strong>
+                            <ul class="mb-0 mt-2 small">
+                                <li>Buyer will be notified of rejection</li>
+                                <li>Account remains available for purchase</li>
+                                <li>No login details will be released</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Submit Verification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Purchase Timeline -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Purchase Timeline</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6>Purchase Created</h6>
+                                <small class="text-muted">{{ purchase.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if purchase.payment_proof_path %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6>Payment Proof Uploaded</h6>
+                                <small class="text-muted">Proof document submitted</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.verified_by_admin %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Admin Verified</h6>
+                                <small class="text-muted">Payment verified by admin</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.details_released %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Details Released</h6>
+                                <small class="text-muted">Account credentials provided to buyer</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.completed_at %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>Purchase Completed</h6>
+                                <small class="text-muted">{{ purchase.completed_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

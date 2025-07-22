@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase @{{ account.username }} - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Complete Your Purchase</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Account Summary -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                {% if account.platform == 'instagram' %}
+                                <i class="fab fa-instagram text-danger fs-2 me-3"></i>
+                                {% elif account.platform == 'tiktok' %}
+                                <i class="fab fa-tiktok text-dark fs-2 me-3"></i>
+                                {% elif account.platform == 'youtube' %}
+                                <i class="fab fa-youtube text-danger fs-2 me-3"></i>
+                                {% elif account.platform == 'twitter' %}
+                                <i class="fab fa-twitter text-info fs-2 me-3"></i>
+                                {% elif account.platform == 'facebook' %}
+                                <i class="fab fa-facebook text-primary fs-2 me-3"></i>
+                                {% elif account.platform == 'linkedin' %}
+                                <i class="fab fa-linkedin text-primary fs-2 me-3"></i>
+                                {% elif account.platform == 'snapchat' %}
+                                <i class="fab fa-snapchat text-warning fs-2 me-3"></i>
+                                {% elif account.platform == 'telegram' %}
+                                <i class="fab fa-telegram text-info fs-2 me-3"></i>
+                                {% else %}
+                                <i class="fas fa-share-alt text-secondary fs-2 me-3"></i>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1">@{{ account.username }}</h5>
+                                    <p class="text-muted mb-1">{{ account.platform.title() }} Account</p>
+                                    <div>
+                                        <span class="badge bg-secondary">{{ format_number(account.followers_count) }} followers</span>
+                                        <span class="badge bg-info">{{ account.category.title() }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <h3 class="text-success mb-0">{{ format_currency(account.price) }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Instructions -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-university me-2"></i>Payment Instructions</h5>
+                            <div class="alert alert-info">
+                                <h6>Bank Transfer Details</h6>
+                                <div class="mb-2">
+                                    <strong>Bank Name:</strong> SocialMarket Bank<br>
+                                    <strong>Account Number:</strong> 1234567890<br>
+                                    <strong>Routing Number:</strong> 123456789<br>
+                                    <strong>Account Holder:</strong> SocialMarket LLC
+                                </div>
+                                <div class="alert alert-warning mt-2">
+                                    <small><strong>Important:</strong> Include "Purchase #{{ account.id }}" in the transfer memo</small>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-secondary">
+                                <h6><i class="fas fa-clock me-2"></i>Processing Timeline</h6>
+                                <ol class="mb-0 small">
+                                    <li>Make bank transfer for {{ format_currency(account.price) }}</li>
+                                    <li>Upload payment proof below</li>
+                                    <li>Admin verification (1-3 business days)</li>
+                                    <li>Receive account login details</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-upload me-2"></i>Upload Payment Proof</h5>
+                            
+                            <form method="POST" enctype="multipart/form-data">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Amount to Transfer</label>
+                                    <input type="text" class="form-control form-control-lg" value="{{ format_currency(account.price) }}" readonly>
+                                    <div class="form-text">Transfer exactly this amount</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    {{ form.payment_proof.label(class="form-label fw-bold") }}
+                                    {{ form.payment_proof(class="form-control", accept=".jpg,.jpeg,.png,.pdf") }}
+                                    {% if form.payment_proof.errors %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.payment_proof.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        Upload bank receipt, transfer confirmation, or statement. Max file size: 15KB
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Before submitting:</strong>
+                                    <ul class="mb-0">
+                                        <li>Ensure the transfer amount matches exactly: {{ format_currency(account.price) }}</li>
+                                        <li>Include "Purchase #{{ account.id }}" in transfer memo</li>
+                                        <li>Upload clear, readable payment proof</li>
+                                        <li>Double-check all bank details</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Account
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-credit-card me-2"></i>Submit Purchase Request
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms and Security -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><i class="fas fa-shield-alt me-2"></i>Purchase Protection</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <small>Account ownership verified</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <small>Seller identity confirmed</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <small>Secure payment processing</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <small>24/7 customer support</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <small class="text-muted">
+                                By proceeding with this purchase, you agree to our Terms of Service and acknowledge that account transfers are final. 
+                                Digital products cannot be returned once access credentials are provided.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// File size validation
+document.getElementById('payment_proof').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.size > 15 * 1024) { // 15KB
+            alert('File size must be less than 15KB. Please compress your image or choose a different file.');
+            e.target.value = '';
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Referral Program - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-gift me-2"></i>Referral Program</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Referral Stats -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-users fs-2 text-primary mb-2"></i>
+                                <h3 class="mb-1">{{ referred_users|length }}</h3>
+                                <small class="text-muted">Total Referrals</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-dollar-sign fs-2 text-success mb-2"></i>
+                                <h3 class="mb-1">{{ format_currency(current_user.total_referral_earnings) }}</h3>
+                                <small class="text-muted">Total Earnings</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-percentage fs-2 text-warning mb-2"></i>
+                                <h3 class="mb-1">5%</h3>
+                                <small class="text-muted">Commission Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- How it Works -->
+                    <div class="mb-5">
+                        <h5><i class="fas fa-question-circle me-2"></i>How it Works</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span class="text-white fw-bold">1</span>
+                                    </div>
+                                    <div>
+                                        <h6>Share Your Link</h6>
+                                        <small class="text-muted">Share your unique referral link with friends and on social media</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span class="text-white fw-bold">2</span>
+                                    </div>
+                                    <div>
+                                        <h6>They Sign Up</h6>
+                                        <small class="text-muted">When someone signs up using your link, they become your referral</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <span class="text-white fw-bold">3</span>
+                                    </div>
+                                    <div>
+                                        <h6>Earn Commission</h6>
+                                        <small class="text-muted">Get 5% commission on their first purchase, added to your wallet</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Referral Link -->
+                    <div class="mb-5">
+                        <h5><i class="fas fa-link me-2"></i>Your Referral Link</h5>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" value="{{ referral_url }}" readonly id="referralLink">
+                            <button class="btn btn-primary" type="button" onclick="copyReferralLink()">
+                                <i class="fas fa-copy me-1"></i>Copy
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="https://twitter.com/intent/tweet?text=Join%20SocialMarket%2C%20the%20trusted%20marketplace%20for%20social%20media%20accounts!&url={{ referral_url|urlencode }}" 
+                               target="_blank" class="btn btn-outline-info btn-sm">
+                                <i class="fab fa-twitter me-1"></i>Share on Twitter
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ referral_url|urlencode }}" 
+                               target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fab fa-facebook me-1"></i>Share on Facebook
+                            </a>
+                            <a href="https://t.me/share/url?url={{ referral_url|urlencode }}&text=Join%20SocialMarket%2C%20the%20trusted%20marketplace%20for%20social%20media%20accounts!" 
+                               target="_blank" class="btn btn-outline-info btn-sm">
+                                <i class="fab fa-telegram me-1"></i>Share on Telegram
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>Referral Terms</h6>
+                        <ul class="mb-0 small">
+                            <li>Earn 5% commission on each referral's first purchase</li>
+                            <li>Commission is automatically added to your wallet</li>
+                            <li>Referrals must complete their purchase for you to earn commission</li>
+                            <li>Self-referrals and fraudulent activity are prohibited</li>
+                            <li>Commission rates may change with prior notice</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Your Referrals -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-users me-2"></i>Your Referrals</h6>
+                </div>
+                <div class="card-body">
+                    {% if referred_users %}
+                    <div class="list-group list-group-flush">
+                        {% for user in referred_users %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ user.username }}</h6>
+                                    <small class="text-muted">Joined {{ user.created_at.strftime('%B %d, %Y') }}</small>
+                                </div>
+                                {% if user.is_verified %}
+                                <span class="badge bg-success">Verified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-plus fs-2 text-muted mb-3"></i>
+                        <h6>No referrals yet</h6>
+                        <p class="text-muted small">Start sharing your referral link to earn commissions!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Earnings Breakdown -->
+            <div class="card shadow mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Earnings Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Total Earned:</span>
+                        <span class="fw-bold text-success">{{ format_currency(current_user.total_referral_earnings) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Active Referrals:</span>
+                        <span class="fw-bold">{{ referred_users|selectattr('is_active', 'equalto', True)|list|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Verified Referrals:</span>
+                        <span class="fw-bold">{{ referred_users|selectattr('is_verified', 'equalto', True)|list|length }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Current Wallet:</span>
+                        <span class="fw-bold text-primary">{{ format_currency(current_user.balance) }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tips for Success -->
+            <div class="card shadow mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips for Success</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-share-alt text-primary me-2"></i>
+                        <small>Share on social media platforms where you have engaged followers</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-comments text-success me-2"></i>
+                        <small>Explain the benefits of SocialMarket to potential referrals</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-target text-warning me-2"></i>
+                        <small>Target people interested in social media marketing</small>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock text-info me-2"></i>
+                        <small>Be patient - good referrals take time to convert</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function copyReferralLink() {
+    const linkInput = document.getElementById('referralLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    navigator.clipboard.writeText(linkInput.value).then(function() {
+        // Show success message
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed top-0 end-0 m-3 alert alert-success alert-dismissible fade show';
+        toast.innerHTML = '<i class="fas fa-check me-2"></i>Referral link copied to clipboard! <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-history me-2"></i>Transaction History</h2>
+    
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="purchases-tab" data-bs-toggle="tab" data-bs-target="#purchases" type="button" role="tab">
+                <i class="fas fa-shopping-cart me-2"></i>My Purchases ({{ purchases|length }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button" role="tab">
+                <i class="fas fa-dollar-sign me-2"></i>My Sales ({{ sales|length }})
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Purchases Tab -->
+        <div class="tab-pane fade show active" id="purchases" role="tabpanel">
+            {% if purchases %}
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for purchase in purchases %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if purchase.account.platform == 'instagram' %}
+                                            <i class="fab fa-instagram text-danger me-3"></i>
+                                            {% elif purchase.account.platform == 'tiktok' %}
+                                            <i class="fab fa-tiktok text-dark me-3"></i>
+                                            {% elif purchase.account.platform == 'youtube' %}
+                                            <i class="fab fa-youtube text-danger me-3"></i>
+                                            {% elif purchase.account.platform == 'twitter' %}
+                                            <i class="fab fa-twitter text-info me-3"></i>
+                                            {% elif purchase.account.platform == 'facebook' %}
+                                            <i class="fab fa-facebook text-primary me-3"></i>
+                                            {% elif purchase.account.platform == 'linkedin' %}
+                                            <i class="fab fa-linkedin text-primary me-3"></i>
+                                            {% elif purchase.account.platform == 'snapchat' %}
+                                            <i class="fab fa-snapchat text-warning me-3"></i>
+                                            {% elif purchase.account.platform == 'telegram' %}
+                                            <i class="fab fa-telegram text-info me-3"></i>
+                                            {% else %}
+                                            <i class="fas fa-share-alt text-secondary me-3"></i>
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold">@{{ purchase.account.username }}</div>
+                                                <small class="text-muted">{{ purchase.account.platform.title() }} • {{ format_number(purchase.account.followers_count) }} followers</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">{{ format_currency(purchase.amount) }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if purchase.status == 'completed' %}success{% elif purchase.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                            {{ purchase.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>{{ purchase.created_at.strftime('%m/%d/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ purchase.created_at.strftime('%I:%M %p') }}</small>
+                                    </td>
+                                    <td>
+                                        {% if purchase.status == 'completed' and purchase.details_released %}
+                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal{{ purchase.id }}">
+                                            <i class="fas fa-key me-1"></i>View Login
+                                        </button>
+                                        {% elif purchase.status == 'pending' %}
+                                        <span class="text-warning small">
+                                            <i class="fas fa-clock me-1"></i>Pending verification
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted small">Not available</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                
+                                <!-- Login Details Modal -->
+                                {% if purchase.status == 'completed' and purchase.details_released %}
+                                <div class="modal fade" id="loginModal{{ purchase.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Account Login Details</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="alert alert-warning">
+                                                    <i class="fas fa-shield-alt me-2"></i>
+                                                    <strong>Security Notice:</strong> Change the password immediately after logging in for security.
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Platform:</label>
+                                                    <div>{{ purchase.account.platform.title() }}</div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Username:</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" value="@{{ purchase.account.username }}" readonly>
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('@{{ purchase.account.username }}')">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Email:</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" value="{{ purchase.account.login_email }}" readonly>
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_email }}')">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Password:</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" value="{{ purchase.account.login_password }}" readonly id="password{{ purchase.id }}">
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password{{ purchase.id }}')">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_password }}')">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Next Steps:</strong>
+                                                    <ol class="mb-0">
+                                                        <li>Login to the account using the credentials above</li>
+                                                        <li>Change the password immediately</li>
+                                                        <li>Update the recovery email to your own</li>
+                                                        <li>Enable two-factor authentication if available</li>
+                                                    </ol>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-cart fs-1 text-muted mb-4"></i>
+                <h4>No purchases yet</h4>
+                <p class="text-muted mb-4">Browse our marketplace to find social media accounts that match your needs.</p>
+                <a href="{{ url_for('main.browse_accounts') }}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Browse Accounts
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sales Tab -->
+        <div class="tab-pane fade" id="sales" role="tabpanel">
+            {% if sales %}
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Account Sold</th>
+                                    <th>Buyer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in sales %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if sale.account.platform == 'instagram' %}
+                                            <i class="fab fa-instagram text-danger me-3"></i>
+                                            {% elif sale.account.platform == 'tiktok' %}
+                                            <i class="fab fa-tiktok text-dark me-3"></i>
+                                            {% elif sale.account.platform == 'youtube' %}
+                                            <i class="fab fa-youtube text-danger me-3"></i>
+                                            {% elif sale.account.platform == 'twitter' %}
+                                            <i class="fab fa-twitter text-info me-3"></i>
+                                            {% elif sale.account.platform == 'facebook' %}
+                                            <i class="fab fa-facebook text-primary me-3"></i>
+                                            {% elif sale.account.platform == 'linkedin' %}
+                                            <i class="fab fa-linkedin text-primary me-3"></i>
+                                            {% elif sale.account.platform == 'snapchat' %}
+                                            <i class="fab fa-snapchat text-warning me-3"></i>
+                                            {% elif sale.account.platform == 'telegram' %}
+                                            <i class="fab fa-telegram text-info me-3"></i>
+                                            {% else %}
+                                            <i class="fas fa-share-alt text-secondary me-3"></i>
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold">@{{ sale.account.username }}</div>
+                                                <small class="text-muted">{{ sale.account.platform.title() }} • {{ format_number(sale.account.followers_count) }} followers</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <i class="fas fa-user text-white small"></i>
+                                            </div>
+                                            <span>{{ sale.buyer.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">{{ format_currency(sale.amount) }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if sale.status == 'completed' %}success{% elif sale.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                            {{ sale.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>{{ sale.created_at.strftime('%m/%d/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ sale.created_at.strftime('%I:%M %p') }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-dollar-sign fs-1 text-muted mb-4"></i>
+                <h4>No sales yet</h4>
+                <p class="text-muted mb-4">Start selling your social media accounts to earn money on our platform.</p>
+                <a href="{{ url_for('main.create_listing') }}" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i>Create Listing
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed top-0 end-0 m-3 alert alert-success alert-dismissible fade show';
+        toast.innerHTML = '<i class="fas fa-check me-2"></i>Copied to clipboard! <button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    });
+}
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
+{% endblock %}

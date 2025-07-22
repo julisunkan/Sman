@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Wallet - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-history me-2"></i>Transaction History</h4>
+                </div>
+                <div class="card-body">
+                    {% if transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if transaction.transaction_type == 'deposit' %}
+                                            <i class="fas fa-plus-circle text-success me-3"></i>
+                                            {% elif transaction.transaction_type == 'purchase' %}
+                                            <i class="fas fa-shopping-cart text-primary me-3"></i>
+                                            {% elif transaction.transaction_type == 'referral_earning' %}
+                                            <i class="fas fa-users text-warning me-3"></i>
+                                            {% else %}
+                                            <i class="fas fa-arrow-right text-info me-3"></i>
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold">{{ transaction.description }}</div>
+                                                <small class="text-muted">{{ transaction.transaction_type.replace('_', ' ').title() }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold {% if transaction.transaction_type in ['deposit', 'referral_earning'] %}text-success{% else %}text-danger{% endif %}">
+                                            {% if transaction.transaction_type in ['deposit', 'referral_earning'] %}+{% else %}-{% endif %}{{ format_currency(transaction.amount) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if transaction.status == 'completed' else 'warning' if transaction.status == 'pending' else 'danger' }}">
+                                            {{ transaction.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ transaction.created_at.strftime('%m/%d/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ transaction.created_at.strftime('%I:%M %p') }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-history fs-2 text-muted mb-3"></i>
+                        <h5>No transactions yet</h5>
+                        <p class="text-muted">Your transaction history will appear here once you make deposits or purchases.</p>
+                        <a href="{{ url_for('main.deposit') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Make Your First Deposit
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Wallet Balance -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-wallet fs-1 text-primary mb-3"></i>
+                    <h2 class="text-success mb-2">{{ format_currency(current_user.balance) }}</h2>
+                    <p class="text-muted mb-4">Available Balance</p>
+                    <a href="{{ url_for('main.deposit') }}" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-plus me-2"></i>Add Funds
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Wallet Stats</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Total Deposits:</span>
+                        <span class="fw-bold text-success">
+                            {{ format_currency(transactions|selectattr('transaction_type', 'equalto', 'deposit')|selectattr('status', 'equalto', 'completed')|sum(attribute='amount')) }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Total Purchases:</span>
+                        <span class="fw-bold text-danger">
+                            {{ format_currency(transactions|selectattr('transaction_type', 'equalto', 'purchase')|selectattr('status', 'equalto', 'completed')|sum(attribute='amount')) }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Referral Earnings:</span>
+                        <span class="fw-bold text-warning">
+                            {{ format_currency(current_user.total_referral_earnings) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Deposit Methods -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-credit-card me-2"></i>Deposit Methods</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Bank Transfer Only</strong><br>
+                        Currently, we only accept manual bank transfers. Upload your payment proof after making the transfer.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('main.deposit') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-university me-2"></i>Bank Transfer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

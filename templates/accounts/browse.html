@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Accounts - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-search me-2"></i>Find Social Media Accounts</h4>
+                </div>
+                <div class="card-body">
+                    <form method="GET">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                {{ form.platform.label(class="form-label") }}
+                                {{ form.platform(class="form-select", value=request.args.get('platform', '')) }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.category.label(class="form-label") }}
+                                {{ form.category(class="form-select", value=request.args.get('category', '')) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.min_price.label(class="form-label") }}
+                                {{ form.min_price(class="form-control", placeholder="Min $", value=request.args.get('min_price', '')) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.max_price.label(class="form-label") }}
+                                {{ form.max_price(class="form-control", placeholder="Max $", value=request.args.get('max_price', '')) }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.min_followers.label(class="form-label") }}
+                                {{ form.min_followers(class="form-control", placeholder="Min followers", value=request.args.get('min_followers', '')) }}
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-search me-1"></i>Search
+                                </button>
+                                <a href="{{ url_for('main.browse_accounts') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i>Clear Filters
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sort and Results Count -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h5>{{ accounts.total }} accounts found</h5>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-sort me-1"></i>Sort by
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='newest', **request.args) }}">Newest First</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='price_low', **request.args) }}">Price: Low to High</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='price_high', **request.args) }}">Price: High to Low</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='followers', **request.args) }}">Most Followers</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounts Grid -->
+    {% if accounts.items %}
+    <div class="row g-4 mb-4">
+        {% for account in accounts.items %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if account.platform == 'instagram' %}
+                        <i class="fab fa-instagram text-danger fs-4 me-3"></i>
+                        {% elif account.platform == 'tiktok' %}
+                        <i class="fab fa-tiktok text-dark fs-4 me-3"></i>
+                        {% elif account.platform == 'youtube' %}
+                        <i class="fab fa-youtube text-danger fs-4 me-3"></i>
+                        {% elif account.platform == 'twitter' %}
+                        <i class="fab fa-twitter text-info fs-4 me-3"></i>
+                        {% elif account.platform == 'facebook' %}
+                        <i class="fab fa-facebook text-primary fs-4 me-3"></i>
+                        {% elif account.platform == 'linkedin' %}
+                        <i class="fab fa-linkedin text-primary fs-4 me-3"></i>
+                        {% elif account.platform == 'snapchat' %}
+                        <i class="fab fa-snapchat text-warning fs-4 me-3"></i>
+                        {% elif account.platform == 'telegram' %}
+                        <i class="fab fa-telegram text-info fs-4 me-3"></i>
+                        {% else %}
+                        <i class="fas fa-share-alt text-secondary fs-4 me-3"></i>
+                        {% endif %}
+                        <div>
+                            <h6 class="card-title mb-0">@{{ account.username }}</h6>
+                            <small class="text-muted">{{ account.platform.title() }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Followers:</span>
+                            <span class="fw-bold">{{ format_number(account.followers_count) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Category:</span>
+                            <span>{{ account.category.title() }}</span>
+                        </div>
+                        {% if account.engagement_rate %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Engagement:</span>
+                            <span>{{ "%.1f"|format(account.engagement_rate) }}%</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if account.description %}
+                    <p class="text-muted small mb-3">{{ account.description[:100] }}{% if account.description|length > 100 %}...{% endif %}</p>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="text-success mb-0">{{ format_currency(account.price) }}</h5>
+                        <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-primary">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>Listed {{ account.created_at.strftime('%B %d, %Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if accounts.pages > 1 %}
+    <nav aria-label="Accounts pagination">
+        <ul class="pagination justify-content-center">
+            {% if accounts.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.prev_num, **request.args) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in accounts.iter_pages() %}
+            {% if page_num %}
+            {% if page_num != accounts.page %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=page_num, **request.args) }}">{{ page_num }}</a>
+            </li>
+            {% else %}
+            <li class="page-item active">
+                <span class="page-link">{{ page_num }}</span>
+            </li>
+            {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if accounts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.next_num, **request.args) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-search fs-1 text-muted mb-4"></i>
+        <h4>No accounts found</h4>
+        <p class="text-muted mb-4">Try adjusting your search filters or browse all available accounts.</p>
+        <a href="{{ url_for('main.browse_accounts') }}" class="btn btn-primary">
+            <i class="fas fa-list me-2"></i>Browse All Accounts
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

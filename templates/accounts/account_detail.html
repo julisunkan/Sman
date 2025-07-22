@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}{{ account.platform.title() }} Account @{{ account.username }} - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <!-- Account Header -->
+                    <div class="d-flex align-items-center mb-4">
+                        {% if account.platform == 'instagram' %}
+                        <i class="fab fa-instagram text-danger fs-1 me-4"></i>
+                        {% elif account.platform == 'tiktok' %}
+                        <i class="fab fa-tiktok text-dark fs-1 me-4"></i>
+                        {% elif account.platform == 'youtube' %}
+                        <i class="fab fa-youtube text-danger fs-1 me-4"></i>
+                        {% elif account.platform == 'twitter' %}
+                        <i class="fab fa-twitter text-info fs-1 me-4"></i>
+                        {% elif account.platform == 'facebook' %}
+                        <i class="fab fa-facebook text-primary fs-1 me-4"></i>
+                        {% elif account.platform == 'linkedin' %}
+                        <i class="fab fa-linkedin text-primary fs-1 me-4"></i>
+                        {% elif account.platform == 'snapchat' %}
+                        <i class="fab fa-snapchat text-warning fs-1 me-4"></i>
+                        {% elif account.platform == 'telegram' %}
+                        <i class="fab fa-telegram text-info fs-1 me-4"></i>
+                        {% else %}
+                        <i class="fas fa-share-alt text-secondary fs-1 me-4"></i>
+                        {% endif %}
+                        <div>
+                            <h2 class="mb-1">@{{ account.username }}</h2>
+                            <p class="text-muted mb-0">{{ account.platform.title() }} Account</p>
+                            <div class="mt-2">
+                                <span class="badge bg-secondary">{{ account.category.title() }}</span>
+                                {% if account.is_verified %}
+                                <span class="badge bg-success">Verified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Stats -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-users fs-3 text-primary mb-2"></i>
+                                <h4 class="mb-1">{{ format_number(account.followers_count) }}</h4>
+                                <small class="text-muted">Followers</small>
+                            </div>
+                        </div>
+                        {% if account.engagement_rate %}
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-chart-line fs-3 text-success mb-2"></i>
+                                <h4 class="mb-1">{{ "%.1f"|format(account.engagement_rate) }}%</h4>
+                                <small class="text-muted">Engagement Rate</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-dollar-sign fs-3 text-warning mb-2"></i>
+                                <h4 class="mb-1">{{ format_currency(account.price) }}</h4>
+                                <small class="text-muted">Price</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    {% if account.description %}
+                    <div class="mb-4">
+                        <h5><i class="fas fa-info-circle me-2"></i>Description</h5>
+                        <p class="text-muted">{{ account.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Account Screenshot -->
+                    {% if account.screenshot_path %}
+                    <div class="mb-4">
+                        <h5><i class="fas fa-image me-2"></i>Account Preview</h5>
+                        <img src="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
+                             class="img-fluid rounded shadow" 
+                             alt="Account Screenshot"
+                             style="max-height: 400px;">
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Seller Information -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-user me-2"></i>Seller Information</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">{{ account.seller.username }}</h6>
+                                <div>
+                                    {% if account.seller.kyc_status == 'verified' %}
+                                    <span class="badge bg-success">KYC Verified</span>
+                                    {% endif %}
+                                    <span class="badge bg-info">Member since {{ account.seller.created_at.strftime('%B %Y') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Details -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><i class="fas fa-calendar me-2"></i>Listing Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Listed:</span>
+                                        <span>{{ account.created_at.strftime('%B %d, %Y') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Platform:</span>
+                                        <span>{{ account.platform.title() }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Category:</span>
+                                        <span>{{ account.category.title() }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Status:</span>
+                                        <span class="badge bg-success">Available</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Purchase Card -->
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <h3 class="text-success mb-3">{{ format_currency(account.price) }}</h3>
+                    
+                    {% if current_user.is_authenticated %}
+                        {% if not is_seller %}
+                            <a href="{{ url_for('main.purchase_account', account_id=account.id) }}" class="btn btn-success btn-lg w-100 mb-3">
+                                <i class="fas fa-shopping-cart me-2"></i>Purchase Now
+                            </a>
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>Secure payment with admin verification
+                            </small>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>This is your listing
+                            </div>
+                            <a href="{{ url_for('main.my_listings') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-list me-2"></i>Manage Listing
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-success btn-lg w-100 mb-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Purchase
+                        </a>
+                        <small class="text-muted">Create an account to buy this social media account</small>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Purchase Process -->
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-list-ol me-2"></i>How it works</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">
+                            <span class="text-white fw-bold">1</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Make Payment</h6>
+                            <small class="text-muted">Transfer funds and upload payment proof</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">
+                            <span class="text-white fw-bold">2</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Admin Verification</h6>
+                            <small class="text-muted">We verify your payment within 24 hours</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">
+                            <span class="text-white fw-bold">3</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Get Account Access</h6>
+                            <small class="text-muted">Receive login details in your dashboard</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Features -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Security & Trust</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Account verified by our team</small>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Seller identity verified</small>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Secure payment processing</small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>24/7 customer support</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

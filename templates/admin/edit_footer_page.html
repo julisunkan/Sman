@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}{% if page %}Edit{% else %}Create{% endif %} Footer Page - Admin{% endblock %}
+
+{% block extra_head %}
+<!-- TinyMCE for rich text editing -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">
+            <i class="fas fa-{% if page %}edit{% else %}plus{% endif %} me-2"></i>
+            {% if page %}Edit{% else %}Create{% endif %} Footer Page
+        </h2>
+        <a href="{{ url_for('admin.footer_pages') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Pages
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Page Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.title.label(class="form-label fw-bold") }}
+                                    {{ form.title(class="form-control", placeholder="e.g., Privacy Policy") }}
+                                    {% if form.title.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.title.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.slug.label(class="form-label fw-bold") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">/page/</span>
+                                        {{ form.slug(class="form-control", placeholder="privacy-policy") }}
+                                    </div>
+                                    {% if form.slug.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.slug.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">URL-friendly identifier (lowercase, hyphens only)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.is_active(class="form-check-input") }}
+                                {{ form.is_active.label(class="form-check-label") }}
+                            </div>
+                            <div class="form-text">Inactive pages won't be accessible to users</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.content.label(class="form-label fw-bold") }}
+                            {{ form.content(class="form-control", id="content-editor") }}
+                            {% if form.content.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.content.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin.footer_pages') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <div class="d-flex gap-2">
+                                {% if page %}
+                                <a href="{{ url_for('main.footer_page', slug=page.slug) }}" target="_blank" class="btn btn-outline-info">
+                                    <i class="fas fa-eye me-2"></i>Preview
+                                </a>
+                                {% endif %}
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>{% if page %}Update{% else %}Create{% endif %} Page
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Page Templates -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-file-medical me-2"></i>Page Templates</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small">Click to insert template content</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertTemplate('privacy')">
+                            <i class="fas fa-shield-alt me-1"></i>Privacy Policy Template
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertTemplate('terms')">
+                            <i class="fas fa-file-contract me-1"></i>Terms of Service Template
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertTemplate('cookies')">
+                            <i class="fas fa-cookie-bite me-1"></i>Cookie Policy Template
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertTemplate('about')">
+                            <i class="fas fa-info-circle me-1"></i>About Us Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Content Tips</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Use clear, concise language</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Include contact information where relevant</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Keep legal pages up to date</small>
+                    </div>
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Make privacy policies easy to understand</small>
+                    </div>
+                    <div>
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small>Consider consulting legal professionals</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Page Info -->
+            {% if page %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info me-2"></i>Page Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Created:</strong><br>
+                        <small class="text-muted">{{ page.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Last Updated:</strong><br>
+                        <small class="text-muted">{{ page.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Public URL:</strong><br>
+                        <small><a href="{{ url_for('main.footer_page', slug=page.slug) }}" target="_blank">/page/{{ page.slug }}</a></small>
+                    </div>
+                    <div>
+                        <strong>Status:</strong>
+                        {% if page.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Initialize TinyMCE
+tinymce.init({
+    selector: '#content-editor',
+    height: 400,
+    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px }',
+    branding: false,
+    menubar: false
+});
+
+// Auto-generate slug from title
+document.getElementById('title').addEventListener('input', function(e) {
+    const title = e.target.value;
+    const slug = title.toLowerCase()
+        .replace(/[^\w\s-]/g, '')  // Remove special characters
+        .replace(/[\s_-]+/g, '-')  // Replace spaces and underscores with hyphens
+        .replace(/^-+|-+$/g, '');  // Remove leading/trailing hyphens
+    document.getElementById('slug').value = slug;
+});
+
+// Template insertion
+function insertTemplate(templateType) {
+    let content = '';
+    
+    switch(templateType) {
+        case 'privacy':
+            content = `
+<h2>Privacy Policy</h2>
+<p><strong>Last updated:</strong> ${new Date().toLocaleDateString()}</p>
+
+<h3>Information We Collect</h3>
+<p>We collect information you provide directly to us, such as when you create an account, make a purchase, or contact us for support.</p>
+
+<h3>How We Use Your Information</h3>
+<p>We use the information we collect to provide, maintain, and improve our services, process transactions, and communicate with you.</p>
+
+<h3>Information Sharing</h3>
+<p>We do not sell, trade, or rent your personal information to third parties without your consent.</p>
+
+<h3>Data Security</h3>
+<p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+
+<h3>Contact Us</h3>
+<p>If you have any questions about this Privacy Policy, please contact us at support@socialmarket.com</p>
+            `;
+            break;
+            
+        case 'terms':
+            content = `
+<h2>Terms of Service</h2>
+<p><strong>Last updated:</strong> ${new Date().toLocaleDateString()}</p>
+
+<h3>Acceptance of Terms</h3>
+<p>By using SocialMarket, you agree to be bound by these Terms of Service.</p>
+
+<h3>User Accounts</h3>
+<p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+
+<h3>Prohibited Activities</h3>
+<ul>
+<li>Fraudulent transactions</li>
+<li>Selling fake or inactive accounts</li>
+<li>Harassment or abusive behavior</li>
+<li>Violation of platform policies</li>
+</ul>
+
+<h3>Account Trading Rules</h3>
+<p>All social media accounts must be legitimately owned and transferred with proper credentials.</p>
+
+<h3>Payment Terms</h3>
+<p>All transactions are subject to admin verification. Refunds are processed according to our refund policy.</p>
+
+<h3>Termination</h3>
+<p>We reserve the right to terminate accounts that violate these terms.</p>
+
+<h3>Contact Information</h3>
+<p>For questions about these terms, contact us at legal@socialmarket.com</p>
+            `;
+            break;
+            
+        case 'cookies':
+            content = `
+<h2>Cookie Policy</h2>
+<p><strong>Last updated:</strong> ${new Date().toLocaleDateString()}</p>
+
+<h3>What Are Cookies</h3>
+<p>Cookies are small text files that are placed on your computer or mobile device when you visit our website.</p>
+
+<h3>How We Use Cookies</h3>
+<ul>
+<li><strong>Essential Cookies:</strong> Required for basic website functionality</li>
+<li><strong>Analytics Cookies:</strong> Help us understand how visitors use our site</li>
+<li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
+</ul>
+
+<h3>Managing Cookies</h3>
+<p>You can control and/or delete cookies as you wish through your browser settings.</p>
+
+<h3>Third-Party Cookies</h3>
+<p>We may use third-party services that place cookies on your device to help us analyze website usage.</p>
+
+<h3>Contact Us</h3>
+<p>If you have questions about our use of cookies, please contact us at privacy@socialmarket.com</p>
+            `;
+            break;
+            
+        case 'about':
+            content = `
+<h2>About SocialMarket</h2>
+
+<h3>Our Mission</h3>
+<p>SocialMarket is the trusted marketplace for buying and selling social media accounts safely and securely.</p>
+
+<h3>What We Do</h3>
+<p>We provide a secure platform where users can:</p>
+<ul>
+<li>Buy verified social media accounts</li>
+<li>Sell their accounts safely</li>
+<li>Get support throughout the process</li>
+<li>Benefit from our referral program</li>
+</ul>
+
+<h3>Our Values</h3>
+<ul>
+<li><strong>Security:</strong> All transactions are verified by our admin team</li>
+<li><strong>Trust:</strong> We verify all accounts and user identities</li>
+<li><strong>Support:</strong> 24/7 customer support for all users</li>
+<li><strong>Transparency:</strong> Clear processes and fair pricing</li>
+</ul>
+
+<h3>Contact Us</h3>
+<p>Questions? Reach out to us at info@socialmarket.com</p>
+            `;
+            break;
+    }
+    
+    if (content) {
+        tinymce.get('content-editor').setContent(content);
+    }
+}
+</script>
+{% endblock %}

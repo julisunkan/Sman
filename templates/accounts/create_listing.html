@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Create Listing - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>List Your Social Media Account</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Before you start:</strong> Make sure your account meets our quality standards. All listings are reviewed by our team before going live.
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.platform.label(class="form-label fw-bold") }}
+                                    {{ form.platform(class="form-select") }}
+                                    {% if form.platform.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.platform.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.username.label(class="form-label fw-bold") }}
+                                    {{ form.username(class="form-control", placeholder="e.g., @yourhandle") }}
+                                    {% if form.username.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.username.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.followers_count.label(class="form-label fw-bold") }}
+                                    {{ form.followers_count(class="form-control", placeholder="e.g., 10000") }}
+                                    {% if form.followers_count.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.followers_count.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.engagement_rate.label(class="form-label fw-bold") }}
+                                    <div class="input-group">
+                                        {{ form.engagement_rate(class="form-control", placeholder="5.5", step="0.1") }}
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    {% if form.engagement_rate.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.engagement_rate.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Optional - average engagement rate</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.price.label(class="form-label fw-bold") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.price(class="form-control", placeholder="100.00", step="0.01") }}
+                                    </div>
+                                    {% if form.price.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.price.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.category.label(class="form-label fw-bold") }}
+                            {{ form.category(class="form-select") }}
+                            {% if form.category.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.category.errors %}
+                                    <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label fw-bold") }}
+                            {{ form.description(class="form-control", rows="4", placeholder="Describe your account, niche, audience demographics, posting frequency, etc.") }}
+                            {% if form.description.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.description.errors %}
+                                    <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">Provide detailed information to attract serious buyers</div>
+                        </div>
+                        
+                        <hr>
+                        <h5><i class="fas fa-key me-2"></i>Account Login Details</h5>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <strong>Security Notice:</strong> These details will only be shared with the buyer after payment verification and admin approval.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.login_email.label(class="form-label fw-bold") }}
+                                    {{ form.login_email(class="form-control", placeholder="account@email.com") }}
+                                    {% if form.login_email.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.login_email.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.login_password.label(class="form-label fw-bold") }}
+                                    {{ form.login_password(class="form-control", placeholder="Account password") }}
+                                    {% if form.login_password.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.login_password.errors %}
+                                            <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.screenshot.label(class="form-label fw-bold") }}
+                            {{ form.screenshot(class="form-control", accept=".jpg,.jpeg,.png") }}
+                            {% if form.screenshot.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.screenshot.errors %}
+                                    <div><i class="fas fa-exclamation-triangle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Upload a screenshot showing your account's profile page with follower count visible. Max file size: 15KB
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-secondary">
+                            <h6><i class="fas fa-clock me-2"></i>What happens next?</h6>
+                            <ol class="mb-0">
+                                <li>Our team will review your listing within 24-48 hours</li>
+                                <li>You'll receive an email notification about the approval status</li>
+                                <li>Once approved, your account will be visible to buyers</li>
+                                <li>You'll be notified when someone purchases your account</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit for Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Auto-format price input
+document.getElementById('price').addEventListener('input', function(e) {
+    let value = parseFloat(e.target.value);
+    if (value && value > 0) {
+        e.target.value = value.toFixed(2);
+    }
+});
+
+// Auto-format followers count
+document.getElementById('followers_count').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+</script>
+{% endblock %}

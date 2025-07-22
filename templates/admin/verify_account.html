@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Account: @{{ account.username }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-gavel me-2"></i>Verify Account: @{{ account.username }}</h2>
+        <a href="{{ url_for('admin.accounts') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Accounts
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Account Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-4">
+                                {% if account.platform == 'instagram' %}
+                                <i class="fab fa-instagram text-danger fs-1 me-4"></i>
+                                {% elif account.platform == 'tiktok' %}
+                                <i class="fab fa-tiktok text-dark fs-1 me-4"></i>
+                                {% elif account.platform == 'youtube' %}
+                                <i class="fab fa-youtube text-danger fs-1 me-4"></i>
+                                {% elif account.platform == 'twitter' %}
+                                <i class="fab fa-twitter text-info fs-1 me-4"></i>
+                                {% elif account.platform == 'facebook' %}
+                                <i class="fab fa-facebook text-primary fs-1 me-4"></i>
+                                {% elif account.platform == 'linkedin' %}
+                                <i class="fab fa-linkedin text-primary fs-1 me-4"></i>
+                                {% elif account.platform == 'snapchat' %}
+                                <i class="fab fa-snapchat text-warning fs-1 me-4"></i>
+                                {% elif account.platform == 'telegram' %}
+                                <i class="fab fa-telegram text-info fs-1 me-4"></i>
+                                {% else %}
+                                <i class="fas fa-share-alt text-secondary fs-1 me-4"></i>
+                                {% endif %}
+                                <div>
+                                    <h3 class="mb-1">@{{ account.username }}</h3>
+                                    <p class="text-muted mb-0">{{ account.platform.title() }} Account</p>
+                                    <span class="badge bg-secondary">{{ account.category.title() }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Followers:</strong> {{ "{:,}".format(account.followers_count) }}<br>
+                                {% if account.engagement_rate %}
+                                <strong>Engagement Rate:</strong> {{ "%.1f"|format(account.engagement_rate) }}%<br>
+                                {% endif %}
+                                <strong>Price:</strong> <span class="text-success fw-bold">${{ "%.2f"|format(account.price) }}</span><br>
+                                <strong>Listed:</strong> {{ account.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                            </div>
+                            
+                            {% if account.description %}
+                            <div class="mb-3">
+                                <strong>Description:</strong>
+                                <p class="text-muted">{{ account.description }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {% if account.screenshot_path %}
+                            <div class="mb-3">
+                                <strong>Account Screenshot:</strong>
+                                <div class="mt-2">
+                                    <img src="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
+                                         class="img-fluid rounded shadow" 
+                                         alt="Account Screenshot"
+                                         style="max-height: 300px;">
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seller Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Seller Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">{{ account.seller.username }}</h6>
+                            <div>
+                                <span class="badge bg-{% if account.seller.is_active %}success{% else %}danger{% endif %}">
+                                    {% if account.seller.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                                {% if account.seller.is_verified %}
+                                <span class="badge bg-success">Email Verified</span>
+                                {% endif %}
+                                {% if account.seller.kyc_status == 'verified' %}
+                                <span class="badge bg-info">KYC Verified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2"><strong>Email:</strong> {{ account.seller.email }}</div>
+                            {% if account.seller.full_name %}
+                            <div class="mb-2"><strong>Full Name:</strong> {{ account.seller.full_name }}</div>
+                            {% endif %}
+                            {% if account.seller.phone %}
+                            <div class="mb-2"><strong>Phone:</strong> {{ account.seller.phone }}</div>
+                            {% endif %}
+                            {% if account.seller.country %}
+                            <div class="mb-2"><strong>Country:</strong> {{ account.seller.country }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2"><strong>Member Since:</strong> {{ account.seller.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="mb-2"><strong>Total Listings:</strong> {{ account.seller.accounts|length }}</div>
+                            <div class="mb-2"><strong>Wallet Balance:</strong> ${{ "%.2f"|format(account.seller.balance) }}</div>
+                            <div class="mb-2"><strong>KYC Status:</strong> 
+                                <span class="badge bg-{% if account.seller.kyc_status == 'verified' %}success{% elif account.seller.kyc_status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                    {{ account.seller.kyc_status.title() }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Credentials (Admin Only) -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-key me-2"></i>Account Credentials (Confidential)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <strong>Admin Notice:</strong> These credentials are only visible to administrators for verification purposes.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Login Email:</strong>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="{{ account.login_email }}" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ account.login_email }}')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <strong>Login Password:</strong>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" value="{{ account.login_password }}" readonly id="accountPassword">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('accountPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ account.login_password }}')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Verification Form -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-gavel me-2"></i>Account Verification</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.status.label(class="form-label fw-bold") }}
+                            {{ form.status(class="form-select") }}
+                            {% if form.status.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.status.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.verification_notes.label(class="form-label fw-bold") }}
+                            {{ form.verification_notes(class="form-control", rows="4", placeholder="Add notes about the verification decision...") }}
+                            {% if form.verification_notes.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.verification_notes.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">These notes will be sent to the seller</div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Verification Guidelines:</strong>
+                            <ul class="mb-0 mt-2 small">
+                                <li>Verify account ownership matches screenshot</li>
+                                <li>Check follower count accuracy</li>
+                                <li>Ensure content quality meets standards</li>
+                                <li>Confirm seller KYC status</li>
+                                <li>Test account credentials if necessary</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Submit Verification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Current Status -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info me-2"></i>Current Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Status:</strong>
+                        <span class="badge bg-{% if account.status == 'approved' %}success{% elif account.status == 'pending' %}warning{% else %}danger{% endif %}">
+                            {{ account.status.title() }}
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Verified:</strong>
+                        {% if account.is_verified %}
+                        <span class="text-success"><i class="fas fa-check-circle me-1"></i>Yes</span>
+                        {% else %}
+                        <span class="text-warning"><i class="fas fa-times-circle me-1"></i>No</span>
+                        {% endif %}
+                    </div>
+                    {% if account.verification_notes %}
+                    <div class="mb-2">
+                        <strong>Previous Notes:</strong>
+                        <p class="text-muted small mb-0">{{ account.verification_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Copied to clipboard!', 'success');
+    });
+}
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `position-fixed top-0 end-0 m-3 alert alert-${type} alert-dismissible fade show`;
+    toast.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-credit-card me-2"></i>Payment Management</h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {{ 'active' if payment_type == 'purchases' else '' }}" 
+               href="{{ url_for('admin.payments', type='purchases') }}">
+                <i class="fas fa-shopping-cart me-2"></i>Purchase Payments
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link {{ 'active' if payment_type == 'deposits' else '' }}" 
+               href="{{ url_for('admin.payments', type='deposits') }}">
+                <i class="fas fa-plus-circle me-2"></i>Deposit Requests
+            </a>
+        </li>
+    </ul>
+    
+    {% if payment_type == 'deposits' %}
+    <!-- Deposits Tab -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Deposit Requests ({{ transactions.total }} total)</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-clock me-1"></i>Pending ({{ transactions.items|selectattr('status', 'equalto', 'pending')|list|length }})
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-check me-1"></i>Completed ({{ transactions.items|selectattr('status', 'equalto', 'completed')|list|length }})
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if transactions.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Payment Proof</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                        <i class="fas fa-user text-white small"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ transaction.user.username }}</div>
+                                        <small class="text-muted">{{ transaction.user.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success">${{ "%.2f"|format(transaction.amount) }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if transaction.status == 'completed' %}success{% elif transaction.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                    {{ transaction.status.title() }}
+                                </span>
+                                {% if transaction.admin_verified %}
+                                <br><small class="text-success"><i class="fas fa-check me-1"></i>Admin Verified</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span>{{ transaction.created_at.strftime('%m/%d/%Y') }}</span>
+                                <br><small class="text-muted">{{ transaction.created_at.strftime('%I:%M %p') }}</small>
+                            </td>
+                            <td>
+                                {% if transaction.payment_proof_path %}
+                                <a href="{{ url_for('main.uploaded_file', filename=transaction.payment_proof_path) }}" 
+                                   target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-file-image me-1"></i>View Proof
+                                </a>
+                                {% else %}
+                                <span class="text-muted">No proof</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.status == 'pending' %}
+                                <a href="{{ url_for('admin.verify_deposit', transaction_id=transaction.id) }}" 
+                                   class="btn btn-warning btn-sm">
+                                    <i class="fas fa-gavel me-1"></i>Review
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">Processed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-plus-circle fs-1 text-muted mb-4"></i>
+                <h4>No deposit requests</h4>
+                <p class="text-muted">No deposit requests found.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            {% if transactions.pages > 1 %}
+            <nav aria-label="Deposits pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if transactions.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='deposits', page=transactions.prev_num) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in transactions.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != transactions.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='deposits', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if transactions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='deposits', page=transactions.next_num) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Purchases Tab -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Purchase Payments ({{ purchases.total }} total)</h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-clock me-1"></i>Pending ({{ purchases.items|selectattr('status', 'equalto', 'pending')|list|length }})
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-check me-1"></i>Completed ({{ purchases.items|selectattr('status', 'equalto', 'completed')|list|length }})
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if purchases.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Buyer</th>
+                            <th>Account</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Payment Proof</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in purchases.items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                        <i class="fas fa-user text-white small"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ purchase.buyer.username }}</div>
+                                        <small class="text-muted">{{ purchase.buyer.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if purchase.account.platform == 'instagram' %}
+                                    <i class="fab fa-instagram text-danger me-2"></i>
+                                    {% elif purchase.account.platform == 'tiktok' %}
+                                    <i class="fab fa-tiktok text-dark me-2"></i>
+                                    {% elif purchase.account.platform == 'youtube' %}
+                                    <i class="fab fa-youtube text-danger me-2"></i>
+                                    {% elif purchase.account.platform == 'twitter' %}
+                                    <i class="fab fa-twitter text-info me-2"></i>
+                                    {% elif purchase.account.platform == 'facebook' %}
+                                    <i class="fab fa-facebook text-primary me-2"></i>
+                                    {% elif purchase.account.platform == 'linkedin' %}
+                                    <i class="fab fa-linkedin text-primary me-2"></i>
+                                    {% elif purchase.account.platform == 'snapchat' %}
+                                    <i class="fab fa-snapchat text-warning me-2"></i>
+                                    {% elif purchase.account.platform == 'telegram' %}
+                                    <i class="fab fa-telegram text-info me-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-share-alt text-secondary me-2"></i>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold">@{{ purchase.account.username }}</div>
+                                        <small class="text-muted">{{ purchase.account.platform.title() }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-success">${{ "%.2f"|format(purchase.amount) }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if purchase.status == 'completed' %}success{% elif purchase.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                    {{ purchase.status.title() }}
+                                </span>
+                                {% if purchase.verified_by_admin %}
+                                <br><small class="text-success"><i class="fas fa-check me-1"></i>Admin Verified</small>
+                                {% endif %}
+                                {% if purchase.details_released %}
+                                <br><small class="text-info"><i class="fas fa-key me-1"></i>Details Released</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span>{{ purchase.created_at.strftime('%m/%d/%Y') }}</span>
+                                <br><small class="text-muted">{{ purchase.created_at.strftime('%I:%M %p') }}</small>
+                            </td>
+                            <td>
+                                {% if purchase.payment_proof_path %}
+                                <a href="{{ url_for('main.uploaded_file', filename=purchase.payment_proof_path) }}" 
+                                   target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-file-image me-1"></i>View Proof
+                                </a>
+                                {% else %}
+                                <span class="text-muted">No proof</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if purchase.status == 'pending' %}
+                                <a href="{{ url_for('admin.verify_purchase_payment', purchase_id=purchase.id) }}" 
+                                   class="btn btn-warning btn-sm">
+                                    <i class="fas fa-gavel me-1"></i>Review
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">Processed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-cart fs-1 text-muted mb-4"></i>
+                <h4>No purchase payments</h4>
+                <p class="text-muted">No purchase payments found.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            {% if purchases.pages > 1 %}
+            <nav aria-label="Purchases pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if purchases.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='purchases', page=purchases.prev_num) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in purchases.iter_pages() %}
+                    {% if page_num %}
+                    {% if page_num != purchases.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='purchases', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if purchases.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.payments', type='purchases', page=purchases.next_num) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

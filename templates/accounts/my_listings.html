@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}My Listings - SocialMarket{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-list me-2"></i>My Account Listings</h2>
+        <a href="{{ url_for('main.create_listing') }}" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>Create New Listing
+        </a>
+    </div>
+    
+    {% if accounts %}
+    <div class="row g-4">
+        {% for account in accounts %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if account.platform == 'instagram' %}
+                        <i class="fab fa-instagram text-danger fs-4 me-3"></i>
+                        {% elif account.platform == 'tiktok' %}
+                        <i class="fab fa-tiktok text-dark fs-4 me-3"></i>
+                        {% elif account.platform == 'youtube' %}
+                        <i class="fab fa-youtube text-danger fs-4 me-3"></i>
+                        {% elif account.platform == 'twitter' %}
+                        <i class="fab fa-twitter text-info fs-4 me-3"></i>
+                        {% elif account.platform == 'facebook' %}
+                        <i class="fab fa-facebook text-primary fs-4 me-3"></i>
+                        {% elif account.platform == 'linkedin' %}
+                        <i class="fab fa-linkedin text-primary fs-4 me-3"></i>
+                        {% elif account.platform == 'snapchat' %}
+                        <i class="fab fa-snapchat text-warning fs-4 me-3"></i>
+                        {% elif account.platform == 'telegram' %}
+                        <i class="fab fa-telegram text-info fs-4 me-3"></i>
+                        {% else %}
+                        <i class="fas fa-share-alt text-secondary fs-4 me-3"></i>
+                        {% endif %}
+                        <div>
+                            <h6 class="card-title mb-0">@{{ account.username }}</h6>
+                            <small class="text-muted">{{ account.platform.title() }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Followers:</span>
+                            <span class="fw-bold">{{ format_number(account.followers_count) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Price:</span>
+                            <span class="fw-bold text-success">{{ format_currency(account.price) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Category:</span>
+                            <span>{{ account.category.title() }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-{% if account.status == 'approved' %}success{% elif account.status == 'pending' %}warning{% elif account.status == 'sold' %}info{% else %}danger{% endif %}">
+                            {{ account.status.title() }}
+                        </span>
+                        {% if account.is_verified %}
+                        <span class="badge bg-success">Verified</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if account.description %}
+                    <p class="text-muted small mb-3">{{ account.description[:80] }}{% if account.description|length > 80 %}...{% endif %}</p>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Listed {{ account.created_at.strftime('%m/%d/%Y') }}</small>
+                        <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    {% if account.status == 'pending' %}
+                    <div class="d-flex align-items-center text-warning">
+                        <i class="fas fa-clock me-2"></i>
+                        <small>Awaiting admin approval</small>
+                    </div>
+                    {% elif account.status == 'approved' %}
+                    <div class="d-flex align-items-center text-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <small>Live and available for purchase</small>
+                    </div>
+                    {% elif account.status == 'sold' %}
+                    <div class="d-flex align-items-center text-info">
+                        <i class="fas fa-handshake me-2"></i>
+                        <small>Successfully sold</small>
+                    </div>
+                    {% elif account.status == 'rejected' %}
+                    <div class="d-flex align-items-center text-danger">
+                        <i class="fas fa-times-circle me-2"></i>
+                        <small>Rejected - {% if account.verification_notes %}{{ account.verification_notes }}{% else %}Contact support{% endif %}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Statistics Summary -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-chart-bar me-2"></i>Listing Summary</h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-primary">{{ accounts|selectattr('status', 'equalto', 'approved')|list|length }}</h4>
+                                <small class="text-muted">Active Listings</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-warning">{{ accounts|selectattr('status', 'equalto', 'pending')|list|length }}</h4>
+                                <small class="text-muted">Pending Approval</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-success">{{ accounts|selectattr('status', 'equalto', 'sold')|list|length }}</h4>
+                                <small class="text-muted">Sold</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-info">{{ format_currency(accounts|selectattr('status', 'equalto', 'sold')|sum(attribute='price')) }}</h4>
+                            <small class="text-muted">Total Earnings</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-plus-circle fs-1 text-muted mb-4"></i>
+        <h4>No listings yet</h4>
+        <p class="text-muted mb-4">Start selling your social media accounts to earn money on our secure platform.</p>
+        <a href="{{ url_for('main.create_listing') }}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle me-2"></i>Create Your First Listing
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
