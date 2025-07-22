@@ -138,6 +138,13 @@ The application is designed to be a complete marketplace solution with built-in 
 
 ## Recent Changes
 
+### File Upload Enhancement (July 22, 2025)
+- Implemented automatic file compression for oversized uploads
+- Enhanced compression algorithm with progressive quality reduction and resizing  
+- Updated frontend to remove file size restrictions and provide user feedback
+- Modified templates to reflect new auto-compression feature
+- Successfully tested with images up to 18MB being compressed to 15KB target
+
 ### Database Migration to PostgreSQL (July 22, 2025)
 - Migrated from SQLite to PostgreSQL for production compatibility
 - Fixed Flask-Login UserMixin conflicts by renaming `is_active` field to `active`

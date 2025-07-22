@@ -6,57 +6,64 @@ from flask import current_app
 import uuid
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
-MAX_FILE_SIZE = 15 * 1024  # 15KB
+MAX_FILE_SIZE = 15 * 1024  # 15KB - Target size after compression
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def compress_image(image_path, max_size_kb=15, quality=85):
-    """Compress image to specified size limit"""
+    """Compress image to specified size limit with aggressive compression"""
     try:
         with Image.open(image_path) as img:
             # Convert to RGB if necessary
             if img.mode in ('RGBA', 'LA', 'P'):
                 img = img.convert('RGB')
             
-            # Try different quality settings to meet size requirement
-            for quality in range(quality, 10, -5):
-                # Save to temporary path
+            original_size = os.path.getsize(image_path)
+            print(f"Compressing image: {os.path.basename(image_path)} (Original size: {original_size / 1024:.1f}KB)")
+            
+            # First, try to reduce quality without resizing
+            for quality in range(quality, 5, -5):
                 temp_path = image_path + '.tmp'
                 img.save(temp_path, 'JPEG', quality=quality, optimize=True)
                 
-                # Check file size
                 file_size = os.path.getsize(temp_path)
                 if file_size <= max_size_kb * 1024:
-                    # Replace original with compressed version
                     os.replace(temp_path, image_path)
+                    print(f"Compressed to {file_size / 1024:.1f}KB using quality {quality}")
                     return True
                 else:
                     os.remove(temp_path)
             
-            # If still too large, resize the image
+            # If quality reduction isn't enough, resize the image progressively
             width, height = img.size
-            scale_factor = 0.8
+            scale_factors = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2]
             
-            while True:
+            for scale_factor in scale_factors:
                 new_width = int(width * scale_factor)
                 new_height = int(height * scale_factor)
+                
+                # Ensure minimum size
+                if new_width < 100 or new_height < 100:
+                    continue
+                    
                 resized_img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                 
-                temp_path = image_path + '.tmp'
-                resized_img.save(temp_path, 'JPEG', quality=70, optimize=True)
-                
-                file_size = os.path.getsize(temp_path)
-                if file_size <= max_size_kb * 1024:
-                    os.replace(temp_path, image_path)
-                    return True
-                else:
-                    os.remove(temp_path)
-                    scale_factor -= 0.1
-                    if scale_factor <= 0.1:
-                        break
+                # Try different quality levels for resized image
+                for quality in [60, 50, 40, 30, 20]:
+                    temp_path = image_path + '.tmp'
+                    resized_img.save(temp_path, 'JPEG', quality=quality, optimize=True)
+                    
+                    file_size = os.path.getsize(temp_path)
+                    if file_size <= max_size_kb * 1024:
+                        os.replace(temp_path, image_path)
+                        print(f"Compressed to {file_size / 1024:.1f}KB using {scale_factor*100:.0f}% size and quality {quality}")
+                        return True
+                    else:
+                        os.remove(temp_path)
             
+            print(f"Warning: Could not compress image to {max_size_kb}KB limit")
             return False
             
     except Exception as e:
@@ -64,7 +71,7 @@ def compress_image(image_path, max_size_kb=15, quality=85):
         return False
 
 def save_file(file, folder):
-    """Save uploaded file with compression if needed"""
+    """Save uploaded file with automatic compression for oversized files"""
     if file and allowed_file(file.filename):
         # Generate unique filename
         filename = secure_filename(file.filename)
@@ -75,24 +82,34 @@ def save_file(file, folder):
         # Ensure directory exists
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         
-        # Save file
+        # Save file initially
         file.save(file_path)
         
-        # Compress if it's an image
+        # Handle different file types
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            # For images, always try to compress to meet size limit
+            original_size = os.path.getsize(file_path)
+            
+            if original_size > MAX_FILE_SIZE * 1024:
+                print(f"File {filename} ({original_size / 1024:.1f}KB) exceeds limit, compressing...")
+                
+            # Always attempt compression to ensure file meets size requirements
             if compress_image(file_path):
+                final_size = os.path.getsize(file_path)
+                print(f"Successfully saved and compressed {filename} ({final_size / 1024:.1f}KB)")
                 return os.path.join(folder, unique_filename)
             else:
-                # If compression failed, remove file and return None
-                os.remove(file_path)
-                return None
+                # If compression completely failed, still keep the file but log warning
+                print(f"Warning: Could not compress {filename} to size limit, keeping original")
+                return os.path.join(folder, unique_filename)
         
-        # For PDF files, check size
-        if filename.lower().endswith('.pdf'):
+        elif filename.lower().endswith('.pdf'):
+            # For PDF files, check size but accept larger files with warning
             file_size = os.path.getsize(file_path)
             if file_size > MAX_FILE_SIZE * 1024:
-                os.remove(file_path)
-                return None
+                print(f"Warning: PDF file {filename} ({file_size / 1024:.1f}KB) exceeds recommended {MAX_FILE_SIZE}KB limit")
+                # Still accept the file but with a warning
+            return os.path.join(folder, unique_filename)
         
         return os.path.join(folder, unique_filename)
     

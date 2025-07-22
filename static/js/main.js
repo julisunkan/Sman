@@ -142,14 +142,6 @@ function initializeFileUploads() {
         input.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
-                // Check file size (15KB limit for most uploads)
-                const maxSize = 15 * 1024; // 15KB
-                if (file.size > maxSize) {
-                    showAlert('File size must be less than 15KB. Please compress your file.', 'warning');
-                    this.value = '';
-                    return;
-                }
-                
                 // Check file type
                 const allowedTypes = this.accept ? this.accept.split(',').map(type => type.trim()) : [];
                 if (allowedTypes.length > 0) {
@@ -164,6 +156,16 @@ function initializeFileUploads() {
                         this.value = '';
                         return;
                     }
+                }
+                
+                // Show file size info and compression notice for large files
+                const fileSizeKB = file.size / 1024;
+                const maxSizeKB = 15;
+                
+                if (fileSizeKB > maxSizeKB && file.type.startsWith('image/')) {
+                    showAlert(`Large file detected (${fileSizeKB.toFixed(1)}KB). It will be automatically compressed during upload.`, 'info');
+                } else if (fileSizeKB > maxSizeKB && file.type === 'application/pdf') {
+                    showAlert(`Large PDF detected (${fileSizeKB.toFixed(1)}KB). PDFs over ${maxSizeKB}KB are accepted but may take longer to process.`, 'info');
                 }
                 
                 // Show file preview for images
