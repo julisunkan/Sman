@@ -6,6 +6,16 @@ SocialMarket is a comprehensive web application built with Flask that serves as 
 
 ## Recent Changes
 
+### Currency Conversion and Support Form Fix (July 22, 2025)
+- Converted entire application from USD to Nigerian Naira (NGN) currency
+- Updated format_currency function in utils.py to use ₦ symbol
+- Modified JavaScript formatCurrency function to use 'en-NG' locale and NGN currency
+- Replaced all manual $ symbols with ₦ across all templates and forms
+- Updated form labels, input placeholders, and validation messages to use Naira
+- Fixed blinking support form by adding validation throttling and novalidate attribute
+- Modified form validation JavaScript to skip support forms and add 500ms delay
+- Replaced dollar-sign icons with money-bill icons for better Naira representation
+
 ### Database Migration to PostgreSQL (July 22, 2025)
 - Migrated from SQLite to PostgreSQL for production compatibility
 - Fixed Flask-Login UserMixin conflicts by renaming `is_active` field to `active`

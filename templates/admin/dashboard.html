@@ -63,7 +63,7 @@
                         <i class="fas fa-shopping-cart fs-2 opacity-75"></i>
                     </div>
                     <div class="mt-2">
-                        <small><i class="fas fa-dollar-sign me-1"></i>${{ "%.0f"|format(stats.total_revenue) }} revenue</small>
+                        <small><i class="fas fa-money-bill me-1"></i>₦{{ "%.0f"|format(stats.total_revenue) }} revenue</small>
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@
                         {% endif %}
                         <div class="flex-grow-1">
                             <div class="fw-bold">@{{ account.username }}</div>
-                            <small class="text-muted">${{ "%.0f"|format(account.price) }} • {{ account.created_at.strftime('%m/%d/%Y') }}</small>
+                            <small class="text-muted">₦{{ "%.0f"|format(account.price) }} • {{ account.created_at.strftime('%m/%d/%Y') }}</small>
                         </div>
                         <div>
                             <span class="badge bg-{% if account.status == 'approved' %}success{% elif account.status == 'pending' %}warning{% else %}danger{% endif %}">
@@ -225,7 +225,7 @@
                                             @{{ purchase.account.username }}
                                         </div>
                                     </td>
-                                    <td class="fw-bold text-success">${{ "%.2f"|format(purchase.amount) }}</td>
+                                    <td class="fw-bold text-success">₦{{ "%.2f"|format(purchase.amount) }}</td>
                                     <td>
                                         <span class="badge bg-{% if purchase.status == 'completed' %}success{% elif purchase.status == 'pending' %}warning{% else %}danger{% endif %}">
                                             {{ purchase.status.title() }}

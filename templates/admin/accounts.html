@@ -129,7 +129,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <span class="fw-bold text-success">${{ "%.2f"|format(account.price) }}</span>
+                                <span class="fw-bold text-success">₦{{ "%.2f"|format(account.price) }}</span>
                             </td>
                             <td>
                                 <span class="badge bg-{% if account.status == 'approved' %}success{% elif account.status == 'pending' %}warning{% elif account.status == 'sold' %}info{% else %}danger{% endif %}">

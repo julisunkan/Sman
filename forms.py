@@ -53,7 +53,7 @@ class SocialMediaAccountForm(FlaskForm):
     username = StringField('Username/Handle', validators=[DataRequired(), Length(max=100)])
     followers_count = IntegerField('Followers Count', validators=[DataRequired(), NumberRange(min=0)])
     engagement_rate = FloatField('Engagement Rate (%)', validators=[Optional(), NumberRange(min=0, max=100)])
-    price = FloatField('Price ($)', validators=[DataRequired(), NumberRange(min=1)])
+    price = FloatField('Price (₦)', validators=[DataRequired(), NumberRange(min=1)])
     description = TextAreaField('Description', validators=[DataRequired(), Length(max=500)])
     
     category = SelectField('Category', choices=[
@@ -79,7 +79,7 @@ class SocialMediaAccountForm(FlaskForm):
     ])
 
 class DepositForm(FlaskForm):
-    amount = FloatField('Deposit Amount ($)', validators=[DataRequired(), NumberRange(min=10)])
+    amount = FloatField('Deposit Amount (₦)', validators=[DataRequired(), NumberRange(min=10)])
     payment_proof = FileField('Payment Proof', validators=[
         FileRequired(),
         FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Images and PDF files only!')

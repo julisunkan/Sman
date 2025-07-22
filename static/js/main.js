@@ -46,17 +46,26 @@ function initializeFormValidations() {
             form.classList.add('was-validated');
         });
         
-        // Real-time validation for specific fields
+        // Real-time validation for specific fields (throttled to prevent blinking)
         const inputs = form.querySelectorAll('input, textarea, select');
         inputs.forEach(input => {
-            input.addEventListener('blur', function() {
-                if (this.checkValidity()) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
+            let validationTimeout;
+            input.addEventListener('input', function() {
+                // Skip validation for support forms to prevent blinking
+                if (this.closest('form').action && this.closest('form').action.includes('support')) {
+                    return;
                 }
+                
+                clearTimeout(validationTimeout);
+                validationTimeout = setTimeout(() => {
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                }, 500); // Delay validation to prevent blinking
             });
         });
     });
@@ -411,9 +420,9 @@ function formatNumber(num) {
 
 // Format currency for display
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-NG', {
         style: 'currency',
-        currency: 'USD'
+        currency: 'NGN'
     }).format(amount);
 }
 

@@ -116,8 +116,8 @@ def save_file(file, folder):
     return None
 
 def format_currency(amount):
-    """Format currency for display"""
-    return f"${amount:,.2f}"
+    """Format currency for display in Naira"""
+    return f"₦{amount:,.2f}"
 
 def format_number(number):
     """Format large numbers (followers, etc.)"""

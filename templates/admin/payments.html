@@ -72,7 +72,7 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="fw-bold text-success">${{ "%.2f"|format(transaction.amount) }}</span>
+                                <span class="fw-bold text-success">₦{{ "%.2f"|format(transaction.amount) }}</span>
                             </td>
                             <td>
                                 <span class="badge bg-{% if transaction.status == 'completed' %}success{% elif transaction.status == 'pending' %}warning{% else %}danger{% endif %}">
@@ -235,7 +235,7 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="fw-bold text-success">${{ "%.2f"|format(purchase.amount) }}</span>
+                                <span class="fw-bold text-success">₦{{ "%.2f"|format(purchase.amount) }}</span>
                             </td>
                             <td>
                                 <span class="badge bg-{% if purchase.status == 'completed' %}success{% elif purchase.status == 'pending' %}warning{% else %}danger{% endif %}">

@@ -42,7 +42,7 @@
                             
                             <div class="mb-2"><strong>Member Since:</strong> {{ purchase.buyer.created_at.strftime('%B %d, %Y') }}</div>
                             <div class="mb-2"><strong>Total Purchases:</strong> {{ purchase.buyer.purchases|length }}</div>
-                            <div class="mb-2"><strong>Wallet Balance:</strong> ${{ "%.2f"|format(purchase.buyer.balance) }}</div>
+                            <div class="mb-2"><strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(purchase.buyer.balance) }}</div>
                         </div>
                         
                         <div class="col-md-6">
@@ -91,7 +91,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <strong>Purchase Amount:</strong>
-                                <h4 class="text-success">${{ "%.2f"|format(purchase.amount) }}</h4>
+                                <h4 class="text-success">₦{{ "%.2f"|format(purchase.amount) }}</h4>
                             </div>
                             <div class="mb-2"><strong>Payment Method:</strong> {{ purchase.payment_method.replace('_', ' ').title() }}</div>
                             <div class="mb-2"><strong>Purchase Date:</strong> {{ purchase.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
@@ -147,7 +147,7 @@
                         <h6><i class="fas fa-info-circle me-2"></i>Expected Bank Transfer Details:</h6>
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Amount:</strong> ${{ "%.2f"|format(purchase.amount) }}<br>
+                                <strong>Amount:</strong> ₦{{ "%.2f"|format(purchase.amount) }}<br>
                                 <strong>Memo/Reference:</strong> "Purchase #{{ purchase.id }}"<br>
                                 <strong>Expected From:</strong> {{ purchase.buyer.username }}
                             </div>

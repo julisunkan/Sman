@@ -43,7 +43,7 @@
                                 <div class="mb-4">
                                     {{ form.amount.label(class="form-label fw-bold") }}
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">₦</span>
                                         {{ form.amount(class="form-control form-control-lg", placeholder="0.00", min="10", step="0.01") }}
                                     </div>
                                     {% if form.amount.errors %}
@@ -53,7 +53,7 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">Minimum deposit: $10.00</div>
+                                    <div class="form-text">Minimum deposit: ₦10.00</div>
                                 </div>
                                 
                                 <div class="mb-4">
@@ -99,7 +99,7 @@
 document.getElementById('amount').addEventListener('input', function(e) {
     let value = parseFloat(e.target.value);
     if (value < 10) {
-        e.target.setCustomValidity('Minimum deposit amount is $10.00');
+        e.target.setCustomValidity('Minimum deposit amount is ₦10.00');
     } else {
         e.target.setCustomValidity('');
     }

@@ -17,7 +17,7 @@
                         <strong>Login Required:</strong> Please <a href="{{ url_for('auth.login') }}">login</a> to submit a support request.
                     </div>
                     {% else %}
-                    <form method="POST">
+                    <form method="POST" novalidate>
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
