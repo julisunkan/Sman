@@ -18,4 +18,5 @@ dependencies = [
     "pyjwt>=2.10.1",
     "flask-dance>=7.1.0",
     "psycopg2-binary>=2.9.10",
+    "requests>=2.32.4",
 ]

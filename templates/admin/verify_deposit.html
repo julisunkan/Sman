@@ -1,39 +1,51 @@
-{% extends "base.html" %}
-
-{% block title %}Verify Deposit - Admin{% endblock %}
-
+{% extends "base.html" %} {% block title %}Verify Deposit - Admin{% endblock %}
 {% block content %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold"><i class="fas fa-gavel me-2"></i>Verify Deposit Request</h2>
-        <a href="{{ url_for('admin.payments', type='deposits') }}" class="btn btn-outline-secondary">
+        <h2 class="fw-bold">
+            <i class="fas fa-gavel me-2"></i>Verify Deposit Request
+        </h2>
+        <a
+            href="{{ url_for('admin.payments', type='deposits') }}"
+            class="btn btn-outline-secondary"
+        >
             <i class="fas fa-arrow-left me-1"></i>Back to Deposits
         </a>
     </div>
-    
+
     <div class="row">
         <div class="col-lg-8">
             <!-- User Information -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>User Information</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>User Information
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 70px; height: 70px;">
+                        <div
+                            class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-4"
+                            style="width: 70px; height: 70px"
+                        >
                             <i class="fas fa-user text-white fs-3"></i>
                         </div>
                         <div>
-                            <h4 class="mb-1">{{ transaction.user.username }}</h4>
-                            <p class="text-muted mb-1">{{ transaction.user.email }}</p>
+                            <h4 class="mb-1">
+                                {{ transaction.user.username }}
+                            </h4>
+                            <p class="text-muted mb-1">
+                                {{ transaction.user.email }}
+                            </p>
                             <div>
                                 {% if transaction.user.is_verified %}
-                                <span class="badge bg-success">Email Verified</span>
-                                {% endif %}
-                                {% if transaction.user.kyc_status == 'verified' %}
+                                <span class="badge bg-success"
+                                    >Email Verified</span
+                                >
+                                {% endif %} {% if transaction.user.kyc_status ==
+                                'verified' %}
                                 <span class="badge bg-info">KYC Verified</span>
-                                {% endif %}
-                                {% if transaction.user.active %}
+                                {% endif %} {% if transaction.user.active %}
                                 <span class="badge bg-primary">Active</span>
                                 {% else %}
                                 <span class="badge bg-danger">Inactive</span>
@@ -41,201 +53,297 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-2"><strong>Member Since:</strong> {{ transaction.user.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="mb-2">
+                                <strong>Member Since:</strong> {{
+                                transaction.user.created_at.strftime('%B %d,
+                                %Y') }}
+                            </div>
                             {% if transaction.user.full_name %}
-                            <div class="mb-2"><strong>Full Name:</strong> {{ transaction.user.full_name }}</div>
-                            {% endif %}
-                            {% if transaction.user.phone %}
-                            <div class="mb-2"><strong>Phone:</strong> {{ transaction.user.phone }}</div>
-                            {% endif %}
-                            {% if transaction.user.country %}
-                            <div class="mb-2"><strong>Country:</strong> {{ transaction.user.country }}</div>
+                            <div class="mb-2">
+                                <strong>Full Name:</strong> {{
+                                transaction.user.full_name }}
+                            </div>
+                            {% endif %} {% if transaction.user.phone %}
+                            <div class="mb-2">
+                                <strong>Phone:</strong> {{
+                                transaction.user.phone }}
+                            </div>
+                            {% endif %} {% if transaction.user.country %}
+                            <div class="mb-2">
+                                <strong>Country:</strong> {{
+                                transaction.user.country }}
+                            </div>
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-2"><strong>Current Balance:</strong> ₦{{ "%.2f"|format(transaction.user.balance or 0) }}</div>
-                            <div class="mb-2"><strong>Total Transactions:</strong> {{ transaction.user.transactions|length }}</div>
-                            <div class="mb-2"><strong>Total Purchases:</strong> {{ transaction.user.purchases|length }}</div>
-                            <div class="mb-2"><strong>Referral Code:</strong> {{ transaction.user.referral_code }}</div>
+                            <div class="mb-2">
+                                <strong>Current Balance:</strong> ₦{{
+                                "%.2f"|format(transaction.user.balance or 0) }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Total Transactions:</strong> {{
+                                transaction.user.transactions|length }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Total Purchases:</strong> {{
+                                transaction.user.purchases|length }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Referral Code:</strong> {{
+                                transaction.user.referral_code }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Deposit Details -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Deposit Information</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Deposit
+                        Information
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <strong>Deposit Amount:</strong>
-                                <h3 class="text-success">₦{{ "%.2f"|format(transaction.amount) }}</h3>
+                                <h3 class="text-success">
+                                    ₦{{ "%.2f"|format(transaction.amount) }}
+                                </h3>
                             </div>
-                            <div class="mb-2"><strong>Request Date:</strong> {{ transaction.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
-                            <div class="mb-2"><strong>Description:</strong> {{ transaction.description }}</div>
-                            <div class="mb-2"><strong>Current Status:</strong> 
-                                <span class="badge bg-{% if transaction.status == 'completed' %}success{% elif transaction.status == 'pending' %}warning{% else %}danger{% endif %}">
+                            <div class="mb-2">
+                                <strong>Request Date:</strong> {{
+                                transaction.created_at.strftime('%B %d, %Y at
+                                %I:%M %p') }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Description:</strong> {{
+                                transaction.description }}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Current Status:</strong>
+                                <span
+                                    class="badge bg-{% if transaction.status == 'completed' %}success{% elif transaction.status == 'pending' %}warning{% else %}danger{% endif %}"
+                                >
                                     {{ transaction.status.title() }}
                                 </span>
                             </div>
                             {% if transaction.admin_verified %}
-                            <div class="mb-2"><strong>Admin Verified:</strong> 
-                                <span class="text-success"><i class="fas fa-check-circle me-1"></i>Yes</span>
+                            <div class="mb-2">
+                                <strong>Admin Verified:</strong>
+                                <span class="text-success"
+                                    ><i class="fas fa-check-circle me-1"></i
+                                    >Yes</span
+                                >
                             </div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="col-md-6">
                             {% if transaction.payment_proof_path %}
                             <div class="mb-3">
                                 <strong>Payment Proof:</strong>
                                 <div class="mt-2">
-                                    <img src="{{ url_for('main.uploaded_file', filename=transaction.payment_proof_path) }}" 
-                                         class="img-fluid rounded shadow" 
-                                         alt="Payment Proof"
-                                         style="max-height: 250px;">
+                                    <img
+                                        src="{{ url_for('main.uploaded_file', filename=transaction.payment_proof_path) }}"
+                                        class="img-fluid rounded shadow"
+                                        alt="Payment Proof"
+                                        style="max-height: 250px"
+                                    />
                                 </div>
                                 <div class="mt-2">
-                                    <a href="{{ url_for('main.uploaded_file', filename=transaction.payment_proof_path) }}" 
-                                       target="_blank" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-external-link-alt me-1"></i>View Full Size
+                                    <a
+                                        href="{{ url_for('main.uploaded_file', filename=transaction.payment_proof_path) }}"
+                                        target="_blank"
+                                        class="btn btn-outline-primary btn-sm"
+                                    >
+                                        <i
+                                            class="fas fa-external-link-alt me-1"
+                                        ></i
+                                        >View Full Size
                                     </a>
                                 </div>
                             </div>
                             {% else %}
                             <div class="alert alert-warning alert-permanent">
-                                <i class="fas fa-exclamation-triangle me-2"></i>No payment proof uploaded
+                                <i class="fas fa-exclamation-triangle me-2"></i
+                                >No payment proof uploaded
                             </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Bank Transfer Verification -->
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-university me-2"></i>Bank Transfer Verification</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-university me-2"></i>Bank Transfer
+                        Verification
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info alert-permanent">
-                        <h6><i class="fas fa-info-circle me-2"></i>Expected Bank Transfer Details:</h6>
+                        <h6>
+                            <i class="fas fa-info-circle me-2"></i>Expected Bank
+                            Transfer Details:
+                        </h6>
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Amount:</strong> ₦{{ "%.2f"|format(transaction.amount) }}<br>
-                                <strong>Memo/Reference:</strong> {{ transaction.user.username }} deposit<br>
-                                <strong>Expected From:</strong> {{ transaction.user.username }}
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Our Bank Account:</strong><br>
-                                Account: 1234567890<br>
-                                Routing: 123456789<br>
-                                Bank: SocialMarket Bank
+                                <strong>Amount:</strong> ₦{{
+                                "%.2f"|format(transaction.amount) }}<br />
+                                <strong>Memo/Reference:</strong> {{
+                                transaction.user.username }} deposit<br />
+                                <strong>Expected From:</strong> {{
+                                transaction.user.username }}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="alert alert-warning alert-permanent">
-                        <h6><i class="fas fa-list-check me-2"></i>Verification Checklist:</h6>
+                        <h6>
+                            <i class="fas fa-list-check me-2"></i>Verification
+                            Checklist:
+                        </h6>
                         <ul class="mb-0">
-                            <li>Verify deposit amount matches exactly: ₦{{ "%.2f"|format(transaction.amount) }}</li>
-                            <li>Check sender information matches user details</li>
+                            <li>
+                                Verify deposit amount matches exactly: ₦{{
+                                "%.2f"|format(transaction.amount) }}
+                            </li>
+                            <li>
+                                Check sender information matches user details
+                            </li>
                             <li>Validate payment proof authenticity</li>
                             <li>Ensure transfer was received in our account</li>
-                            <li>Confirm minimum deposit requirement met (₦10.00)</li>
+                            <li>
+                                Confirm minimum deposit requirement met (₦10.00)
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-4">
             <!-- Verification Form -->
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-gavel me-2"></i>Deposit Verification</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-gavel me-2"></i>Deposit Verification
+                    </h5>
                 </div>
                 <div class="card-body">
                     <form method="POST">
                         {{ form.hidden_tag() }}
-                        
+
                         <div class="mb-3">
                             {{ form.status.label(class="form-label fw-bold") }}
-                            {{ form.status(class="form-select") }}
-                            {% if form.status.errors %}
+                            {{ form.status(class="form-select") }} {% if
+                            form.status.errors %}
                             <div class="text-danger mt-1">
                                 {% for error in form.status.errors %}
-                                    <div>{{ error }}</div>
+                                <div>{{ error }}</div>
                                 {% endfor %}
                             </div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="mb-4">
-                            {{ form.admin_notes.label(class="form-label fw-bold") }}
-                            {{ form.admin_notes(class="form-control", rows="4", placeholder="Add verification notes...") }}
-                            {% if form.admin_notes.errors %}
+                            {{ form.admin_notes.label(class="form-label
+                            fw-bold") }} {{
+                            form.admin_notes(class="form-control", rows="4",
+                            placeholder="Add verification notes...") }} {% if
+                            form.admin_notes.errors %}
                             <div class="text-danger mt-1">
                                 {% for error in form.admin_notes.errors %}
-                                    <div>{{ error }}</div>
+                                <div>{{ error }}</div>
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            <div class="form-text">These notes will be sent to the user</div>
+                            <div class="form-text">
+                                These notes will be sent to the user
+                            </div>
                         </div>
-                        
+
                         <div class="alert alert-success alert-permanent">
                             <i class="fas fa-check-circle me-2"></i>
                             <strong>If Approved:</strong>
                             <ul class="mb-0 mt-2 small">
-                                <li>₦{{ "%.2f"|format(transaction.amount) }} will be added to user's wallet</li>
+                                <li>
+                                    ₦{{ "%.2f"|format(transaction.amount) }}
+                                    will be added to user's wallet
+                                </li>
                                 <li>User will be notified via email</li>
-                                <li>Transaction status will be marked as completed</li>
+                                <li>
+                                    Transaction status will be marked as
+                                    completed
+                                </li>
                             </ul>
                         </div>
-                        
+
                         <div class="alert alert-danger alert-permanent">
                             <i class="fas fa-times-circle me-2"></i>
                             <strong>If Rejected:</strong>
                             <ul class="mb-0 mt-2 small">
                                 <li>No funds will be added to wallet</li>
-                                <li>User will be notified of rejection reason</li>
+                                <li>
+                                    User will be notified of rejection reason
+                                </li>
                                 <li>User can submit a new deposit request</li>
                             </ul>
                         </div>
-                        
+
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-check me-2"></i>Submit Verification
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg"
+                            >
+                                <i class="fas fa-check me-2"></i>Submit
+                                Verification
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-            
+
             <!-- User's Previous Deposits -->
             <div class="card mt-4">
                 <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-history me-2"></i>Previous Deposits</h6>
+                    <h6 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Previous Deposits
+                    </h6>
                 </div>
                 <div class="card-body">
-                    {% set previous_deposits = transaction.user.transactions|selectattr('transaction_type', 'equalto', 'deposit')|selectattr('id', 'ne', transaction.id)|list %}
-                    {% if previous_deposits %}
+                    {% set previous_deposits =
+                    transaction.user.transactions|selectattr('transaction_type',
+                    'equalto', 'deposit')|selectattr('id', 'ne',
+                    transaction.id)|list %} {% if previous_deposits %}
                     <div class="list-group list-group-flush">
                         {% for deposit in previous_deposits[:5] %}
                         <div class="list-group-item px-0 py-2">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div
+                                class="d-flex justify-content-between align-items-center"
+                            >
                                 <div>
-                                    <div class="fw-bold">₦{{ "%.2f"|format(deposit.amount) }}</div>
-                                    <small class="text-muted">{{ deposit.created_at.strftime('%m/%d/%Y') }}</small>
+                                    <div class="fw-bold">
+                                        ₦{{ "%.2f"|format(deposit.amount) }}
+                                    </div>
+                                    <small class="text-muted"
+                                        >{{
+                                        deposit.created_at.strftime('%m/%d/%Y')
+                                        }}</small
+                                    >
                                 </div>
-                                <span class="badge bg-{% if deposit.status == 'completed' %}success{% elif deposit.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                <span
+                                    class="badge bg-{% if deposit.status == 'completed' %}success{% elif deposit.status == 'pending' %}warning{% else %}danger{% endif %}"
+                                >
                                     {{ deposit.status[:3] }}
                                 </span>
                             </div>
@@ -244,13 +352,17 @@
                     </div>
                     {% if previous_deposits|length > 5 %}
                     <div class="text-center mt-2">
-                        <small class="text-muted">{{ previous_deposits|length - 5 }} more deposits...</small>
+                        <small class="text-muted"
+                            >{{ previous_deposits|length - 5 }} more
+                            deposits...</small
+                        >
                     </div>
-                    {% endif %}
-                    {% else %}
+                    {% endif %} {% else %}
                     <div class="text-center py-3">
                         <i class="fas fa-plus-circle fs-2 text-muted"></i>
-                        <p class="text-muted mt-2 mb-0">First deposit request</p>
+                        <p class="text-muted mt-2 mb-0">
+                            First deposit request
+                        </p>
                     </div>
                     {% endif %}
                 </div>
