@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm, AdminSupportResponseForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -297,7 +297,8 @@ def support_messages():
     messages = SupportMessage.query.order_by(SupportMessage.created_at.desc()).paginate(
         page=page, per_page=20, error_out=False
     )
-    return render_template('admin/support_messages.html', messages=messages)
+    form = AdminSupportResponseForm()
+    return render_template('admin/support_messages.html', messages=messages, form=form)
 
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @login_required

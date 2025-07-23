@@ -185,3 +185,9 @@ class TestEmailForm(FlaskForm):
     test_email = EmailField('Test Email Address', validators=[DataRequired(), Email()])
     subject = StringField('Test Subject', validators=[DataRequired()], default='Test Email from SocialMarket')
     message = TextAreaField('Test Message', validators=[DataRequired()], default='This is a test email to verify SMTP configuration.')
+    submit = SubmitField('Send Test Email')
+
+class AdminSupportResponseForm(FlaskForm):
+    response = TextAreaField('Response', validators=[DataRequired()], 
+                           render_kw={'rows': 6, 'placeholder': 'Type your response here...'})
+    submit = SubmitField('Send Response & Close Ticket')
