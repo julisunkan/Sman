@@ -11,9 +11,9 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    # Get featured accounts (approved and available - not sold)
+    # Get featured accounts (approved and sold accounts for display)
     featured_accounts = SocialMediaAccount.query.filter(
-        SocialMediaAccount.status == 'approved'
+        SocialMediaAccount.status.in_(['approved', 'sold'])
     ).order_by(SocialMediaAccount.followers_count.desc()).limit(8).all()
     
     # Get platform statistics
@@ -22,7 +22,7 @@ def index():
     for platform in platforms:
         count = SocialMediaAccount.query.filter(
             SocialMediaAccount.platform == platform,
-            SocialMediaAccount.status == 'approved'
+            SocialMediaAccount.status.in_(['approved', 'sold'])
         ).count()
         platform_stats[platform] = count
     
@@ -235,9 +235,9 @@ def browse_accounts():
     form = SearchForm()
     page = request.args.get('page', 1, type=int)
     
-    # Build query - only show approved accounts that are not sold
+    # Build query - show both approved and sold accounts
     query = SocialMediaAccount.query.filter(
-        SocialMediaAccount.status == 'approved'
+        SocialMediaAccount.status.in_(['approved', 'sold'])
     )
     
     # Apply filters
@@ -297,7 +297,7 @@ def browse_accounts():
 def account_detail(account_id):
     account = SocialMediaAccount.query.get_or_404(account_id)
     
-    if account.status != 'approved':
+    if account.status not in ['approved', 'sold']:
         flash('Account not available.', 'warning')
         return redirect(url_for('main.browse_accounts'))
     

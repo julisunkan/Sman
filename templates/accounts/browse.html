@@ -78,7 +78,7 @@
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
+                    <div class="d-flex align-items-center mb-3 position-relative">
                         {% if account.platform == 'instagram' %}
                         <i class="fab fa-instagram text-danger fs-4 me-3"></i>
                         {% elif account.platform == 'tiktok' %}
@@ -98,10 +98,13 @@
                         {% else %}
                         <i class="fas fa-share-alt text-secondary fs-4 me-3"></i>
                         {% endif %}
-                        <div>
+                        <div class="flex-grow-1">
                             <h6 class="card-title mb-0">@{{ account.username }}</h6>
                             <small class="text-muted">{{ account.platform.title() }}</small>
                         </div>
+                        {% if account.status == 'sold' %}
+                        <span class="badge bg-danger position-absolute top-0 end-0" style="transform: translate(50%, -50%);">SOLD</span>
+                        {% endif %}
                     </div>
                     
                     <div class="mb-3">
@@ -133,9 +136,15 @@
                                 <i class="fas fa-eye"></i>
                             </a>
                             {% endif %}
+                            {% if account.status == 'sold' %}
+                            <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-secondary">
+                                View Details (SOLD)
+                            </a>
+                            {% else %}
                             <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-primary">
                                 View Details
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -320,6 +320,10 @@ The application is designed to be a complete marketplace solution with built-in 
 - Platform distribution: Instagram (19), TikTok (15), YouTube (15), Facebook (16), LinkedIn (15), Twitter (10), Snapchat (13), Telegram (15)
 - All accounts marked as "sold" to simulate active marketplace activity
 - Accounts span 10 different categories: lifestyle, entertainment, technology, business, health, finance, education, travel, food, fashion
+- Updated website display to show sold accounts with visual indicators
+- Modified route filters to include sold accounts in homepage and browse pages
+- Added "SOLD" badges and updated button styling for sold accounts
+- Enhanced user experience with clear visual distinction between available and sold accounts
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
