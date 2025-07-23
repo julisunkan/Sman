@@ -129,7 +129,7 @@ def deposit():
         # Validate minimum deposit amount
         if form.amount.data and form.amount.data < min_deposit:
             flash(f'Minimum deposit amount is {format_currency(min_deposit)}', 'danger')
-            return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings, format_currency=format_currency)
+            return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings)
         payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
         if payment_proof_path:
             transaction = Transaction(  # type: ignore
@@ -148,7 +148,7 @@ def deposit():
         else:
             flash('Failed to upload payment proof. Please ensure file is under 15KB.', 'danger')
     
-    return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings, format_currency=format_currency)
+    return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings)
 
 @main_bp.route('/accounts')
 def browse_accounts():
