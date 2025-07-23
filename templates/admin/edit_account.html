@@ -121,6 +121,49 @@
                             {% endif %}
                         </div>
                         
+                        <!-- Login Credentials Section -->
+                        <div class="card mb-3 bg-light">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-key me-2"></i>Account Login Credentials</h6>
+                                <small class="text-muted">These credentials will be provided to buyers after purchase</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.login_email.label(class="form-label") }}
+                                            {{ form.login_email(class="form-control") }}
+                                            {% if form.login_email.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.login_email.errors %}
+                                                    <div>{{ error }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.login_password.label(class="form-label") }}
+                                            <div class="input-group">
+                                                {{ form.login_password(class="form-control", type="password", id="loginPassword") }}
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('loginPassword', this)">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            {% if form.login_password.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.login_password.errors %}
+                                                    <div>{{ error }}</div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="mb-3">
                             {{ form.description.label(class="form-label") }}
                             {{ form.description(class="form-control", rows="4") }}
@@ -229,4 +272,19 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePasswordVisibility(fieldId, button) {
+    const passwordField = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
 {% endblock %}

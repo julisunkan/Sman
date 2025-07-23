@@ -105,6 +105,8 @@ class AdminEditAccountForm(FlaskForm):
         ('other', 'Other')
     ], validators=[DataRequired()])
     account_url = URLField('Account URL (for preview)', validators=[Optional(), URL()])
+    login_email = EmailField('Account Login Email', validators=[DataRequired(), Email()])
+    login_password = StringField('Account Login Password', validators=[DataRequired(), Length(min=6)])
     status = SelectField('Status', choices=[
         ('pending', 'Pending'),
         ('approved', 'Approved'),

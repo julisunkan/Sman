@@ -261,6 +261,8 @@ def edit_account(account_id):
         account.description = form.description.data
         account.category = form.category.data
         account.account_url = form.account_url.data
+        account.login_email = form.login_email.data
+        account.login_password = form.login_password.data
         account.status = form.status.data
         account.verification_notes = form.verification_notes.data
         account.is_verified = (form.status.data == 'approved')
