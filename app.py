@@ -19,10 +19,19 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+# Configure the database - use SQLite for static deployment
+database_url = os.environ.get("DATABASE_URL")
+if database_url and database_url.startswith("sqlite"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+else:
+    # Ensure instance directory exists
+    os.makedirs('instance', exist_ok=True)
+    # Default to SQLite database in instance folder with absolute path
+    db_path = os.path.join(os.getcwd(), 'instance', 'marketplace.db')
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+
+# Configure engine options (simplified for SQLite)
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
     "pool_pre_ping": True,
 }
 
