@@ -14,21 +14,21 @@
                     <!-- Referral Stats -->
                     <div class="row g-4 mb-5">
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-primary bg-opacity-10 rounded">
                                 <i class="fas fa-users fs-2 text-primary mb-2"></i>
                                 <h3 class="mb-1">{{ referred_users|length }}</h3>
                                 <small class="text-muted">Total Referrals</small>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-success bg-opacity-10 rounded">
                                 <i class="fas fa-money-bill fs-2 text-success mb-2"></i>
                                 <h3 class="mb-1">{{ format_currency(current_user.total_referral_earnings or 0) }}</h3>
                                 <small class="text-muted">Total Earnings</small>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
                                 <i class="fas fa-percentage fs-2 text-warning mb-2"></i>
                                 <h3 class="mb-1">{{ site_config.referral_rate }}%</h3>
                                 <small class="text-muted">Commission Rate</small>

@@ -44,7 +44,7 @@
                     <!-- Account Stats -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-primary bg-opacity-10 rounded">
                                 <i class="fas fa-users fs-3 text-primary mb-2"></i>
                                 <h4 class="mb-1">{{ format_number(account.followers_count) }}</h4>
                                 <small class="text-muted">Followers</small>
@@ -52,7 +52,7 @@
                         </div>
                         {% if account.engagement_rate %}
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-success bg-opacity-10 rounded">
                                 <i class="fas fa-chart-line fs-3 text-success mb-2"></i>
                                 <h4 class="mb-1">{{ "%.1f"|format(account.engagement_rate) }}%</h4>
                                 <small class="text-muted">Engagement Rate</small>
@@ -60,7 +60,7 @@
                         </div>
                         {% endif %}
                         <div class="col-md-4">
-                            <div class="text-center p-3 bg-light rounded">
+                            <div class="text-center p-3 bg-warning bg-opacity-10 rounded">
                                 <i class="fas fa-money-bill fs-3 text-warning mb-2"></i>
                                 <h4 class="mb-1">{{ format_currency(account.price) }}</h4>
                                 <small class="text-muted">Price</small>
@@ -118,7 +118,7 @@
                     </div>
                     
                     <!-- Account Details -->
-                    <div class="card bg-light">
+                    <div class="card border-info">
                         <div class="card-body">
                             <h6><i class="fas fa-calendar me-2"></i>Listing Information</h6>
                             <div class="row">
