@@ -133,24 +133,13 @@ def verify_user_email(user_id):
 @login_required
 @admin_required
 def reset_user_password(user_id):
-    from werkzeug.security import generate_password_hash
-    import secrets
-    import string
-    
     user = User.query.get_or_404(user_id)
     
-    # Generate a temporary password
-    temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
-    user.password_hash = generate_password_hash(temp_password)
+    # Set flag to force password change on next login
+    user.force_password_change = True
     db.session.commit()
     
-    send_email_notification(
-        user.email,
-        'Password Reset',
-        f'Your password has been reset by an administrator. Your new temporary password is: {temp_password}\n\nPlease log in and change your password immediately.'
-    )
-    
-    flash(f'Password reset for {user.username}. Temporary password sent via email.', 'success')
+    flash(f'Password reset for {user.username}. User will be forced to change password on next login.', 'success')
     return redirect(url_for('admin.users'))
 
 @admin_bp.route('/accounts')

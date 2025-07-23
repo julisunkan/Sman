@@ -36,6 +36,9 @@ class User(UserMixin, db.Model):
     email_verification_token = db.Column(db.String(100))
     email_verification_expires = db.Column(db.DateTime)
     
+    # Password reset flag
+    force_password_change = db.Column(db.Boolean, default=False)
+    
     # Relationships
     accounts = db.relationship('SocialMediaAccount', backref='seller', lazy=True)
     purchases = db.relationship('Purchase', backref='buyer', lazy=True)

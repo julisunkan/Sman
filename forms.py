@@ -191,3 +191,21 @@ class AdminSupportResponseForm(FlaskForm):
     response = TextAreaField('Response', validators=[DataRequired()], 
                            render_kw={'rows': 6, 'placeholder': 'Type your response here...'})
     submit = SubmitField('Send Response & Close Ticket')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message='Password must be at least 8 characters long.')
+    ])
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message='Passwords must match.')
+    ])
+    submit = SubmitField('Change Password')
+    
+    def validate_current_password(self, field):
+        from flask_login import current_user
+        from werkzeug.security import check_password_hash
+        if not check_password_hash(current_user.password_hash, field.data):
+            raise ValidationError('Current password is incorrect.')

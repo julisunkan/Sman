@@ -227,7 +227,9 @@ The application is designed to be a complete marketplace solution with built-in 
 - Fixed admin quick actions functionality (verify email, deactivate user, reset password)
 - Added manual email verification route allowing admins to verify user emails directly
 - Implemented proper user status toggle with email notifications
-- Added password reset functionality generating temporary passwords
+- Modified password reset to force password change on next login instead of sending emails
 - Enhanced user management template with proper form submissions and CSRF protection
 - Replaced JavaScript AJAX calls with reliable server-side form processing
-- All admin actions now provide user feedback and email notifications
+- Added force_password_change database field and change password workflow
+- Created change password template and form for forced password changes
+- All admin actions now provide user feedback and appropriate notifications

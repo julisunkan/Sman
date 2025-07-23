@@ -22,6 +22,12 @@ def login():
                 flash('Your account has been deactivated. Please contact support.', 'danger')
                 return render_template('auth/login.html', form=form)
             
+            # Check if user needs to change password
+            if hasattr(user, 'force_password_change') and user.force_password_change:
+                login_user(user, remember=form.remember_me.data)
+                flash('You must change your password before continuing.', 'warning')
+                return redirect(url_for('auth.change_password'))
+            
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get('next')
             
@@ -118,3 +124,24 @@ def resend_verification():
     
     flash('Verification email sent! Please check your email.', 'success')
     return redirect(url_for('main.dashboard'))
+
+@auth_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    from forms import ChangePasswordForm
+    form = ChangePasswordForm()
+    
+    if form.validate_on_submit():
+        # Update password
+        current_user.password_hash = generate_password_hash(form.new_password.data)
+        current_user.force_password_change = False
+        db.session.commit()
+        
+        flash('Password changed successfully!', 'success')
+        
+        if current_user.role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        else:
+            return redirect(url_for('main.dashboard'))
+    
+    return render_template('auth/change_password.html', form=form)
