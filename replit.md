@@ -341,8 +341,15 @@ The application is designed to be a complete marketplace solution with built-in 
 - Updated index, browse, and account detail templates to prevent @@ username display
 - Fixed pagination error in browse page causing 500 internal server error
 - Replaced problematic **request.args with explicit parameter passing
-- Created build_browse_url helper function to properly handle URL parameters
-- Fixed all sort dropdown and pagination links to work correctly
+
+### Realistic Nigerian Seller Distribution (July 23, 2025)
+- Created 15 authentic Nigerian seller accounts with realistic names and email addresses
+- Distributed all 117 social media accounts among the Nigerian sellers instead of "demo_seller"
+- Seller names include: ChidozieOkeke, AdesuwaIhama, EmmanuelAdebayo, FatimaAbubakar, etc.
+- Removed demo_seller account completely from the system
+- Each seller now owns 5-13 accounts distributed across different platforms
+- Account distribution reflects realistic ownership patterns in Nigerian marketplace
+
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
