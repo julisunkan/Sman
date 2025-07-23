@@ -52,6 +52,10 @@ login_manager.login_view = 'auth.login'  # type: ignore
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
 
+# Initialize Flask-WTF for CSRF protection
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect(app)
+
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
