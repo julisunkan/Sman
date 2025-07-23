@@ -316,8 +316,11 @@ def purchase_account(account_id):
     account = SocialMediaAccount.query.get_or_404(account_id)
     
     if account.status != 'approved':
-        flash('Account not available for purchase.', 'danger')
-        return redirect(url_for('main.browse_accounts'))
+        if account.status == 'sold':
+            flash('This account has been sold and is no longer available for purchase.', 'warning')
+        else:
+            flash('Account not available for purchase.', 'danger')
+        return redirect(url_for('main.account_detail', account_id=account_id))
     
     if account.seller_id == current_user.id:
         flash('You cannot purchase your own account.', 'danger')

@@ -332,6 +332,10 @@ The application is designed to be a complete marketplace solution with built-in 
 - Enhanced user experience with appropriate messaging for sold account limitations
 - Fixed username formatting consistency - ensured all social media usernames use single @ symbol
 - Standardized username format across all platforms with proper @ prefixes where appropriate
+- Disabled "Login to Purchase" and purchase functionality for sold accounts
+- Added disabled "Account Sold" button with clear messaging for sold accounts
+- Updated account status display to show "SOLD" badge in account details
+- Enhanced purchase route protection to prevent purchasing sold accounts
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
