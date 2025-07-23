@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from functools import wraps
+from datetime import datetime
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
 from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm
 from utils import send_email_notification, calculate_referral_commission
@@ -168,18 +169,19 @@ def verify_purchase_payment(purchase_id):
             if buyer.referred_by_id:
                 commission = calculate_referral_commission(purchase.amount)
                 referrer = User.query.get(buyer.referred_by_id)
-                referrer.balance += commission
-                referrer.total_referral_earnings += commission
+                if referrer:
+                    referrer.balance += commission
+                    referrer.total_referral_earnings += commission
                 
-                # Create transaction record
-                referral_transaction = Transaction(
-                    user_id=referrer.id,
-                    transaction_type='referral_earning',
-                    amount=commission,
-                    description=f'Referral commission from {buyer.username} purchase',
-                    status='completed'
-                )
-                db.session.add(referral_transaction)
+                    # Create transaction record
+                    referral_transaction = Transaction(  # type: ignore
+                        user_id=referrer.id,
+                        transaction_type='referral_earning',
+                        amount=commission,
+                        description=f'Referral commission from {buyer.username} purchase',
+                        status='completed'
+                    )
+                    db.session.add(referral_transaction)
             
             # Notify buyer
             send_email_notification(
@@ -243,11 +245,11 @@ def create_footer_page():
     form = FooterPageForm()
     
     if form.validate_on_submit():
-        page = FooterPage(
+        page = FooterPage(  # type: ignore
             title=form.title.data,
             slug=form.slug.data,
             content=form.content.data,
-            active=form.active.data
+            is_active=True
         )
         db.session.add(page)
         db.session.commit()
@@ -332,7 +334,7 @@ def system_settings():
                     setting.setting_value = value
                     setting.updated_at = func.now()
                 else:
-                    setting = SystemSettings(
+                    setting = SystemSettings(  # type: ignore
                         setting_key=key,
                         setting_value=value,
                         description=description,
@@ -391,7 +393,7 @@ def test_email():
             msg['To'] = form.test_email.data
             msg['Subject'] = form.subject.data
             
-            msg.attach(MIMEText(form.message.data, 'plain'))
+            msg.attach(MIMEText(form.message.data or '', 'plain'))
             
             # Send email
             server = smtplib.SMTP(smtp_settings.get('smtp_server', 'localhost'), 
@@ -399,8 +401,10 @@ def test_email():
             if smtp_settings.get('smtp_use_tls', 'True') == 'True':
                 server.starttls()
             
-            if smtp_settings.get('smtp_username') and smtp_settings.get('smtp_password'):
-                server.login(smtp_settings.get('smtp_username'), smtp_settings.get('smtp_password'))
+            smtp_username = smtp_settings.get('smtp_username')
+            smtp_password = smtp_settings.get('smtp_password')
+            if smtp_username and smtp_password:
+                server.login(smtp_username, smtp_password)
             
             server.send_message(msg)
             server.quit()

@@ -17,12 +17,12 @@
                         <strong>Login Required:</strong> Please <a href="{{ url_for('auth.login') }}">login</a> to submit a support request.
                     </div>
                     {% else %}
-                    <form method="POST" novalidate>
+                    <form method="POST" novalidate data-no-validation class="support-form">
                         {{ form.hidden_tag() }}
                         
                         <div class="mb-3">
                             {{ form.subject.label(class="form-label fw-bold") }}
-                            {{ form.subject(class="form-control", placeholder="Brief description of your issue") }}
+                            {{ form.subject(class="form-control", placeholder="Brief description of your issue", **{"data-no-validation": ""}) }}
                             {% if form.subject.errors %}
                             <div class="text-danger mt-1">
                                 {% for error in form.subject.errors %}
@@ -34,7 +34,7 @@
                         
                         <div class="mb-4">
                             {{ form.message.label(class="form-label fw-bold") }}
-                            {{ form.message(class="form-control", rows="6", placeholder="Please describe your issue in detail. Include any relevant information such as error messages, account details, or transaction IDs.") }}
+                            {{ form.message(class="form-control", rows="6", placeholder="Please describe your issue in detail. Include any relevant information such as error messages, account details, or transaction IDs.", **{"data-no-validation": ""}) }}
                             {% if form.message.errors %}
                             <div class="text-danger mt-1">
                                 {% for error in form.message.errors %}

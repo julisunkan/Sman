@@ -51,8 +51,20 @@ function initializeFormValidations() {
         inputs.forEach(input => {
             let validationTimeout;
             input.addEventListener('input', function() {
-                // Skip validation for support forms to prevent blinking
+                // Skip validation for support forms and admin response fields
                 if (this.closest('form').action && this.closest('form').action.includes('support')) {
+                    return;
+                }
+                if (this.name === 'response' || this.id && this.id.includes('response')) {
+                    return;
+                }
+                if (this.name === 'admin_response' || this.id === 'admin_response') {
+                    return;
+                }
+                if (this.closest('.support-form') || this.closest('[data-no-validation]')) {
+                    return;
+                }
+                if (this.hasAttribute('data-no-validation')) {
                     return;
                 }
                 

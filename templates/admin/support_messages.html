@@ -207,7 +207,7 @@
                                         <h5 class="modal-title">Respond to Ticket #{{ message.id }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
-                                    <form method="POST" action="{{ url_for('admin.respond_to_support', message_id=message.id) }}">
+                                    <form method="POST" action="{{ url_for('admin.respond_to_support', message_id=message.id) }}" data-no-validation class="support-form">
                                         <div class="modal-body">
                                             <div class="mb-3">
                                                 <strong>User's Message:</strong>
@@ -216,7 +216,7 @@
                                             
                                             <div class="mb-3">
                                                 <label for="response{{ message.id }}" class="form-label fw-bold">Your Response</label>
-                                                <textarea class="form-control" id="response{{ message.id }}" name="response" rows="6" placeholder="Type your response here..." required></textarea>
+                                                <textarea class="form-control" id="response{{ message.id }}" name="response" rows="6" placeholder="Type your response here..." required data-no-validation></textarea>
                                             </div>
                                             
                                             <div class="alert alert-info alert-permanent">
