@@ -156,6 +156,7 @@ class FooterPageForm(FlaskForm):
     slug = StringField('URL Slug', validators=[DataRequired(), Length(min=2, max=100)])
     content = TextAreaField('Page Content', validators=[DataRequired()], widget=TextArea())
     is_active = BooleanField('Published', default=True)
+    submit = SubmitField('Save Page')
 
 class SystemSettingsForm(FlaskForm):
     # Bank Details

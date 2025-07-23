@@ -303,17 +303,32 @@ def create_footer_page():
     form = FooterPageForm()
     
     if form.validate_on_submit():
-        page = FooterPage(  # type: ignore
-            title=form.title.data,
-            slug=form.slug.data,
-            content=form.content.data,
-            is_active=True
-        )
-        db.session.add(page)
-        db.session.commit()
-        
-        flash('Footer page created successfully.', 'success')
-        return redirect(url_for('admin.footer_pages'))
+        try:
+            # Check if slug already exists
+            existing_page = FooterPage.query.filter_by(slug=form.slug.data).first()
+            if existing_page:
+                flash('A page with this URL slug already exists. Please choose a different slug.', 'danger')
+                return render_template('admin/edit_footer_page.html', form=form, page=None)
+            
+            page = FooterPage(  # type: ignore
+                title=form.title.data or '',
+                slug=form.slug.data or '',
+                content=form.content.data or '',
+                is_active=form.is_active.data if form.is_active.data is not None else True
+            )
+            db.session.add(page)
+            db.session.commit()
+            
+            flash('Footer page created successfully.', 'success')
+            return redirect(url_for('admin.footer_pages'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating footer page: {str(e)}', 'danger')
+    else:
+        # Display form validation errors
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}', 'danger')
     
     return render_template('admin/edit_footer_page.html', form=form, page=None)
 
