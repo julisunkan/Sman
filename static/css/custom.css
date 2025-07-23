@@ -20,6 +20,127 @@ a, button, .btn, .card, .form-control, .form-select {
     box-shadow: var(--shadow-lg);
 }
 
+/* Dark theme improvements */
+.bg-light {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+}
+
+.text-dark {
+    color: var(--bs-light) !important;
+}
+
+.table-light th {
+    background-color: var(--bs-gray-800) !important;
+    color: var(--bs-light) !important;
+}
+
+/* Override any remaining light backgrounds */
+.bg-white, 
+.badge.bg-light {
+    background-color: var(--bs-gray-800) !important;
+    color: var(--bs-light) !important;
+}
+
+/* Modal and dropdown dark theme */
+.modal-content {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+}
+
+.dropdown-menu {
+    background-color: var(--bs-dark) !important;
+    border: 1px solid var(--bs-gray-700) !important;
+}
+
+.dropdown-item {
+    color: var(--bs-light) !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bs-gray-700) !important;
+    color: var(--bs-light) !important;
+}
+
+/* List group dark theme */
+.list-group-item {
+    background-color: var(--bs-gray-800) !important;
+    color: var(--bs-light) !important;
+    border-color: var(--bs-gray-700) !important;
+}
+
+.list-group-item:hover {
+    background-color: var(--bs-gray-700) !important;
+}
+
+/* Pagination dark theme */
+.page-link {
+    background-color: var(--bs-gray-800) !important;
+    border-color: var(--bs-gray-700) !important;
+    color: var(--bs-light) !important;
+}
+
+.page-link:hover {
+    background-color: var(--bs-gray-700) !important;
+    color: var(--bs-light) !important;
+}
+
+.page-item.active .page-link {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+/* Form controls dark theme */
+.form-control, .form-select {
+    background-color: var(--bs-gray-800) !important;
+    border-color: var(--bs-gray-600) !important;
+    color: var(--bs-light) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--bs-gray-800) !important;
+    border-color: var(--bs-primary) !important;
+    color: var(--bs-light) !important;
+}
+
+/* Alert improvements for dark theme */
+.alert-info {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+    border-color: rgba(13, 110, 253, 0.3) !important;
+    color: #b6effb !important;
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+    color: #ffecb5 !important;
+}
+
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.2) !important;
+    border-color: rgba(25, 135, 84, 0.3) !important;
+    color: #b8e6c1 !important;
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2) !important;
+    border-color: rgba(220, 53, 69, 0.3) !important;
+    color: #f5c2c7 !important;
+}
+
+/* Card component improvements */
+.card {
+    background-color: var(--bs-gray-900) !important;
+    border-color: var(--bs-gray-700) !important;
+    color: var(--bs-light) !important;
+}
+
+.card-header {
+    background-color: var(--bs-gray-800) !important;
+    border-color: var(--bs-gray-700) !important;
+    color: var(--bs-light) !important;
+}
+
 /* Improved button styles */
 .btn {
     border-radius: var(--border-radius);
@@ -72,7 +193,8 @@ a, button, .btn, .card, .form-control, .form-select {
     border-radius: var(--border-radius);
     padding: 1rem;
     text-align: center;
-    background: var(--bs-light);
+    background: var(--bs-dark);
+    color: var(--bs-light);
 }
 
 .image-preview img {
@@ -424,11 +546,11 @@ a, button, .btn, .card, .form-control, .form-select {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bs-gray-100);
+    background: var(--bs-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--bs-gray-400);
+    background: var(--bs-gray-600);
     border-radius: 4px;
 }
 
