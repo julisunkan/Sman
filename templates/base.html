@@ -153,9 +153,9 @@
                 <div class="col-md-2">
                     <h6>Legal</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('main.footer_page', slug='privacy-policy') }}" class="text-light text-decoration-none">Privacy Policy</a></li>
-                        <li><a href="{{ url_for('main.footer_page', slug='terms-of-service') }}" class="text-light text-decoration-none">Terms of Service</a></li>
-                        <li><a href="{{ url_for('main.footer_page', slug='cookie-policy') }}" class="text-light text-decoration-none">Cookie Policy</a></li>
+                        {% for page in footer_pages %}
+                        <li><a href="{{ url_for('main.footer_page', slug=page.slug) }}" class="text-light text-decoration-none">{{ page.title }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="col-md-4">

@@ -61,6 +61,13 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
+# Context processor to make footer pages available in all templates
+@app.context_processor
+def inject_footer_pages():
+    from models import FooterPage
+    footer_pages = FooterPage.query.filter_by(is_active=True).order_by(FooterPage.title).all()
+    return {'footer_pages': footer_pages}
+
 # Import blueprints
 from auth import auth_bp
 from admin import admin_bp
