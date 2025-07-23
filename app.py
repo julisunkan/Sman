@@ -61,19 +61,29 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
-# Context processor to make footer pages and social media links available in all templates
+# Context processor to make site data available in all templates
 @app.context_processor
-def inject_footer_data():
+def inject_site_data():
     from models import FooterPage, SystemSettings
     footer_pages = FooterPage.query.filter_by(is_active=True).order_by(FooterPage.title).all()
     
-    # Get social media settings
-    social_settings = SystemSettings.query.filter_by(category='social').all()
-    social_links = {s.setting_key: s.setting_value for s in social_settings}
+    # Get all system settings
+    all_settings = SystemSettings.query.all()
+    settings_dict = {s.setting_key: s.setting_value for s in all_settings}
+    
+    # Extract social media settings
+    social_links = {k: v for k, v in settings_dict.items() if k.endswith('_url')}
+    
+    # Site configuration
+    site_config = {
+        'site_name': settings_dict.get('site_name', 'SocialMarket'),
+        'site_description': settings_dict.get('site_description', 'The trusted marketplace for buying and selling social media accounts safely and securely.')
+    }
     
     return {
         'footer_pages': footer_pages,
-        'social_links': social_links
+        'social_links': social_links,
+        'site_config': site_config
     }
 
 # Import blueprints

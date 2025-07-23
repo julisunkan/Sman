@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}SocialMarket - Buy & Sell Social Media Accounts{% endblock %}
+{% block title %}{{ site_config.site_name }} - Buy & Sell Social Media Accounts{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -9,7 +9,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold mb-4">Buy & Sell Social Media Accounts</h1>
-                <p class="lead mb-4">The most trusted marketplace for social media accounts. Buy established accounts or sell yours safely with our secure platform.</p>
+                <p class="lead mb-4">{{ site_config.site_description }}</p>
                 <div class="d-flex gap-3">
                     <a href="{{ url_for('main.browse_accounts') }}" class="btn btn-light btn-lg">
                         <i class="fas fa-search me-2"></i>Browse Accounts
