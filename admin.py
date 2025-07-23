@@ -399,6 +399,12 @@ def system_settings():
             ('referral_rate', str(form.referral_rate.data) if form.referral_rate.data else '', 'Referral commission rate (%)', 'general'),
             ('min_deposit', str(form.min_deposit.data) if form.min_deposit.data else '', 'Minimum deposit amount', 'general'),
             ('max_file_size', str(form.max_file_size.data) if form.max_file_size.data else '', 'Maximum file size (MB)', 'general'),
+            ('facebook_url', form.facebook_url.data, 'Facebook page URL', 'social'),
+            ('twitter_url', form.twitter_url.data, 'Twitter profile URL', 'social'),
+            ('instagram_url', form.instagram_url.data, 'Instagram profile URL', 'social'),
+            ('telegram_url', form.telegram_url.data, 'Telegram channel URL', 'social'),
+            ('linkedin_url', form.linkedin_url.data, 'LinkedIn profile URL', 'social'),
+            ('youtube_url', form.youtube_url.data, 'YouTube channel URL', 'social'),
         ]
         
         for key, value, description, category in settings_to_save:
@@ -442,6 +448,12 @@ def system_settings():
     form.referral_rate.data = float(current_settings.get('referral_rate', 5.0)) if current_settings.get('referral_rate') else 5.0
     form.min_deposit.data = float(current_settings.get('min_deposit', 1000.0)) if current_settings.get('min_deposit') else 1000.0
     form.max_file_size.data = int(current_settings.get('max_file_size', 10)) if current_settings.get('max_file_size') else 10
+    form.facebook_url.data = current_settings.get('facebook_url', '')
+    form.twitter_url.data = current_settings.get('twitter_url', '')
+    form.instagram_url.data = current_settings.get('instagram_url', '')
+    form.telegram_url.data = current_settings.get('telegram_url', '')
+    form.linkedin_url.data = current_settings.get('linkedin_url', '')
+    form.youtube_url.data = current_settings.get('youtube_url', '')
     
     return render_template('admin/system_settings.html', form=form, current_settings=current_settings)
 

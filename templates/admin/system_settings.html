@@ -241,6 +241,84 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Social Media Links -->
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-share-alt me-2"></i>Social Media Links</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info alert-permanent">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Configure Social Media:</strong> Add your social media profile URLs. Only links that are provided will appear in the footer.
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.facebook_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-facebook"></i></span>
+                                                {{ form.facebook_url(class="form-control", placeholder="https://facebook.com/yourpage") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.twitter_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                                {{ form.twitter_url(class="form-control", placeholder="https://twitter.com/yourusername") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.instagram_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                                {{ form.instagram_url(class="form-control", placeholder="https://instagram.com/yourusername") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.telegram_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-telegram"></i></span>
+                                                {{ form.telegram_url(class="form-control", placeholder="https://t.me/yourchannel") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.linkedin_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                                                {{ form.linkedin_url(class="form-control", placeholder="https://linkedin.com/company/yourcompany") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.youtube_url.label(class="form-label fw-bold") }}
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fab fa-youtube"></i></span>
+                                                {{ form.youtube_url(class="form-control", placeholder="https://youtube.com/yourchannel") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="mb-4">

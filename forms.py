@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, SelectField, FloatField, IntegerField, BooleanField, PasswordField, EmailField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, NumberRange, Optional, EqualTo, ValidationError
+from wtforms import StringField, TextAreaField, SelectField, FloatField, IntegerField, BooleanField, PasswordField, EmailField, SubmitField, URLField
+from wtforms.validators import DataRequired, Email, Length, NumberRange, Optional, EqualTo, ValidationError, URL
 from wtforms.widgets import TextArea
 
 # Authentication Forms
@@ -181,6 +181,14 @@ class SystemSettingsForm(FlaskForm):
     referral_rate = FloatField('Referral Commission Rate (%)', validators=[Optional(), NumberRange(min=0, max=100)])
     min_deposit = FloatField('Minimum Deposit (₦)', validators=[Optional(), NumberRange(min=1)])
     max_file_size = IntegerField('Max File Size (MB)', validators=[Optional(), NumberRange(min=1, max=100)])
+    
+    # Social Media Links
+    facebook_url = URLField('Facebook URL', validators=[Optional(), URL()])
+    twitter_url = URLField('Twitter URL', validators=[Optional(), URL()])
+    instagram_url = URLField('Instagram URL', validators=[Optional(), URL()])
+    telegram_url = URLField('Telegram URL', validators=[Optional(), URL()])
+    linkedin_url = URLField('LinkedIn URL', validators=[Optional(), URL()])
+    youtube_url = URLField('YouTube URL', validators=[Optional(), URL()])
 
 class TestEmailForm(FlaskForm):
     test_email = EmailField('Test Email Address', validators=[DataRequired(), Email()])

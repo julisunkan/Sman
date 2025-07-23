@@ -161,10 +161,24 @@
                 <div class="col-md-4">
                     <h6>Connect With Us</h6>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-light fs-4"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light fs-4"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-light fs-4"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-light fs-4"><i class="fab fa-telegram"></i></a>
+                        {% if social_links.get('twitter_url') %}
+                        <a href="{{ social_links.twitter_url }}" target="_blank" class="text-light fs-4" title="Follow us on Twitter"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                        {% if social_links.get('facebook_url') %}
+                        <a href="{{ social_links.facebook_url }}" target="_blank" class="text-light fs-4" title="Like us on Facebook"><i class="fab fa-facebook"></i></a>
+                        {% endif %}
+                        {% if social_links.get('instagram_url') %}
+                        <a href="{{ social_links.instagram_url }}" target="_blank" class="text-light fs-4" title="Follow us on Instagram"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                        {% if social_links.get('telegram_url') %}
+                        <a href="{{ social_links.telegram_url }}" target="_blank" class="text-light fs-4" title="Join our Telegram"><i class="fab fa-telegram"></i></a>
+                        {% endif %}
+                        {% if social_links.get('linkedin_url') %}
+                        <a href="{{ social_links.linkedin_url }}" target="_blank" class="text-light fs-4" title="Connect on LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        {% endif %}
+                        {% if social_links.get('youtube_url') %}
+                        <a href="{{ social_links.youtube_url }}" target="_blank" class="text-light fs-4" title="Subscribe to our YouTube"><i class="fab fa-youtube"></i></a>
+                        {% endif %}
                     </div>
                     <div class="mt-3">
                         <small>&copy; 2025 SocialMarket. All rights reserved.</small>

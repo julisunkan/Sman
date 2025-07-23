@@ -248,3 +248,13 @@ The application is designed to be a complete marketplace solution with built-in 
 - Footer now automatically updates when new pages are created or existing pages are activated/deactivated
 - Enhanced form submission handling with improved validation and CKEditor content synchronization
 - Fixed Create Footer Page button functionality with proper event listeners and debugging
+
+### Admin Social Media Configuration (July 23, 2025)
+- Added social media links configuration to admin system settings
+- Implemented URLField and URL validators for social media form fields
+- Added six social media platforms: Facebook, Twitter, Instagram, Telegram, LinkedIn, YouTube
+- Enhanced SystemSettingsForm with social media URL fields and validation
+- Updated admin system settings template with dedicated social media configuration section
+- Modified Flask context processor to inject social media links into all templates
+- Made footer social media links dynamic - only configured links appear with proper icons and titles
+- Social media links open in new tabs with descriptive titles for better user experience

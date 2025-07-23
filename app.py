@@ -61,12 +61,20 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
-# Context processor to make footer pages available in all templates
+# Context processor to make footer pages and social media links available in all templates
 @app.context_processor
-def inject_footer_pages():
-    from models import FooterPage
+def inject_footer_data():
+    from models import FooterPage, SystemSettings
     footer_pages = FooterPage.query.filter_by(is_active=True).order_by(FooterPage.title).all()
-    return {'footer_pages': footer_pages}
+    
+    # Get social media settings
+    social_settings = SystemSettings.query.filter_by(category='social').all()
+    social_links = {s.setting_key: s.setting_value for s in social_settings}
+    
+    return {
+        'footer_pages': footer_pages,
+        'social_links': social_links
+    }
 
 # Import blueprints
 from auth import auth_bp
