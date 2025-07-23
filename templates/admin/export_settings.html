@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Export Settings - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-export me-2"></i>Export System Settings
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info alert-permanent">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Export Options:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li><strong>All Settings:</strong> Export complete configuration</li>
+                            <li><strong>Bank Details:</strong> Export only payment/banking information</li>
+                            <li><strong>SMTP Settings:</strong> Export only email configuration</li>
+                            <li><strong>General Settings:</strong> Export site name, commission rates, etc.</li>
+                            <li><strong>Social Media Links:</strong> Export only social media URLs</li>
+                        </ul>
+                    </div>
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.export_type.label(class="form-label fw-bold") }}
+                            {{ form.export_type(class="form-select") }}
+                            {% if form.export_type.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.export_type.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <small class="text-muted">Select which settings to include in the export</small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-success") }}
+                            <a href="{{ url_for('admin.system_settings') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Settings
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

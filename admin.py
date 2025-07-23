@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, Withdrawal, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, AdminCreateUserForm, FooterPageForm, SystemSettingsForm, AdminWithdrawalForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, AdminCreateUserForm, FooterPageForm, SystemSettingsForm, AdminWithdrawalForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm, SettingsImportForm, SettingsExportForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -1008,3 +1008,118 @@ def respond_to_support(message_id):
                 flash(f'{field}: {error}', 'danger')
     
     return redirect(url_for('admin.support_messages'))
+
+@admin_bp.route('/settings/import', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def import_settings():
+    """Import system settings from JSON file"""
+    form = SettingsImportForm()
+    
+    if form.validate_on_submit():
+        import json
+        import tempfile
+        import os
+        
+        try:
+            
+            # Save uploaded file temporarily
+            uploaded_file = form.settings_file.data
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.json') as temp_file:
+                uploaded_file.save(temp_file.name)
+                
+                # Read and parse JSON
+                with open(temp_file.name, 'r') as f:
+                    settings_data = json.load(f)
+                
+                # Clean up temp file
+                os.unlink(temp_file.name)
+            
+            # Validate JSON structure
+            if not isinstance(settings_data, dict):
+                flash('Invalid settings file format. Expected JSON object.', 'danger')
+                return render_template('admin/import_settings.html', form=form)
+            
+            # Import settings
+            imported_count = 0
+            skipped_count = 0
+            
+            for key, value in settings_data.items():
+                existing_setting = SystemSettings.query.filter_by(setting_key=key).first()
+                
+                if existing_setting and not form.overwrite_existing.data:
+                    skipped_count += 1
+                    continue
+                
+                if existing_setting:
+                    existing_setting.setting_value = str(value)
+                else:
+                    new_setting = SystemSettings()  # type: ignore
+                    new_setting.setting_key = key
+                    new_setting.setting_value = str(value)
+                    db.session.add(new_setting)
+                
+                imported_count += 1
+            
+            db.session.commit()
+            
+            flash(f'Settings imported successfully! {imported_count} settings imported, {skipped_count} skipped.', 'success')
+            return redirect(url_for('admin.system_settings'))
+            
+        except json.JSONDecodeError:
+            flash('Invalid JSON file format.', 'danger')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error importing settings: {str(e)}', 'danger')
+    
+    return render_template('admin/import_settings.html', form=form)
+
+@admin_bp.route('/settings/export', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def export_settings():
+    """Export system settings to JSON file"""
+    form = SettingsExportForm()
+    
+    if form.validate_on_submit():
+        try:
+            import json
+            from flask import make_response
+            
+            # Get settings based on export type
+            export_type = form.export_type.data
+            
+            if export_type == 'all':
+                settings = SystemSettings.query.all()
+            elif export_type == 'bank':
+                bank_keys = ['bank_name', 'account_number', 'account_name', 'routing_number']
+                settings = SystemSettings.query.filter(SystemSettings.setting_key.in_(bank_keys)).all()
+            elif export_type == 'smtp':
+                smtp_keys = ['smtp_server', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_use_tls', 'from_email', 'from_name']
+                settings = SystemSettings.query.filter(SystemSettings.setting_key.in_(smtp_keys)).all()
+            elif export_type == 'general':
+                general_keys = ['site_name', 'site_description', 'commission_rate', 'referral_rate', 'min_deposit', 'max_file_size']
+                settings = SystemSettings.query.filter(SystemSettings.setting_key.in_(general_keys)).all()
+            elif export_type == 'social':
+                social_keys = ['facebook_url', 'twitter_url', 'instagram_url', 'telegram_url', 'linkedin_url', 'youtube_url']
+                settings = SystemSettings.query.filter(SystemSettings.setting_key.in_(social_keys)).all()
+            else:
+                settings = []
+            
+            # Convert to dictionary
+            settings_dict = {s.setting_key: s.setting_value for s in settings}
+            
+            # Create JSON response
+            json_data = json.dumps(settings_dict, indent=2)
+            
+            response = make_response(json_data)
+            response.headers['Content-Type'] = 'application/json'
+            response.headers['Content-Disposition'] = f'attachment; filename=socialmarket_settings_{export_type}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+            
+            flash(f'Settings exported successfully! {len(settings_dict)} settings exported.', 'success')
+            return response
+            
+        except Exception as e:
+            flash(f'Error exporting settings: {str(e)}', 'danger')
+    
+    return render_template('admin/export_settings.html', form=form)

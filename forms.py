@@ -306,3 +306,21 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset Password')
+
+class SettingsImportForm(FlaskForm):
+    settings_file = FileField('Settings File (JSON)', validators=[
+        DataRequired(),
+        FileAllowed(['json'], 'Only JSON files are allowed!')
+    ])
+    overwrite_existing = BooleanField('Overwrite Existing Settings', default=False)
+    submit = SubmitField('Import Settings')
+
+class SettingsExportForm(FlaskForm):
+    export_type = SelectField('Export Type', choices=[
+        ('all', 'All Settings'),
+        ('bank', 'Bank Details Only'),
+        ('smtp', 'SMTP Settings Only'),
+        ('general', 'General Settings Only'),
+        ('social', 'Social Media Links Only')
+    ], validators=[DataRequired()], default='all')
+    submit = SubmitField('Export Settings')
