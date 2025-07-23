@@ -5,6 +5,45 @@
 {% block extra_head %}
 <!-- CKEditor for rich text editing -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<style>
+/* Dark theme support for CKEditor */
+.ck-editor__editable {
+    background-color: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+.ck-toolbar {
+    background-color: var(--bs-secondary) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+.ck-button {
+    color: var(--bs-light) !important;
+}
+
+.ck-button:hover {
+    background-color: var(--bs-primary) !important;
+}
+
+.ck-button.ck-on {
+    background-color: var(--bs-primary) !important;
+    color: white !important;
+}
+
+.ck-dropdown__panel {
+    background-color: var(--bs-dark) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+.ck-list__item {
+    color: var(--bs-light) !important;
+}
+
+.ck-list__item:hover {
+    background-color: var(--bs-primary) !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -220,6 +259,14 @@ ClassicEditor
     })
     .then(newEditor => {
         editor = newEditor;
+        
+        // Apply dark theme styling to the editor content
+        const editorElement = newEditor.editing.view.document.getRoot();
+        newEditor.editing.view.change(writer => {
+            writer.setStyle('background-color', '#212529', editorElement);
+            writer.setStyle('color', '#f8f9fa', editorElement);
+            writer.setStyle('min-height', '300px', editorElement);
+        });
     })
     .catch(error => {
         console.error('CKEditor initialization error:', error);
