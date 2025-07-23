@@ -232,7 +232,7 @@ def verify_user_email(user_id):
         flash(f'User {user.username} is already verified.', 'info')
     else:
         user.is_verified = True
-        user.verification_token = None  # Clear verification token
+        user.email_verification_token = None  # Clear verification token
         db.session.commit()
         
         send_email_notification(
