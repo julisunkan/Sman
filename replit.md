@@ -162,7 +162,7 @@ The application is designed to be a complete marketplace solution with built-in 
 - Updated database configuration to use environment-based DATABASE_URL
 - Successfully tested admin user creation and application startup
 
-### July 23, 2025 - Migration to Replit Environment
+### July 23, 2025 - Migration to Replit Environment and Alert System Enhancement
 - Successfully migrated from Replit Agent to standard Replit environment
 - Fixed database initialization to prevent recreating database on each startup
 - Updated database configuration to use absolute path for SQLite reliability
@@ -170,3 +170,18 @@ The application is designed to be a complete marketplace solution with built-in 
 - Application running successfully on port 5000 with gunicorn
 - Admin account creation logic updated to check for existing users
 - Default footer pages creation improved with conflict checking
+
+### Alert Auto-Dismiss Issue Fix (July 23, 2025)
+- Fixed critical bug where important information alerts were disappearing after 5 seconds
+- Implemented alert-permanent class system to prevent auto-dismissal of critical alerts
+- Updated JavaScript in main.js to only auto-dismiss flash messages, not permanent alerts
+- Applied alert-permanent class to over 25+ critical alert elements across all templates:
+  - Bank transfer details and payment instructions
+  - KYC verification status alerts
+  - Security notices and warnings
+  - Information boxes and guidelines
+  - Admin verification checklists
+  - Support form notices
+  - Account purchase instructions
+- Comprehensive scan and fix ensures users can properly read important information
+- Bank details, KYC status, and other critical alerts now remain visible permanently

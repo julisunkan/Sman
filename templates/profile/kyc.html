@@ -12,19 +12,19 @@
                 </div>
                 <div class="card-body p-4">
                     {% if current_user.kyc_status == 'verified' %}
-                    <div class="alert alert-success text-center">
+                    <div class="alert alert-success alert-permanent text-center">
                         <i class="fas fa-check-circle fs-2 mb-3"></i>
                         <h4>KYC Verified</h4>
                         <p class="mb-0">Your identity has been successfully verified. You can now create listings and access all features.</p>
                     </div>
                     {% elif current_user.kyc_status == 'pending' %}
-                    <div class="alert alert-warning text-center">
+                    <div class="alert alert-warning alert-permanent text-center">
                         <i class="fas fa-clock fs-2 mb-3"></i>
                         <h4>KYC Under Review</h4>
                         <p class="mb-0">Your KYC document is being reviewed by our team. We'll notify you once the verification is complete.</p>
                     </div>
                     {% elif current_user.kyc_status == 'rejected' %}
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger alert-permanent">
                         <i class="fas fa-times-circle me-2"></i>
                         <strong>KYC Rejected</strong><br>
                         Your previous KYC submission was rejected. Please upload a new document that meets our requirements.
@@ -75,7 +75,7 @@
                             </div>
                         </div>
                         
-                        <div class="alert alert-info">
+                        <div class="alert alert-info alert-permanent">
                             <i class="fas fa-shield-alt me-2"></i>
                             <strong>Privacy Notice:</strong> Your document will be used solely for verification purposes and stored securely. We never share your personal information with third parties.
                         </div>

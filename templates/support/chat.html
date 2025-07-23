@@ -12,7 +12,7 @@
                 </div>
                 <div class="card-body p-4">
                     {% if not current_user.is_authenticated %}
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning alert-permanent">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         <strong>Login Required:</strong> Please <a href="{{ url_for('auth.login') }}">login</a> to submit a support request.
                     </div>
@@ -45,7 +45,7 @@
                             <div class="form-text">Maximum 1000 characters</div>
                         </div>
                         
-                        <div class="alert alert-info">
+                        <div class="alert alert-info alert-permanent">
                             <i class="fas fa-info-circle me-2"></i>
                             <strong>Response Time:</strong> Our support team typically responds within 24 hours. For urgent issues, please mark them clearly in your subject line.
                         </div>
