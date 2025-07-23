@@ -3,8 +3,8 @@
 {% block title %}{% if page %}Edit{% else %}Create{% endif %} Footer Page - Admin{% endblock %}
 
 {% block extra_head %}
-<!-- TinyMCE for rich text editing -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- CKEditor for rich text editing -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -195,30 +195,59 @@
 
 {% block extra_scripts %}
 <script>
-// Initialize TinyMCE
-tinymce.init({
-    selector: '#content-editor',
-    height: 400,
-    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px }',
-    branding: false,
-    menubar: false
-});
+// Initialize CKEditor
+let editor;
+ClassicEditor
+    .create(document.querySelector('#content-editor'), {
+        toolbar: {
+            items: [
+                'heading', '|',
+                'bold', 'italic', 'link', '|',
+                'bulletedList', 'numberedList', '|',
+                'outdent', 'indent', '|',
+                'blockQuote', 'insertTable', '|',
+                'undo', 'redo'
+            ]
+        },
+        language: 'en',
+        table: {
+            contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells'
+            ]
+        }
+    })
+    .then(newEditor => {
+        editor = newEditor;
+    })
+    .catch(error => {
+        console.error('CKEditor initialization error:', error);
+    });
 
 // Auto-generate slug from title
-document.getElementById('title').addEventListener('input', function(e) {
-    const title = e.target.value;
-    const slug = title.toLowerCase()
-        .replace(/[^\w\s-]/g, '')  // Remove special characters
-        .replace(/[\s_-]+/g, '-')  // Replace spaces and underscores with hyphens
-        .replace(/^-+|-+$/g, '');  // Remove leading/trailing hyphens
-    document.getElementById('slug').value = slug;
+document.addEventListener('DOMContentLoaded', function() {
+    const titleField = document.querySelector('input[name="title"]');
+    const slugField = document.querySelector('input[name="slug"]');
+    
+    if (titleField && slugField) {
+        titleField.addEventListener('input', function(e) {
+            const title = e.target.value;
+            const slug = title.toLowerCase()
+                .replace(/[^\w\s-]/g, '')  // Remove special characters
+                .replace(/[\s_-]+/g, '-')  // Replace spaces and underscores with hyphens
+                .replace(/^-+|-+$/g, '');  // Remove leading/trailing hyphens
+            slugField.value = slug;
+        });
+    }
 });
 
 // Template insertion
 function insertTemplate(templateType) {
     let content = '';
+    
+    // Get current content from CKEditor
+    const currentContent = editor ? editor.getData() : '';
     
     switch(templateType) {
         case 'privacy':
@@ -332,8 +361,9 @@ function insertTemplate(templateType) {
             break;
     }
     
-    if (content) {
-        tinymce.get('content-editor').setContent(content);
+    if (content && editor) {
+        // Set content in CKEditor
+        editor.setData(content);
     }
 }
 </script>
