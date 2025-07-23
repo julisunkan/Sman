@@ -37,6 +37,9 @@
                                 {% if account.is_verified %}
                                 <span class="badge bg-success">Verified</span>
                                 {% endif %}
+                                {% if account.status == 'sold' %}
+                                <span class="badge bg-danger">SOLD</span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -69,13 +72,21 @@
                     </div>
                     
                     <!-- Account Preview Link -->
-                    {% if account.account_url %}
+                    {% if account.account_url and account.status != 'sold' %}
                     <div class="mb-4">
                         <h5><i class="fas fa-external-link-alt me-2"></i>Account Preview</h5>
                         <a href="{{ account.account_url }}" target="_blank" class="btn btn-outline-primary">
                             <i class="fas fa-eye me-2"></i>View Live Account
                         </a>
                         <small class="text-muted ms-2">Preview the account before purchasing</small>
+                    </div>
+                    {% elif account.status == 'sold' %}
+                    <div class="mb-4">
+                        <h5><i class="fas fa-external-link-alt me-2"></i>Account Preview</h5>
+                        <button class="btn btn-outline-secondary" disabled>
+                            <i class="fas fa-eye me-2"></i>Account Sold - Preview Unavailable
+                        </button>
+                        <small class="text-muted ms-2">This account has been sold and is no longer available for preview</small>
                     </div>
                     {% endif %}
                     

@@ -327,6 +327,9 @@ The application is designed to be a complete marketplace solution with built-in 
 - Adjusted all account prices to realistic range of ₦2,000-₦10,000 based on platform and follower count
 - Price distribution: Instagram/TikTok/YouTube premium pricing, LinkedIn professional rates, moderate pricing for other platforms
 - Average account price: ₦7,027 with good spread across all price ranges
+- Disabled "View Live Account" buttons for sold accounts to prevent access to unavailable accounts
+- Added clear status indicators and disabled preview functionality for sold accounts
+- Enhanced user experience with appropriate messaging for sold account limitations
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
