@@ -84,6 +84,75 @@ def manage_user(user_id):
     
     return render_template('admin/manage_user.html', user=user, form=form)
 
+@admin_bp.route('/users/<int:user_id>/toggle-status', methods=['POST'])
+@login_required
+@admin_required
+def toggle_user_status(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.role == 'admin':
+        flash('Cannot modify admin user status.', 'danger')
+        return redirect(url_for('admin.users'))
+    
+    user.active = not user.active
+    db.session.commit()
+    
+    status_message = 'activated' if user.active else 'deactivated'
+    send_email_notification(
+        user.email,
+        'Account Status Update',
+        f'Your account has been {status_message} by an administrator.'
+    )
+    
+    flash(f'User {user.username} {status_message} successfully.', 'success')
+    return redirect(url_for('admin.users'))
+
+@admin_bp.route('/users/<int:user_id>/verify-email', methods=['POST'])
+@login_required
+@admin_required
+def verify_user_email(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    if user.is_verified:
+        flash(f'User {user.username} is already verified.', 'info')
+    else:
+        user.is_verified = True
+        user.verification_token = None  # Clear verification token
+        db.session.commit()
+        
+        send_email_notification(
+            user.email,
+            'Email Verified',
+            'Your email address has been manually verified by an administrator. You now have full access to your account.'
+        )
+        
+        flash(f'User {user.username} email verified successfully.', 'success')
+    
+    return redirect(url_for('admin.users'))
+
+@admin_bp.route('/users/<int:user_id>/reset-password', methods=['POST'])
+@login_required
+@admin_required
+def reset_user_password(user_id):
+    from werkzeug.security import generate_password_hash
+    import secrets
+    import string
+    
+    user = User.query.get_or_404(user_id)
+    
+    # Generate a temporary password
+    temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+    user.password_hash = generate_password_hash(temp_password)
+    db.session.commit()
+    
+    send_email_notification(
+        user.email,
+        'Password Reset',
+        f'Your password has been reset by an administrator. Your new temporary password is: {temp_password}\n\nPlease log in and change your password immediately.'
+    )
+    
+    flash(f'Password reset for {user.username}. Temporary password sent via email.', 'success')
+    return redirect(url_for('admin.users'))
+
 @admin_bp.route('/accounts')
 @login_required
 @admin_required

@@ -82,14 +82,37 @@
                             <td>{{ user.created_at.strftime('%m/%d/%Y') }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <a href="{{ url_for('admin.manage_user', user_id=user.id) }}" class="btn btn-outline-primary btn-sm">
+                                    <a href="{{ url_for('admin.manage_user', user_id=user.id) }}" class="btn btn-outline-primary btn-sm" title="Manage User">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     {% if user.role != 'admin' %}
-                                    <button class="btn btn-outline-{% if user.active %}danger{% else %}success{% endif %} btn-sm" 
-                                            onclick="toggleUserStatus({{ user.id }}, {{ user.active|lower }})">
-                                        <i class="fas fa-{% if user.active %}ban{% else %}check{% endif %}"></i>
-                                    </button>
+                                    <!-- Email Verification -->
+                                    {% if not user.is_verified %}
+                                    <form method="POST" action="{{ url_for('admin.verify_user_email', user_id=user.id) }}" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Verify Email" onclick="return confirm('Manually verify this user\'s email?')">
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    
+                                    <!-- Activate/Deactivate -->
+                                    <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-{% if user.active %}danger{% else %}success{% endif %} btn-sm" 
+                                                title="{% if user.active %}Deactivate{% else %}Activate{% endif %} User"
+                                                onclick="return confirm('{% if user.active %}Deactivate{% else %}Activate{% endif %} this user?')">
+                                            <i class="fas fa-{% if user.active %}ban{% else %}check{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Reset Password -->
+                                    <form method="POST" action="{{ url_for('admin.reset_user_password', user_id=user.id) }}" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Reset Password" onclick="return confirm('Reset password and send new temporary password via email?')">
+                                            <i class="fas fa-key"></i>
+                                        </button>
+                                    </form>
                                     {% endif %}
                                 </div>
                             </td>
@@ -157,22 +180,7 @@ function filterUsers(status) {
     window.location.href = url.toString();
 }
 
-function toggleUserStatus(userId, isActive) {
-    const action = isActive ? 'deactivate' : 'activate';
-    const message = isActive ? 'deactivate' : 'activate';
-    
-    if (confirm(`Are you sure you want to ${message} this user?`)) {
-        // In a real application, this would make an AJAX request
-        fetch(`/admin/users/${userId}/toggle-status`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
-            }
-        }).then(response => {
-            if (response.ok) {
-                location.reload();
-            }
+// JavaScript functions removed - now using direct form submissions for better reliability
         });
     }
 }
