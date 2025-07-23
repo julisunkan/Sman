@@ -145,7 +145,7 @@
                             <h5 class="text-success mb-0">{{ format_currency(account.price) }}</h5>
                             {% if account.status == 'sold' %}
                             <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-secondary btn-sm">
-                                View Details (SOLD)
+                                SOLD
                             </a>
                             {% else %}
                             <a href="{{ url_for('main.account_detail', account_id=account.id) }}" class="btn btn-primary btn-sm">
