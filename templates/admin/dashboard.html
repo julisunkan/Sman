@@ -108,6 +108,9 @@
                         <a href="{{ url_for('admin.payments', type='deposits') }}" class="btn btn-success">
                             <i class="fas fa-plus-circle me-2"></i>Process Deposits ({{ stats.pending_deposits }})
                         </a>
+                        <a href="{{ url_for('admin.withdrawals') }}" class="btn btn-outline-success">
+                            <i class="fas fa-money-bill-transfer me-2"></i>Process Withdrawals ({{ stats.pending_withdrawals }})
+                        </a>
                         <a href="{{ url_for('admin.support_messages') }}" class="btn btn-secondary">
                             <i class="fas fa-headset me-2"></i>Support Messages ({{ stats.open_support_tickets }})
                         </a>

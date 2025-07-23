@@ -171,11 +171,12 @@ def withdraw():
         current_user.balance -= form.amount.data
         
         # Create transaction record
+        withdrawal_amount = form.amount.data or 0
         transaction = Transaction(  # type: ignore
             user_id=current_user.id,
             transaction_type='withdrawal',
-            amount=-form.amount.data,  # Negative for withdrawal
-            description=f'Withdrawal request - ₦{form.amount.data}',
+            amount=-withdrawal_amount,  # Negative for withdrawal
+            description=f'Withdrawal request - ₦{withdrawal_amount}',
             status='pending'
         )
         
