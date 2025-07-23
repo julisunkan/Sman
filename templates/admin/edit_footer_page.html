@@ -67,7 +67,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" id="footer-page-form">
                         {{ form.hidden_tag() }}
                         
                         <div class="row">
@@ -416,23 +416,74 @@ function insertTemplate(templateType) {
 
 // Handle form submission to sync CKEditor content
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
+    const form = document.getElementById('footer-page-form');
     const submitBtn = document.getElementById('submit-btn');
     
+    console.log('Form found:', !!form);
+    console.log('Submit button found:', !!submitBtn);
+    
     if (form && submitBtn) {
-        form.addEventListener('submit', function(e) {
+        // Remove any existing event listeners
+        submitBtn.removeEventListener('click', handleSubmit);
+        
+        function handleSubmit(e) {
+            e.preventDefault(); // Prevent default form submission
+            console.log('Submit button clicked');
+            
+            // Validate required fields first
+            const titleField = form.querySelector('input[name="title"]');
+            const slugField = form.querySelector('input[name="slug"]');
+            
+            if (!titleField || !titleField.value.trim()) {
+                alert('Please enter a page title');
+                return false;
+            }
+            
+            if (!slugField || !slugField.value.trim()) {
+                alert('Please enter a URL slug');
+                return false;
+            }
+            
             // Sync CKEditor content to the textarea before submitting
             if (editor) {
-                const contentTextarea = document.querySelector('#content-editor');
+                const contentTextarea = form.querySelector('#content-editor');
                 if (contentTextarea) {
-                    contentTextarea.value = editor.getData();
+                    const editorContent = editor.getData();
+                    contentTextarea.value = editorContent;
+                    console.log('Content synced:', editorContent.length, 'characters');
                 }
             }
             
             // Disable submit button to prevent double submission
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            
+            // Now submit the form
+            console.log('Submitting form...');
+            form.submit();
+            
+            return true;
+        }
+        
+        // Add click event listener to submit button
+        submitBtn.addEventListener('click', handleSubmit);
+        
+        // Also handle direct form submit event
+        form.addEventListener('submit', function(e) {
+            console.log('Form submit event triggered');
+            
+            // Sync CKEditor content if not already done
+            if (editor) {
+                const contentTextarea = form.querySelector('#content-editor');
+                if (contentTextarea) {
+                    contentTextarea.value = editor.getData();
+                }
+            }
         });
+        
+        console.log('Event listeners attached successfully');
+    } else {
+        console.error('Required elements not found - Form:', !!form, 'Submit button:', !!submitBtn);
     }
 });
 </script>

@@ -81,7 +81,7 @@ with app.app_context():
     # Create default admin user if it doesn't exist
     from werkzeug.security import generate_password_hash
     
-    admin_user = User.query.filter_by(email='admin@marketplace.com').first()
+    admin_user = User.query.filter_by(email='admin@marketplace.com').first() or User.query.filter_by(role='admin').first()
     if not admin_user:
         admin_user = User(
             username='admin',
