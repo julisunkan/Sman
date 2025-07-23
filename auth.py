@@ -47,51 +47,75 @@ def register():
     
     form = RegisterForm()
     if form.validate_on_submit():
+        # Check if username or email already exists
+        existing_username = User.query.filter_by(username=form.username.data).first()
+        existing_email = User.query.filter_by(email=form.email.data).first()
+        
+        if existing_username:
+            flash('Username already exists. Please choose a different username.', 'danger')
+            return render_template('auth/register.html', form=form)
+        
+        if existing_email:
+            flash('Email address already registered. Please use a different email or try logging in.', 'danger')
+            return render_template('auth/register.html', form=form)
+        
         # Check if referral code is valid
         referrer = None
         if form.referral_code.data:
             referrer = User.query.filter_by(referral_code=form.referral_code.data).first()
             if not referrer:
                 flash('Invalid referral code.', 'warning')
+                return render_template('auth/register.html', form=form)
         
-        # Create new user
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password_hash=generate_password_hash(form.password.data or ''),
-            referred_by_id=referrer.id if referrer else None
-        )
-        
-        db.session.add(user)
-        db.session.commit()
-        
-        # Generate and send verification token
-        token = user.generate_verification_token()
-        db.session.commit()
-        
-        # Send verification email with beautiful template
-        verification_url = url_for('auth.verify_email', token=token, _external=True)
-        
-        # Get referral rate for welcome email
-        from models import SystemSettings
-        referral_setting = SystemSettings.query.filter_by(setting_key='referral_rate').first()
-        referral_rate = f"{referral_setting.setting_value}%" if referral_setting and referral_setting.setting_value else "5%"
-        
-        send_email_notification(
-            user.email, 
-            'Welcome to SocialMarket - Verify Your Account',
-            f'Please click this link to verify your account: {verification_url}',
-            template_name='welcome.html',
-            template_data={
-                'user_name': user.username,
-                'verification_url': verification_url,
-                'referral_code': user.referral_code,
-                'referral_rate': referral_rate
-            }
-        )
-        
-        flash('Registration successful! Please check your email to verify your account.', 'success')
-        return redirect(url_for('auth.login'))
+        try:
+            # Create new user
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                password_hash=generate_password_hash(form.password.data or ''),
+                referred_by_id=referrer.id if referrer else None
+            )
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            # Generate and send verification token
+            token = user.generate_verification_token()
+            db.session.commit()
+            
+            # Send verification email with beautiful template
+            verification_url = url_for('auth.verify_email', token=token, _external=True)
+            
+            # Get referral rate for welcome email
+            from models import SystemSettings
+            referral_setting = SystemSettings.query.filter_by(setting_key='referral_rate').first()
+            referral_rate = f"{referral_setting.setting_value}%" if referral_setting and referral_setting.setting_value else "5%"
+            
+            try:
+                send_email_notification(
+                    user.email, 
+                    'Welcome to SocialMarket - Verify Your Account',
+                    f'Please click this link to verify your account: {verification_url}',
+                    template_name='welcome.html',
+                    template_data={
+                        'user_name': user.username,
+                        'verification_url': verification_url,
+                        'referral_code': user.referral_code,
+                        'referral_rate': referral_rate
+                    }
+                )
+            except Exception as e:
+                # Registration still successful even if email fails
+                print(f"Email sending failed: {e}")
+            
+            flash('Registration successful! Please check your email to verify your account.', 'success')
+            return redirect(url_for('auth.login'))
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"Registration error: {e}")
+            flash('An error occurred during registration. Please try again.', 'danger')
+            return render_template('auth/register.html', form=form)
     
     return render_template('auth/register.html', form=form)
 
