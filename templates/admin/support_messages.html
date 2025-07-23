@@ -4,229 +4,92 @@
 
 {% block content %}
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold"><i class="fas fa-headset me-2"></i>Support Messages</h2>
-        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
-        </a>
-    </div>
-    
-    <!-- Filter Options -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <select class="form-select" onchange="filterMessages('status', this.value)">
-                        <option value="">All Status</option>
-                        <option value="open">Open</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="Search messages..." onchange="filterMessages('search', this.value)">
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" onchange="filterMessages('sort', this.value)">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="priority">By Priority</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
-                        <i class="fas fa-times me-1"></i>Clear Filters
-                    </button>
-                </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Support Messages</h2>
+                <div class="badge bg-info fs-6">{{ messages.total }} Total Messages</div>
             </div>
         </div>
     </div>
-    
-    <!-- Messages List -->
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Support Tickets ({{ messages.total }} total)</h5>
-                <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-danger">
-                        <i class="fas fa-exclamation-circle me-1"></i>Open ({{ messages.items|selectattr('status', 'equalto', 'open')|list|length }})
-                    </button>
-                    <button class="btn btn-outline-warning">
-                        <i class="fas fa-clock me-1"></i>In Progress ({{ messages.items|selectattr('status', 'equalto', 'in_progress')|list|length }})
-                    </button>
-                    <button class="btn btn-outline-success">
-                        <i class="fas fa-check me-1"></i>Closed ({{ messages.items|selectattr('status', 'equalto', 'closed')|list|length }})
-                    </button>
+
+    {% if messages.items %}
+    <div class="row">
+        {% for message in messages.items %}
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">
+                            <i class="fas fa-ticket-alt me-2"></i>Ticket #{{ message.id }} - {{ message.subject }}
+                        </h5>
+                        <small class="text-muted">
+                            From: {{ message.user.username }} ({{ message.user.email }}) | 
+                            Created: {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </small>
+                    </div>
+                    <div>
+                        <span class="badge {% if message.status == 'closed' %}bg-success{% elif message.status == 'in_progress' %}bg-warning{% else %}bg-danger{% endif %} me-2">
+                            {{ message.status.replace('_', ' ').title() }}
+                        </span>
+                        <button class="btn btn-sm btn-outline-primary" onclick="toggleDetails({{ message.id }})">
+                            <i class="fas fa-chevron-down" id="icon-{{ message.id }}"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            {% if messages.items %}
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>User</th>
-                            <th>Subject</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Updated</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for message in messages.items %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
-                                        <i class="fas fa-user text-white small"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">{{ message.user.username }}</div>
-                                        <small class="text-muted">{{ message.user.email }}</small>
-                                    </div>
+                
+                <!-- Message Details -->
+                <div class="collapse" id="details-{{ message.id }}">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <h6>User's Message:</h6>
+                                <div class="border rounded p-3 bg-light">
+                                    {{ message.message|replace('\n', '<br>')|safe }}
                                 </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <div class="fw-bold">{{ message.subject }}</div>
-                                    <small class="text-muted">{{ message.message[:50] }}{% if message.message|length > 50 %}...{% endif %}</small>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-{% if message.status == 'open' %}danger{% elif message.status == 'in_progress' %}warning{% else %}success{% endif %}">
-                                    {{ message.status.replace('_', ' ').title() }}
-                                </span>
-                            </td>
-                            <td>
-                                <span>{{ message.created_at.strftime('%m/%d/%Y') }}</span>
-                                <br><small class="text-muted">{{ message.created_at.strftime('%I:%M %p') }}</small>
-                            </td>
-                            <td>
-                                <span>{{ message.updated_at.strftime('%m/%d/%Y') }}</span>
-                                <br><small class="text-muted">{{ message.updated_at.strftime('%I:%M %p') }}</small>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-1">
-                                    <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#messageModal{{ message.id }}">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    {% if message.status != 'closed' %}
-                                    <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#responseModal{{ message.id }}">
-                                        <i class="fas fa-reply"></i>
-                                    </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Message Details Modal -->
-                        <div class="modal fade" id="messageModal{{ message.id }}" tabindex="-1">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Support Ticket #{{ message.id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <strong>From:</strong> {{ message.user.username }} ({{ message.user.email }})<br>
-                                                <strong>Subject:</strong> {{ message.subject }}<br>
-                                                <strong>Status:</strong> 
-                                                <span class="badge bg-{% if message.status == 'open' %}danger{% elif message.status == 'in_progress' %}warning{% else %}success{% endif %}">
-                                                    {{ message.status.replace('_', ' ').title() }}
-                                                </span>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Created:</strong> {{ message.created_at.strftime('%B %d, %Y at %I:%M %p') }}<br>
-                                                <strong>Updated:</strong> {{ message.updated_at.strftime('%B %d, %Y at %I:%M %p') }}
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <strong>User's Message:</strong>
-                                            <div class="card bg-light mt-2">
-                                                <div class="card-body">
-                                                    {{ message.message|replace('\n', '<br>')|safe }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        {% if message.admin_response %}
-                                        <div class="mb-3">
-                                            <strong>Admin Response:</strong>
-                                            <div class="card bg-success bg-opacity-10 mt-2">
-                                                <div class="card-body">
-                                                    {{ message.admin_response|replace('\n', '<br>')|safe }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        <!-- User Info -->
-                                        <div class="card bg-light">
-                                            <div class="card-header">
-                                                <h6 class="mb-0">User Information</h6>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <strong>Username:</strong> {{ message.user.username }}<br>
-                                                        <strong>Email:</strong> {{ message.user.email }}<br>
-                                                        <strong>Member Since:</strong> {{ message.user.created_at.strftime('%B %d, %Y') }}
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(message.user.balance) }}<br>
-                                                        <strong>Total Purchases:</strong> {{ (message.user.purchases|length) if message.user.purchases else 0 }}<br>
-                                                        <strong>Total Listings:</strong> {{ (message.user.accounts|length) if message.user.accounts else 0 }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        {% if message.status != 'closed' %}
-                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#responseModal{{ message.id }}">
-                                            Respond
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>User Information:</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Username:</strong> {{ message.user.username }}</li>
+                                    <li><strong>Email:</strong> {{ message.user.email }}</li>
+                                    <li><strong>Balance:</strong> ₦{{ "%.2f"|format(message.user.balance) }}</li>
+                                    <li><strong>Member Since:</strong> {{ message.user.created_at.strftime('%Y-%m-%d') }}</li>
+                                </ul>
                             </div>
                         </div>
                         
-                        <!-- Response Modal -->
+                        {% if message.admin_response %}
+                        <div class="mb-3">
+                            <h6>Admin Response:</h6>
+                            <div class="border rounded p-3 bg-success bg-opacity-10">
+                                {{ message.admin_response|replace('\n', '<br>')|safe }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Response Form (only for open tickets) -->
                         {% if message.status != 'closed' %}
-                        <div class="modal fade" id="responseModal{{ message.id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Respond to Ticket #{{ message.id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
+                        <div class="mt-4">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-reply me-2"></i>Send Response</h6>
+                                </div>
+                                <div class="card-body">
                                     <form method="POST" action="{{ url_for('admin.respond_to_support', message_id=message.id) }}" data-no-validation class="support-form">
                                         {{ form.hidden_tag() }}
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <strong>User's Message:</strong>
-                                                <p class="text-muted">{{ message.subject }} - {{ message.message[:100] }}{% if message.message|length > 100 %}...{% endif %}</p>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label for="response{{ message.id }}" class="form-label fw-bold">Your Response</label>
-                                                <textarea class="form-control" id="response{{ message.id }}" name="response" rows="6" placeholder="Type your response here..." required data-no-validation></textarea>
-                                            </div>
-                                            
-                                            <div class="alert alert-info alert-permanent">
-                                                <i class="fas fa-info-circle me-2"></i>
-                                                <strong>Note:</strong> This response will be sent via email to {{ message.user.email }} and will close the support ticket.
-                                            </div>
+                                        
+                                        <div class="alert alert-info alert-permanent mb-3">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Note:</strong> This response will be sent via email to {{ message.user.email }} and will close the support ticket.
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        
+                                        <div class="mb-3">
+                                            <label for="response-{{ message.id }}" class="form-label fw-bold">Your Response</label>
+                                            <textarea class="form-control" id="response-{{ message.id }}" name="response" rows="4" placeholder="Type your response here..." required data-no-validation></textarea>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
                                             <button type="submit" class="btn btn-success">
                                                 <i class="fas fa-paper-plane me-2"></i>Send Response & Close Ticket
                                             </button>
@@ -236,23 +99,19 @@
                             </div>
                         </div>
                         {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-headset fs-1 text-muted mb-4"></i>
-                <h4>No support messages</h4>
-                <p class="text-muted">No support tickets found matching your criteria.</p>
-            </div>
-            {% endif %}
         </div>
-        <div class="card-footer">
-            <!-- Pagination -->
-            {% if messages.pages > 1 %}
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if messages.pages > 1 %}
+    <div class="row">
+        <div class="col-12">
             <nav aria-label="Messages pagination">
-                <ul class="pagination justify-content-center mb-0">
+                <ul class="pagination justify-content-center">
                     {% if messages.has_prev %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url_for('admin.support_messages', page=messages.prev_num) }}">
@@ -274,7 +133,7 @@
                     {% endif %}
                     {% else %}
                     <li class="page-item disabled">
-                        <span class="page-link">...</span>
+                        <span class="page-link">…</span>
                     </li>
                     {% endif %}
                     {% endfor %}
@@ -288,26 +147,37 @@
                     {% endif %}
                 </ul>
             </nav>
-            {% endif %}
         </div>
     </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-headset fs-1 text-muted mb-4"></i>
+                <h4>No Support Messages</h4>
+                <p class="text-muted">No support tickets found. Messages will appear here when users contact support.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
 <script>
-function filterMessages(filterType, value) {
-    let url = new URL(window.location);
-    if (value) {
-        url.searchParams.set(filterType, value);
+function toggleDetails(messageId) {
+    const detailsDiv = document.getElementById('details-' + messageId);
+    const icon = document.getElementById('icon-' + messageId);
+    
+    if (detailsDiv.classList.contains('show')) {
+        detailsDiv.classList.remove('show');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
     } else {
-        url.searchParams.delete(filterType);
+        detailsDiv.classList.add('show');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
     }
-    window.location.href = url.toString();
-}
-
-function clearFilters() {
-    window.location.href = "{{ url_for('admin.support_messages') }}";
 }
 </script>
 {% endblock %}

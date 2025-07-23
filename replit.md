@@ -213,12 +213,12 @@ The application is designed to be a complete marketplace solution with built-in 
 - All core routes functional: authentication, accounts browsing, admin panel, user dashboard
 - Fixed currency display from USD ($) to Nigerian Naira (₦) in notifications
 
-### Support System JavaScript Fix (July 23, 2025)
-- Fixed critical JavaScript validation issues causing form blinking in support system
-- Enhanced form validation JavaScript to properly skip support forms and admin response fields
-- Added data-no-validation attributes to support forms to prevent interference
-- Fixed CSRF token handling in admin support response forms
-- Updated admin support routes from /support to /support-messages for consistency
-- Added proper error handling and user feedback for admin support responses
-- Fixed LSP diagnostics in admin.py with proper type annotations and imports
-- Support system now allows proper text entry for both users and admins without blinking
+### Support System Redesign (July 23, 2025)
+- Completely redesigned admin support system to remove popup forms per user request
+- Replaced modal dialogs with inline expandable cards for better user experience
+- Implemented collapsible ticket details with toggle functionality
+- Added inline response forms directly within each ticket card
+- Enhanced ticket display with comprehensive user information and message details
+- Maintained all existing functionality (CSRF protection, form validation, email notifications)
+- Fixed JavaScript validation issues and removed dependency on Bootstrap modals
+- Support system now uses clean, accessible inline interface without popups
