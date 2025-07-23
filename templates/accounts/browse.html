@@ -24,11 +24,11 @@
                             </div>
                             <div class="col-md-2">
                                 {{ form.min_price.label(class="form-label") }}
-                                {{ form.min_price(class="form-control", placeholder="Min $", value=request.args.get('min_price', '')) }}
+                                {{ form.min_price(class="form-control", placeholder="Min ₦", value=request.args.get('min_price', '')) }}
                             </div>
                             <div class="col-md-2">
                                 {{ form.max_price.label(class="form-label") }}
-                                {{ form.max_price(class="form-control", placeholder="Max $", value=request.args.get('max_price', '')) }}
+                                {{ form.max_price(class="form-control", placeholder="Max ₦", value=request.args.get('max_price', '')) }}
                             </div>
                             <div class="col-md-2">
                                 {{ form.min_followers.label(class="form-label") }}

@@ -56,7 +56,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-2"><strong>Current Balance:</strong> ${{ "%.2f"|format(transaction.user.balance) }}</div>
+                            <div class="mb-2"><strong>Current Balance:</strong> ₦{{ "%.2f"|format(transaction.user.balance) }}</div>
                             <div class="mb-2"><strong>Total Transactions:</strong> {{ transaction.user.transactions|length }}</div>
                             <div class="mb-2"><strong>Total Purchases:</strong> {{ transaction.user.purchases|length }}</div>
                             <div class="mb-2"><strong>Referral Code:</strong> {{ transaction.user.referral_code }}</div>
@@ -75,7 +75,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <strong>Deposit Amount:</strong>
-                                <h3 class="text-success">${{ "%.2f"|format(transaction.amount) }}</h3>
+                                <h3 class="text-success">₦{{ "%.2f"|format(transaction.amount) }}</h3>
                             </div>
                             <div class="mb-2"><strong>Request Date:</strong> {{ transaction.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
                             <div class="mb-2"><strong>Description:</strong> {{ transaction.description }}</div>
@@ -128,7 +128,7 @@
                         <h6><i class="fas fa-info-circle me-2"></i>Expected Bank Transfer Details:</h6>
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Amount:</strong> ${{ "%.2f"|format(transaction.amount) }}<br>
+                                <strong>Amount:</strong> ₦{{ "%.2f"|format(transaction.amount) }}<br>
                                 <strong>Memo/Reference:</strong> {{ transaction.user.username }} deposit<br>
                                 <strong>Expected From:</strong> {{ transaction.user.username }}
                             </div>
@@ -194,7 +194,7 @@
                             <i class="fas fa-check-circle me-2"></i>
                             <strong>If Approved:</strong>
                             <ul class="mb-0 mt-2 small">
-                                <li>${{ "%.2f"|format(transaction.amount) }} will be added to user's wallet</li>
+                                <li>₦{{ "%.2f"|format(transaction.amount) }} will be added to user's wallet</li>
                                 <li>User will be notified via email</li>
                                 <li>Transaction status will be marked as completed</li>
                             </ul>
@@ -232,7 +232,7 @@
                         <div class="list-group-item px-0 py-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div class="fw-bold">${{ "%.2f"|format(deposit.amount) }}</div>
+                                    <div class="fw-bold">₦{{ "%.2f"|format(deposit.amount) }}</div>
                                     <small class="text-muted">{{ deposit.created_at.strftime('%m/%d/%Y') }}</small>
                                 </div>
                                 <span class="badge bg-{% if deposit.status == 'completed' %}success{% elif deposit.status == 'pending' %}warning{% else %}danger{% endif %}">
