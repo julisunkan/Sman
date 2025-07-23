@@ -336,6 +336,7 @@ The application is designed to be a complete marketplace solution with built-in 
 - Added disabled "Account Sold" button with clear messaging for sold accounts
 - Updated account status display to show "SOLD" badge in account details
 - Enhanced purchase route protection to prevent purchasing sold accounts
+- Changed "View Details (SOLD)" button text to simply "SOLD" for cleaner display
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
