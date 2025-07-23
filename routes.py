@@ -119,11 +119,11 @@ def deposit():
     if form.validate_on_submit():
         payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
         if payment_proof_path:
-            transaction = Transaction(
+            transaction = Transaction(  # type: ignore
                 user_id=current_user.id,
                 transaction_type='deposit',
                 amount=form.amount.data,
-                description=f'Wallet deposit - ${form.amount.data}',
+                description=f'Wallet deposit - ₦{form.amount.data}',
                 payment_proof_path=payment_proof_path,
                 status='pending'
             )
@@ -154,23 +154,29 @@ def browse_accounts():
     
     if request.args.get('min_price'):
         try:
-            min_price = float(request.args.get('min_price'))
-            query = query.filter(SocialMediaAccount.price >= min_price)
-        except ValueError:
+            min_price_str = request.args.get('min_price')
+            if min_price_str:
+                min_price = float(min_price_str)
+                query = query.filter(SocialMediaAccount.price >= min_price)
+        except (ValueError, TypeError):
             pass
     
     if request.args.get('max_price'):
         try:
-            max_price = float(request.args.get('max_price'))
-            query = query.filter(SocialMediaAccount.price <= max_price)
-        except ValueError:
+            max_price_str = request.args.get('max_price')
+            if max_price_str:
+                max_price = float(max_price_str)
+                query = query.filter(SocialMediaAccount.price <= max_price)
+        except (ValueError, TypeError):
             pass
     
     if request.args.get('min_followers'):
         try:
-            min_followers = int(request.args.get('min_followers'))
-            query = query.filter(SocialMediaAccount.followers_count >= min_followers)
-        except ValueError:
+            min_followers_str = request.args.get('min_followers')
+            if min_followers_str:
+                min_followers = int(min_followers_str)
+                query = query.filter(SocialMediaAccount.followers_count >= min_followers)
+        except (ValueError, TypeError):
             pass
     
     # Sort by price or followers
@@ -238,7 +244,7 @@ def purchase_account(account_id):
     if form.validate_on_submit():
         payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
         if payment_proof_path:
-            purchase = Purchase(
+            purchase = Purchase(  # type: ignore
                 buyer_id=current_user.id,
                 account_id=account_id,
                 amount=account.price,
@@ -252,7 +258,7 @@ def purchase_account(account_id):
             send_email_notification(
                 account.seller.email,
                 'New Purchase Request',
-                f'Someone wants to purchase your {account.platform} account (@{account.username}) for ${account.price}.'
+                f'Someone wants to purchase your {account.platform} account (@{account.username}) for ₦{account.price}.'
             )
             
             flash('Purchase request submitted successfully. Admin verification pending.', 'success')
@@ -278,7 +284,7 @@ def create_listing():
     if form.validate_on_submit():
         screenshot_path = save_file(form.screenshot.data, 'screenshots')
         if screenshot_path:
-            account = SocialMediaAccount(
+            account = SocialMediaAccount(  # type: ignore
                 platform=form.platform.data,
                 username=form.username.data,
                 followers_count=form.followers_count.data,
@@ -352,7 +358,7 @@ def support():
     form = SupportMessageForm()
     
     if form.validate_on_submit():
-        message = SupportMessage(
+        message = SupportMessage(  # type: ignore
             user_id=current_user.id,
             subject=form.subject.data,
             message=form.message.data

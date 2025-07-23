@@ -25,7 +25,7 @@ class ProfileForm(FlaskForm):
     country = StringField('Country', validators=[Optional(), Length(max=50)])
 
 class KYCForm(FlaskForm):
-    kyc_document = FileField('Identity Document', validators=[
+    document = FileField('Identity Document', validators=[
         DataRequired(),
         FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Only JPG, PNG and PDF files are allowed!')
     ])
@@ -74,7 +74,11 @@ class DepositForm(FlaskForm):
     ])
 
 class PurchaseForm(FlaskForm):
-    pass  # Simple form for purchase confirmation
+    account_id = IntegerField('Account ID', validators=[DataRequired()])
+    payment_proof = FileField('Payment Proof', validators=[
+        DataRequired(),
+        FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Only JPG, PNG and PDF files are allowed!')
+    ])
 
 class SupportMessageForm(FlaskForm):
     subject = StringField('Subject', validators=[DataRequired(), Length(min=5, max=200)])
