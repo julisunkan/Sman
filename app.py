@@ -48,6 +48,11 @@ os.makedirs('uploads/payment_proofs', exist_ok=True)
 # Initialize the app with the extension
 db.init_app(app)
 
+# Register custom Jinja2 filters
+from utils import format_currency, format_number
+app.jinja_env.filters['format_currency'] = format_currency
+app.jinja_env.filters['format_number'] = format_number
+
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
