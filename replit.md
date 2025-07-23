@@ -341,6 +341,8 @@ The application is designed to be a complete marketplace solution with built-in 
 - Updated index, browse, and account detail templates to prevent @@ username display
 - Fixed pagination error in browse page causing 500 internal server error
 - Replaced problematic **request.args with explicit parameter passing
+- Created build_browse_url helper function to properly handle URL parameters
+- Fixed all sort dropdown and pagination links to work correctly
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page

@@ -62,10 +62,10 @@
                     <i class="fas fa-sort me-1"></i>Sort by
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='newest', **request.args) }}">Newest First</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='price_low', **request.args) }}">Price: Low to High</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='price_high', **request.args) }}">Price: High to Low</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('main.browse_accounts', sort='followers', **request.args) }}">Most Followers</a></li>
+                    <li><a class="dropdown-item" href="{{ build_browse_url(sort='newest', page=None) }}">Newest First</a></li>
+                    <li><a class="dropdown-item" href="{{ build_browse_url(sort='price_low', page=None) }}">Price: Low to High</a></li>
+                    <li><a class="dropdown-item" href="{{ build_browse_url(sort='price_high', page=None) }}">Price: High to Low</a></li>
+                    <li><a class="dropdown-item" href="{{ build_browse_url(sort='followers', page=None) }}">Most Followers</a></li>
                 </ul>
             </div>
         </div>
@@ -164,7 +164,7 @@
         <ul class="pagination justify-content-center">
             {% if accounts.has_prev %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.prev_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">
+                <a class="page-link" href="{{ build_browse_url(page=accounts.prev_num) }}">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             </li>
@@ -174,7 +174,7 @@
             {% if page_num %}
             {% if page_num != accounts.page %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=page_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">{{ page_num }}</a>
+                <a class="page-link" href="{{ build_browse_url(page=page_num) }}">{{ page_num }}</a>
             </li>
             {% else %}
             <li class="page-item active">
@@ -190,7 +190,7 @@
             
             {% if accounts.has_next %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.next_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">
+                <a class="page-link" href="{{ build_browse_url(page=accounts.next_num) }}">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </li>

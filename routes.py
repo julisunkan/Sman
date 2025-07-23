@@ -287,11 +287,27 @@ def browse_accounts():
     
     accounts = query.paginate(page=page, per_page=12, error_out=False)
     
+    # Helper function for building URLs with current filters
+    def build_browse_url(**kwargs):
+        # Get current filters from request
+        current_filters = {
+            'platform': request.args.get('platform'),
+            'category': request.args.get('category'),
+            'sort': request.args.get('sort'),
+            'page': request.args.get('page')
+        }
+        # Update with new parameters
+        current_filters.update(kwargs)
+        # Remove None values
+        filtered_params = {k: v for k, v in current_filters.items() if v is not None}
+        return url_for('main.browse_accounts', **filtered_params)
+    
     return render_template('accounts/browse.html', 
                          accounts=accounts,
                          form=form,
                          format_currency=format_currency,
-                         format_number=format_number)
+                         format_number=format_number,
+                         build_browse_url=build_browse_url)
 
 @main_bp.route('/accounts/<int:account_id>')
 def account_detail(account_id):
