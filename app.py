@@ -48,7 +48,7 @@ db.init_app(app)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.login'  # type: ignore
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
 
@@ -100,7 +100,7 @@ with app.app_context():
     for page_data in pages_to_create:
         existing_page = FooterPage.query.filter_by(slug=page_data['slug']).first()
         if not existing_page:
-            page = FooterPage(
+            page = FooterPage(  # type: ignore
                 slug=page_data['slug'],
                 title=page_data['title'],
                 content=page_data['content']
