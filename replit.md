@@ -310,3 +310,18 @@ The application is designed to be a complete marketplace solution with built-in 
 - Account URLs display as external link buttons in admin dashboard and user browsing
 - Email notifications sent to sellers when accounts are edited or deleted by admins
 - CSRF token visibility issue fixed in KYC verification forms
+
+### Instant Wallet-Based Purchase System (July 23, 2025)
+- Completely redesigned purchase system to use wallet-based instant payments
+- Removed payment proof upload requirement in favor of immediate wallet deduction
+- Implemented instant account details release upon successful payment
+- Added automatic account status change to 'sold' after purchase completion
+- Enhanced platform commission calculation using dynamic system settings
+- Integrated referral commission system for instant commission payments
+- Created comprehensive purchase details page with account credentials display
+- Updated purchase template to show wallet balance and payment flow
+- Added transaction records for buyers, sellers, and referral commissions
+- Removed sold accounts from browse listings and homepage featured accounts
+- Email notifications sent to both buyer and seller upon successful purchase
+- Purchase system now creates completed Purchase records instantly
+- Enhanced security with password visibility toggle and copy-to-clipboard functionality

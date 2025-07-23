@@ -115,10 +115,6 @@ class AdminEditAccountForm(FlaskForm):
 
 class PurchaseForm(FlaskForm):
     account_id = IntegerField('Account ID', validators=[DataRequired()])
-    payment_proof = FileField('Payment Proof', validators=[
-        DataRequired(),
-        FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Only JPG, PNG and PDF files are allowed!')
-    ])
 
 class SupportMessageForm(FlaskForm):
     subject = StringField('Subject', validators=[DataRequired(), Length(min=5, max=200)])

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
-from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, db
+from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
 from forms import ProfileForm, KYCForm, SocialMediaAccountForm, DepositForm, PurchaseForm, SupportMessageForm, SearchForm
 from utils import save_file, format_currency, format_number, send_email_notification
 from sqlalchemy import or_, and_, func
@@ -11,17 +11,18 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    # Get featured accounts (approved and available)
-    featured_accounts = SocialMediaAccount.query.filter_by(
-        status='approved'
+    # Get featured accounts (approved and available - not sold)
+    featured_accounts = SocialMediaAccount.query.filter(
+        SocialMediaAccount.status == 'approved'
     ).order_by(SocialMediaAccount.followers_count.desc()).limit(8).all()
     
     # Get platform statistics
     platform_stats = {}
     platforms = ['instagram', 'tiktok', 'youtube', 'twitter', 'facebook']
     for platform in platforms:
-        count = SocialMediaAccount.query.filter_by(
-            platform=platform, status='approved'
+        count = SocialMediaAccount.query.filter(
+            SocialMediaAccount.platform == platform,
+            SocialMediaAccount.status == 'approved'
         ).count()
         platform_stats[platform] = count
     
@@ -155,8 +156,10 @@ def browse_accounts():
     form = SearchForm()
     page = request.args.get('page', 1, type=int)
     
-    # Build query
-    query = SocialMediaAccount.query.filter_by(status='approved')
+    # Build query - only show approved accounts that are not sold
+    query = SocialMediaAccount.query.filter(
+        SocialMediaAccount.status == 'approved'
+    )
     
     # Apply filters
     if request.args.get('platform'):
@@ -255,31 +258,118 @@ def purchase_account(account_id):
     form.account_id.data = account_id
     
     if form.validate_on_submit():
-        payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
-        if payment_proof_path:
+        # Check if user has sufficient wallet balance
+        if (current_user.balance or 0) < account.price:
+            flash(f'Insufficient wallet balance. You need ₦{account.price:.2f} but have ₦{(current_user.balance or 0):.2f}. Please deposit funds first.', 'danger')
+            return redirect(url_for('main.deposit'))
+        
+        try:
+            # Deduct amount from buyer's wallet
+            current_user.balance = (current_user.balance or 0) - account.price
+            
+            # Calculate platform commission
+            commission_setting = SystemSettings.query.filter_by(setting_key='commission_rate').first()
+            commission_rate = float(commission_setting.setting_value) if commission_setting else 5.0
+            
+            commission = account.price * (commission_rate / 100)
+            seller_amount = account.price - commission
+            
+            # Add amount to seller's wallet (minus commission)
+            account.seller.balance = (account.seller.balance or 0) + seller_amount
+            
+            # Mark account as sold
+            account.status = 'sold'
+            
+            # Create completed purchase record
             purchase = Purchase(  # type: ignore
                 buyer_id=current_user.id,
                 account_id=account_id,
                 amount=account.price,
-                payment_proof_path=payment_proof_path,
-                status='pending'
+                status='completed',
+                verified_by_admin=True,
+                details_released=True,
+                completed_at=datetime.utcnow()
             )
             db.session.add(purchase)
+            
+            # Create transaction records
+            # Buyer transaction
+            buyer_transaction = Transaction(  # type: ignore
+                user_id=current_user.id,
+                transaction_type='purchase',
+                amount=account.price,
+                description=f'Purchased {account.platform} account @{account.username}',
+                status='completed'
+            )
+            db.session.add(buyer_transaction)
+            
+            # Seller transaction
+            seller_transaction = Transaction(  # type: ignore
+                user_id=account.seller_id,
+                transaction_type='sale',
+                amount=seller_amount,
+                description=f'Sold {account.platform} account @{account.username} (₦{commission:.2f} platform fee)',
+                status='completed'
+            )
+            db.session.add(seller_transaction)
+            
+            # Handle referral commission
+            if current_user.referred_by_id:
+                referrer = User.query.get(current_user.referred_by_id)
+                if referrer:
+                    referral_setting = SystemSettings.query.filter_by(setting_key='referral_rate').first()
+                    referral_rate = float(referral_setting.setting_value) if referral_setting else 5.0
+                    referral_commission = account.price * (referral_rate / 100)
+                    referrer.balance = (referrer.balance or 0) + referral_commission
+                    referrer.total_referral_earnings = (referrer.total_referral_earnings or 0) + referral_commission
+                    
+                    # Create referral transaction
+                    referral_transaction = Transaction(  # type: ignore
+                        user_id=referrer.id,
+                        transaction_type='referral_earning',
+                        amount=referral_commission,
+                        description=f'Referral commission from {current_user.username} purchase',
+                        status='completed'
+                    )
+                    db.session.add(referral_transaction)
+            
             db.session.commit()
             
             # Notify seller
             send_email_notification(
                 account.seller.email,
-                'New Purchase Request',
-                f'Someone wants to purchase your {account.platform} account (@{account.username}) for ₦{account.price}.'
+                'Account Sold Successfully',
+                f'Your {account.platform} account (@{account.username}) has been sold for ₦{account.price:.2f}. You received ₦{seller_amount:.2f} (₦{commission:.2f} platform fee deducted). The buyer can now access the account details.'
             )
             
-            flash('Purchase request submitted successfully. Admin verification pending.', 'success')
-            return redirect(url_for('main.transaction_history'))
-        else:
-            flash('Failed to upload payment proof. Please ensure file is under 15KB.', 'danger')
+            # Notify buyer with account details
+            send_email_notification(
+                current_user.email,
+                'Account Purchase Successful',
+                f'You have successfully purchased the {account.platform} account (@{account.username}) for ₦{account.price:.2f}.\n\nAccount Details:\nEmail: {account.login_email}\nPassword: {account.login_password}\n\nPlease change the password immediately after logging in.'
+            )
+            
+            flash('Purchase successful! Account details have been sent to your email. Please change the password immediately.', 'success')
+            return redirect(url_for('main.view_purchase', purchase_id=purchase.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash('Purchase failed. Please try again or contact support.', 'danger')
+            return redirect(url_for('main.account_detail', account_id=account_id))
     
     return render_template('accounts/purchase.html', account=account, form=form)
+
+@main_bp.route('/purchase/<int:purchase_id>')
+@login_required
+def view_purchase(purchase_id):
+    purchase = Purchase.query.get_or_404(purchase_id)
+    
+    # Only allow buyer to view their purchase
+    if purchase.buyer_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('main.transaction_history'))
+    
+    return render_template('accounts/purchase_details.html', purchase=purchase)
 
 @main_bp.route('/accounts/create', methods=['GET', 'POST'])
 @login_required
