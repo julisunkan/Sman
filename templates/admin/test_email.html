@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Test Email - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Admin Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.users') }}">
+                            <i class="fas fa-users me-2"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.accounts') }}">
+                            <i class="fas fa-list me-2"></i>Accounts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.payments') }}">
+                            <i class="fas fa-credit-card me-2"></i>Payments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.footer_pages') }}">
+                            <i class="fas fa-file-alt me-2"></i>Footer Pages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.support_messages') }}">
+                            <i class="fas fa-headset me-2"></i>Support
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.system_settings') }}">
+                            <i class="fas fa-cogs me-2"></i>System Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-envelope-open-text me-2"></i>Test Email Configuration</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{{ url_for('admin.system_settings') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-cogs me-1"></i>Back to Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Send Test Email</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info alert-permanent">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Test Your SMTP Configuration:</strong> Use this form to verify that your email settings are working correctly. The test email will be sent using the SMTP configuration from System Settings.
+                            </div>
+
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+                                
+                                <div class="mb-3">
+                                    {{ form.test_email.label(class="form-label fw-bold") }}
+                                    {{ form.test_email(class="form-control", placeholder="Enter email address to test") }}
+                                    {% if form.test_email.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.test_email.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    {{ form.subject.label(class="form-label fw-bold") }}
+                                    {{ form.subject(class="form-control") }}
+                                    {% if form.subject.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.subject.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-4">
+                                    {{ form.message.label(class="form-label fw-bold") }}
+                                    {{ form.message(class="form-control", rows="5") }}
+                                    {% if form.message.errors %}
+                                        <div class="text-danger mt-1">
+                                            {% for error in form.message.errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Test Email
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Troubleshooting Tips</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning alert-permanent">
+                                <strong>Common Issues:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>Gmail:</strong> Use App Password instead of regular password. Enable 2-factor authentication first.</li>
+                                    <li><strong>Port 587:</strong> Standard SMTP port with TLS encryption</li>
+                                    <li><strong>Port 465:</strong> SMTP over SSL (older method)</li>
+                                    <li><strong>Authentication failed:</strong> Check username and password</li>
+                                    <li><strong>Connection timeout:</strong> Verify server hostname and port</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

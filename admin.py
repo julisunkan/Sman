@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from functools import wraps
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminUserManagementForm, FooterPageForm
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -268,7 +268,7 @@ def edit_footer_page(page_id):
         page.title = form.title.data
         page.slug = form.slug.data
         page.content = form.content.data
-        page.is_active = form.active.data
+        page.is_active = form.is_active.data
         db.session.commit()
         
         flash('Footer page updated successfully.', 'success')
@@ -296,6 +296,122 @@ def support_messages():
         page=page, per_page=20, error_out=False
     )
     return render_template('admin/support_messages.html', messages=messages)
+
+@admin_bp.route('/settings', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def system_settings():
+    form = SystemSettingsForm()
+    
+    if form.validate_on_submit():
+        # Save all settings
+        settings_to_save = [
+            ('bank_name', form.bank_name.data, 'Bank name for deposits', 'bank'),
+            ('account_number', form.account_number.data, 'Bank account number', 'bank'),
+            ('account_name', form.account_name.data, 'Bank account holder name', 'bank'),
+            ('routing_number', form.routing_number.data, 'Bank routing number', 'bank'),
+            ('smtp_server', form.smtp_server.data, 'SMTP server hostname', 'smtp'),
+            ('smtp_port', str(form.smtp_port.data) if form.smtp_port.data else '', 'SMTP server port', 'smtp'),
+            ('smtp_username', form.smtp_username.data, 'SMTP username', 'smtp'),
+            ('smtp_password', form.smtp_password.data, 'SMTP password', 'smtp'),
+            ('smtp_use_tls', str(form.smtp_use_tls.data), 'Use TLS for SMTP', 'smtp'),
+            ('from_email', form.from_email.data, 'Default from email address', 'smtp'),
+            ('from_name', form.from_name.data, 'Default from name', 'smtp'),
+            ('site_name', form.site_name.data, 'Website name', 'general'),
+            ('site_description', form.site_description.data, 'Website description', 'general'),
+            ('commission_rate', str(form.commission_rate.data) if form.commission_rate.data else '', 'Platform commission rate (%)', 'general'),
+            ('referral_rate', str(form.referral_rate.data) if form.referral_rate.data else '', 'Referral commission rate (%)', 'general'),
+            ('min_deposit', str(form.min_deposit.data) if form.min_deposit.data else '', 'Minimum deposit amount', 'general'),
+            ('max_file_size', str(form.max_file_size.data) if form.max_file_size.data else '', 'Maximum file size (MB)', 'general'),
+        ]
+        
+        for key, value, description, category in settings_to_save:
+            if value is not None and value != '':
+                setting = SystemSettings.query.filter_by(setting_key=key).first()
+                if setting:
+                    setting.setting_value = value
+                    setting.updated_at = func.now()
+                else:
+                    setting = SystemSettings(
+                        setting_key=key,
+                        setting_value=value,
+                        description=description,
+                        category=category
+                    )
+                    db.session.add(setting)
+        
+        db.session.commit()
+        flash('System settings updated successfully!', 'success')
+        return redirect(url_for('admin.system_settings'))
+    
+    # Load current settings
+    settings = SystemSettings.query.all()
+    current_settings = {s.setting_key: s.setting_value for s in settings}
+    
+    # Populate form with current values
+    form.bank_name.data = current_settings.get('bank_name', '')
+    form.account_number.data = current_settings.get('account_number', '')
+    form.account_name.data = current_settings.get('account_name', '')
+    form.routing_number.data = current_settings.get('routing_number', '')
+    form.smtp_server.data = current_settings.get('smtp_server', '')
+    form.smtp_port.data = int(current_settings.get('smtp_port', 587)) if current_settings.get('smtp_port') else 587
+    form.smtp_username.data = current_settings.get('smtp_username', '')
+    form.smtp_password.data = current_settings.get('smtp_password', '')
+    form.smtp_use_tls.data = current_settings.get('smtp_use_tls', 'True') == 'True'
+    form.from_email.data = current_settings.get('from_email', '')
+    form.from_name.data = current_settings.get('from_name', 'SocialMarket')
+    form.site_name.data = current_settings.get('site_name', 'SocialMarket')
+    form.site_description.data = current_settings.get('site_description', '')
+    form.commission_rate.data = float(current_settings.get('commission_rate', 5.0)) if current_settings.get('commission_rate') else 5.0
+    form.referral_rate.data = float(current_settings.get('referral_rate', 5.0)) if current_settings.get('referral_rate') else 5.0
+    form.min_deposit.data = float(current_settings.get('min_deposit', 1000.0)) if current_settings.get('min_deposit') else 1000.0
+    form.max_file_size.data = int(current_settings.get('max_file_size', 10)) if current_settings.get('max_file_size') else 10
+    
+    return render_template('admin/system_settings.html', form=form, current_settings=current_settings)
+
+@admin_bp.route('/test-email', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def test_email():
+    form = TestEmailForm()
+    
+    if form.validate_on_submit():
+        try:
+            # Get SMTP settings
+            settings = SystemSettings.query.all()
+            smtp_settings = {s.setting_key: s.setting_value for s in settings}
+            
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            # Create message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_settings.get('from_email', 'noreply@socialmarket.com')
+            msg['To'] = form.test_email.data
+            msg['Subject'] = form.subject.data
+            
+            msg.attach(MIMEText(form.message.data, 'plain'))
+            
+            # Send email
+            server = smtplib.SMTP(smtp_settings.get('smtp_server', 'localhost'), 
+                                int(smtp_settings.get('smtp_port', 587)))
+            if smtp_settings.get('smtp_use_tls', 'True') == 'True':
+                server.starttls()
+            
+            if smtp_settings.get('smtp_username') and smtp_settings.get('smtp_password'):
+                server.login(smtp_settings.get('smtp_username'), smtp_settings.get('smtp_password'))
+            
+            server.send_message(msg)
+            server.quit()
+            
+            flash(f'Test email sent successfully to {form.test_email.data}!', 'success')
+        except Exception as e:
+            flash(f'Failed to send test email: {str(e)}', 'danger')
+        
+        return redirect(url_for('admin.test_email'))
+    
+    return render_template('admin/test_email.html', form=form)
 
 @admin_bp.route('/support/<int:message_id>/respond', methods=['POST'])
 @login_required

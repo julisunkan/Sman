@@ -132,13 +132,14 @@ class SystemSettings(db.Model):
     setting_key = db.Column(db.String(100), unique=True, nullable=False)
     setting_value = db.Column(db.Text)
     description = db.Column(db.String(200))
+    category = db.Column(db.String(50), default='general')  # general, smtp, payment, bank
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class FooterPage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(100), unique=True, nullable=False)
-    content = db.Column(db.Text)
+    content = db.Column(db.Text, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

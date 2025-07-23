@@ -149,7 +149,7 @@
                                             <strong>User's Message:</strong>
                                             <div class="card bg-light mt-2">
                                                 <div class="card-body">
-                                                    {{ message.message|nl2br }}
+                                                    {{ message.message|replace('\n', '<br>')|safe }}
                                                 </div>
                                             </div>
                                         </div>
@@ -159,7 +159,7 @@
                                             <strong>Admin Response:</strong>
                                             <div class="card bg-success bg-opacity-10 mt-2">
                                                 <div class="card-body">
-                                                    {{ message.admin_response|nl2br }}
+                                                    {{ message.admin_response|replace('\n', '<br>')|safe }}
                                                 </div>
                                             </div>
                                         </div>
