@@ -242,7 +242,6 @@ class SystemSettingsForm(FlaskForm):
     bank_name = StringField('Bank Name', validators=[Optional(), Length(max=100)])
     account_number = StringField('Account Number', validators=[Optional(), Length(max=20)])
     account_name = StringField('Account Name', validators=[Optional(), Length(max=100)])
-    routing_number = StringField('Routing Number', validators=[Optional(), Length(max=20)])
     
     # SMTP Settings
     smtp_server = StringField('SMTP Server', validators=[Optional(), Length(max=100)])

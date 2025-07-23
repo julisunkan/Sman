@@ -118,18 +118,6 @@
                                         </div>
                                     {% endif %}
                                 </div>
-                                
-                                <div class="mb-3">
-                                    {{ form.routing_number.label(class="form-label fw-bold") }}
-                                    {{ form.routing_number(class="form-control") }}
-                                    {% if form.routing_number.errors %}
-                                        <div class="text-danger mt-1">
-                                            {% for error in form.routing_number.errors %}
-                                                <div>{{ error }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
                             </div>
                         </div>
                     </div>

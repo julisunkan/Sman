@@ -725,7 +725,6 @@ def system_settings():
             ('bank_name', form.bank_name.data, 'Bank name for deposits', 'bank'),
             ('account_number', form.account_number.data, 'Bank account number', 'bank'),
             ('account_name', form.account_name.data, 'Bank account holder name', 'bank'),
-            ('routing_number', form.routing_number.data, 'Bank routing number', 'bank'),
             ('smtp_server', form.smtp_server.data, 'SMTP server hostname', 'smtp'),
             ('smtp_port', str(form.smtp_port.data) if form.smtp_port.data else '', 'SMTP server port', 'smtp'),
             ('smtp_username', form.smtp_username.data, 'SMTP username', 'smtp'),
@@ -774,7 +773,6 @@ def system_settings():
     form.bank_name.data = current_settings.get('bank_name', '')
     form.account_number.data = current_settings.get('account_number', '')
     form.account_name.data = current_settings.get('account_name', '')
-    form.routing_number.data = current_settings.get('routing_number', '')
     form.smtp_server.data = current_settings.get('smtp_server', '')
     form.smtp_port.data = int(current_settings.get('smtp_port', 587)) if current_settings.get('smtp_port') else 587
     form.smtp_username.data = current_settings.get('smtp_username', '')
@@ -1092,7 +1090,7 @@ def export_settings():
             if export_type == 'all':
                 settings = SystemSettings.query.all()
             elif export_type == 'bank':
-                bank_keys = ['bank_name', 'account_number', 'account_name', 'routing_number']
+                bank_keys = ['bank_name', 'account_number', 'account_name']
                 settings = SystemSettings.query.filter(SystemSettings.setting_key.in_(bank_keys)).all()
             elif export_type == 'smtp':
                 smtp_keys = ['smtp_server', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_use_tls', 'from_email', 'from_name']

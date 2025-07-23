@@ -318,6 +318,7 @@ The application is designed to be a complete marketplace solution with built-in 
 - Added comprehensive error handling for database integrity constraints
 - Fixed LSP diagnostics issues in admin panel and authentication modules
 - Implemented admin settings import/export functionality with JSON file support
+- Removed "Routing Number" field from bank details forms and templates per user request
 - All core routes functional: authentication, accounts browsing, admin panel, user dashboard
 - Application running stable on port 5000 with SQLite database
 - Admin login available with credentials: admin@marketplace.com / admin123
