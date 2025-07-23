@@ -36,6 +36,10 @@ class User(UserMixin, db.Model):
     email_verification_token = db.Column(db.String(100))
     email_verification_expires = db.Column(db.DateTime)
     
+    # Password reset
+    password_reset_token = db.Column(db.String(100))
+    password_reset_expires = db.Column(db.DateTime)
+    
     # Password reset flag
     force_password_change = db.Column(db.Boolean, default=False)
     
@@ -60,6 +64,16 @@ class User(UserMixin, db.Model):
         self.email_verification_token = secrets.token_urlsafe(32)
         self.email_verification_expires = datetime.utcnow() + timedelta(hours=24)
         return self.email_verification_token
+    
+    def generate_password_reset_token(self):
+        self.password_reset_token = secrets.token_urlsafe(32)
+        self.password_reset_expires = datetime.utcnow() + timedelta(hours=1)  # 1 hour expiry
+        return self.password_reset_token
+    
+    def verify_password_reset_token(self, token):
+        if self.password_reset_token == token and self.password_reset_expires > datetime.utcnow():
+            return True
+        return False
 
 class SocialMediaAccount(db.Model):
     id = db.Column(db.Integer, primary_key=True)

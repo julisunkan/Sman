@@ -256,3 +256,12 @@ class ChangePasswordForm(FlaskForm):
         from werkzeug.security import check_password_hash
         if not check_password_hash(current_user.password_hash, field.data):
             raise ValidationError('Current password is incorrect.')
+
+class ForgotPasswordForm(FlaskForm):
+    email = EmailField('Email Address', validators=[DataRequired(), Email()])
+    submit = SubmitField('Send Reset Link')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
