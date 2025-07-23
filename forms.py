@@ -74,6 +74,17 @@ class DepositForm(FlaskForm):
         FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Only JPG, PNG and PDF files are allowed!')
     ])
 
+class WithdrawalForm(FlaskForm):
+    amount = FloatField('Amount (₦)', validators=[DataRequired(), NumberRange(min=1)])
+    bank_name = StringField('Bank Name', validators=[DataRequired(), Length(min=2, max=100)])
+    account_number = StringField('Account Number', validators=[DataRequired(), Length(min=10, max=20)])
+    account_name = StringField('Account Name', validators=[DataRequired(), Length(min=2, max=100)])
+    
+    def validate_amount(self, field):
+        from flask_login import current_user
+        if field.data > current_user.balance:
+            raise ValidationError('Insufficient balance. Your current balance is ₦{:,.2f}'.format(current_user.balance))
+
 # Admin Forms
 class AdminEditAccountForm(FlaskForm):
     platform = SelectField('Platform', choices=[
@@ -172,6 +183,14 @@ class AdminDepositVerificationForm(FlaskForm):
     status = SelectField('Status', choices=[
         ('completed', 'Approve Deposit'),
         ('rejected', 'Reject Deposit')
+    ], validators=[DataRequired()])
+    admin_notes = TextAreaField('Admin Notes', validators=[Optional(), Length(max=500)])
+
+class AdminWithdrawalForm(FlaskForm):
+    status = SelectField('Status', choices=[
+        ('approved', 'Approve Withdrawal'),
+        ('rejected', 'Reject Withdrawal'),
+        ('paid', 'Mark as Paid')
     ], validators=[DataRequired()])
     admin_notes = TextAreaField('Admin Notes', validators=[Optional(), Length(max=500)])
 

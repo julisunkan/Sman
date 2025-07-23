@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
-from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
-from forms import ProfileForm, KYCForm, SocialMediaAccountForm, DepositForm, PurchaseForm, SupportMessageForm, SearchForm
+from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, Withdrawal, db
+from forms import ProfileForm, KYCForm, SocialMediaAccountForm, DepositForm, WithdrawalForm, PurchaseForm, SupportMessageForm, SearchForm
 from utils import save_file, format_currency, format_number, send_email_notification
 from sqlalchemy import or_, and_, func
 from datetime import datetime
@@ -150,6 +150,84 @@ def deposit():
             flash('Failed to upload payment proof. Please ensure file is under 15KB.', 'danger')
     
     return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings)
+
+@main_bp.route('/wallet/withdraw', methods=['GET', 'POST'])
+@login_required
+def withdraw():
+    form = WithdrawalForm()
+    
+    if form.validate_on_submit():
+        # Create withdrawal request
+        withdrawal = Withdrawal(  # type: ignore
+            user_id=current_user.id,
+            amount=form.amount.data,
+            bank_name=form.bank_name.data,
+            account_number=form.account_number.data,
+            account_name=form.account_name.data,
+            status='pending'
+        )
+        
+        # Deduct amount from user's balance immediately (pending approval)
+        current_user.balance -= form.amount.data
+        
+        # Create transaction record
+        transaction = Transaction(  # type: ignore
+            user_id=current_user.id,
+            transaction_type='withdrawal',
+            amount=-form.amount.data,  # Negative for withdrawal
+            description=f'Withdrawal request - ₦{form.amount.data}',
+            status='pending'
+        )
+        
+        db.session.add(withdrawal)
+        db.session.add(transaction)
+        db.session.commit()
+        
+        flash('Withdrawal request submitted successfully. Admin approval required.', 'success')
+        return redirect(url_for('main.wallet'))
+    
+    return render_template('wallet/withdraw.html', form=form)
+
+@main_bp.route('/sales')
+@login_required
+def my_sales():
+    """View seller's sales history and earnings"""
+    # Get all purchases of user's accounts
+    purchases = Purchase.query.join(SocialMediaAccount).filter(
+        SocialMediaAccount.seller_id == current_user.id,
+        Purchase.status == 'completed'
+    ).order_by(Purchase.completed_at.desc()).all()
+    
+    # Calculate total sales and earnings
+    total_sales = len(purchases)
+    total_gross_earnings = sum(p.amount for p in purchases)
+    
+    # Calculate commission and net earnings
+    from models import SystemSettings
+    commission_setting = SystemSettings.query.filter_by(setting_key='commission_rate').first()
+    commission_rate = float(commission_setting.setting_value) if commission_setting and commission_setting.setting_value else 5.0
+    
+    total_commission = total_gross_earnings * (commission_rate / 100)
+    total_net_earnings = total_gross_earnings - total_commission
+    
+    # Get withdrawal history
+    withdrawals = Withdrawal.query.filter_by(user_id=current_user.id).order_by(
+        Withdrawal.created_at.desc()
+    ).all()
+    
+    stats = {
+        'total_sales': total_sales,
+        'total_gross_earnings': total_gross_earnings,
+        'total_commission': total_commission,
+        'total_net_earnings': total_net_earnings,
+        'commission_rate': commission_rate
+    }
+    
+    return render_template('sales/my_sales.html', 
+                         purchases=purchases,
+                         withdrawals=withdrawals,
+                         stats=stats,
+                         format_currency=format_currency)
 
 @main_bp.route('/accounts')
 def browse_accounts():

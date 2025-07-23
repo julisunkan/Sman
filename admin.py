@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
-from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
+from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, Withdrawal, db
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, AdminWithdrawalForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -42,6 +42,7 @@ def dashboard():
         'pending_purchases': Purchase.query.filter_by(status='pending').count(),
         'completed_purchases': Purchase.query.filter_by(status='completed').count(),
         'pending_deposits': Transaction.query.filter_by(transaction_type='deposit', status='pending').count(),
+        'pending_withdrawals': Withdrawal.query.filter_by(status='pending').count(),
         'total_revenue': db.session.query(func.sum(Purchase.amount)).filter_by(status='completed').scalar() or 0,
         'open_support_tickets': SupportMessage.query.filter_by(status='open').count()
     }
@@ -469,6 +470,109 @@ def verify_deposit(transaction_id):
         return redirect(url_for('admin.payments'))
     
     return render_template('admin/verify_deposit.html', transaction=transaction, form=form)
+
+@admin_bp.route('/withdrawals')
+@login_required
+@admin_required
+def withdrawals():
+    """Admin view for managing withdrawal requests"""
+    page = request.args.get('page', 1, type=int)
+    withdrawals = Withdrawal.query.order_by(Withdrawal.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    return render_template('admin/withdrawals.html', withdrawals=withdrawals)
+
+@admin_bp.route('/withdrawals/<int:withdrawal_id>/process', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def process_withdrawal(withdrawal_id):
+    """Process withdrawal request"""
+    withdrawal = Withdrawal.query.get_or_404(withdrawal_id)
+    form = AdminWithdrawalForm()
+    
+    if form.validate_on_submit():
+        withdrawal.status = form.status.data
+        withdrawal.admin_notes = form.admin_notes.data
+        withdrawal.processed_by_admin_id = current_user.id
+        withdrawal.processed_at = datetime.utcnow()
+        
+        # Update corresponding transaction
+        withdrawal_transaction = Transaction.query.filter_by(
+            user_id=withdrawal.user_id,
+            transaction_type='withdrawal',
+            amount=-withdrawal.amount,
+            status='pending'
+        ).first()
+        
+        if form.status.data == 'approved':
+            # Withdrawal approved - funds already deducted
+            if withdrawal_transaction:
+                withdrawal_transaction.status = 'completed'
+            
+            # Notify user
+            send_email_notification(
+                withdrawal.user.email,
+                'Withdrawal Approved',
+                f'Your withdrawal request of ₦{withdrawal.amount:,.2f} has been approved. Payment will be processed within 2-3 business days.',
+                template_data={
+                    'user_name': withdrawal.user.username,
+                    'amount': withdrawal.amount,
+                    'bank_name': withdrawal.bank_name,
+                    'account_number': withdrawal.account_number,
+                    'account_name': withdrawal.account_name
+                }
+            )
+            
+        elif form.status.data == 'rejected':
+            # Withdrawal rejected - refund the amount
+            withdrawal.user.balance += withdrawal.amount
+            if withdrawal_transaction:
+                withdrawal_transaction.status = 'rejected'
+            
+            # Create refund transaction
+            refund_transaction = Transaction(  # type: ignore
+                user_id=withdrawal.user_id,
+                transaction_type='refund',
+                amount=withdrawal.amount,
+                description=f'Withdrawal refund - ₦{withdrawal.amount}',
+                status='completed'
+            )
+            db.session.add(refund_transaction)
+            
+            # Notify user
+            send_email_notification(
+                withdrawal.user.email,
+                'Withdrawal Rejected',
+                f'Your withdrawal request of ₦{withdrawal.amount:,.2f} has been rejected. The amount has been refunded to your wallet.',
+                template_data={
+                    'user_name': withdrawal.user.username,
+                    'amount': withdrawal.amount,
+                    'reason': form.admin_notes.data or 'No reason provided'
+                }
+            )
+            
+        elif form.status.data == 'paid':
+            # Mark as paid - final status
+            if withdrawal_transaction:
+                withdrawal_transaction.status = 'completed'
+            
+            # Notify user
+            send_email_notification(
+                withdrawal.user.email,
+                'Withdrawal Completed',
+                f'Your withdrawal of ₦{withdrawal.amount:,.2f} has been successfully processed and sent to your bank account.',
+                template_data={
+                    'user_name': withdrawal.user.username,
+                    'amount': withdrawal.amount,
+                    'bank_name': withdrawal.bank_name
+                }
+            )
+        
+        db.session.commit()
+        flash(f'Withdrawal request {form.status.data}.', 'success')
+        return redirect(url_for('admin.withdrawals'))
+    
+    return render_template('admin/process_withdrawal.html', withdrawal=withdrawal, form=form)
 
 @admin_bp.route('/footer-pages')
 @login_required

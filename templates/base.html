@@ -57,6 +57,9 @@
                             <li><a class="dropdown-item" href="{{ url_for('main.deposit') }}">
                                 <i class="fas fa-plus me-2"></i>Deposit Funds
                             </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.withdraw') }}">
+                                <i class="fas fa-money-bill-transfer me-2"></i>Withdraw Funds
+                            </a></li>
                         </ul>
                     </li>
                     
@@ -77,6 +80,9 @@
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('main.my_listings') }}">
                                 <i class="fas fa-list me-2"></i>My Listings
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.my_sales') }}">
+                                <i class="fas fa-chart-line me-2"></i>My Sales
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('main.transaction_history') }}">
                                 <i class="fas fa-history me-2"></i>Transactions

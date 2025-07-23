@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Withdrawals{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-money-bill-transfer me-2"></i>Withdrawal Requests</h1>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if withdrawals.items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Bank Details</th>
+                                    <th>Status</th>
+                                    <th>Request Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for withdrawal in withdrawals.items %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ withdrawal.user.username }}</strong><br>
+                                            <small class="text-muted">{{ withdrawal.user.email }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ format_currency(withdrawal.amount) }}</strong>
+                                        </td>
+                                        <td>
+                                            <strong>{{ withdrawal.bank_name }}</strong><br>
+                                            <small class="text-muted">
+                                                {{ withdrawal.account_number }}<br>
+                                                {{ withdrawal.account_name }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if withdrawal.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif withdrawal.status == 'approved' %}
+                                                <span class="badge bg-info">Approved</span>
+                                            {% elif withdrawal.status == 'paid' %}
+                                                <span class="badge bg-success">Paid</span>
+                                            {% elif withdrawal.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ withdrawal.created_at.strftime('%b %d, %Y at %I:%M %p') }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin.process_withdrawal', withdrawal_id=withdrawal.id) }}" 
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit me-1"></i>Process
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if withdrawals.pages > 1 %}
+                        <nav aria-label="Withdrawals pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if withdrawals.has_prev %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin.withdrawals', page=withdrawals.prev_num) }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for page_num in withdrawals.iter_pages() %}
+                                    {% if page_num %}
+                                        {% if page_num != withdrawals.page %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('admin.withdrawals', page=page_num) }}">{{ page_num }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page_num }}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if withdrawals.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin.withdrawals', page=withdrawals.next_num) }}">Next</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-money-bill-transfer fa-3x text-muted mb-3"></i>
+                        <h5>No Withdrawal Requests</h5>
+                        <p class="text-muted">Withdrawal requests from users will appear here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

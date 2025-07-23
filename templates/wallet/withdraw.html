@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Withdraw Funds{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-money-bill-transfer me-2"></i>Withdraw Funds</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info alert-permanent">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Withdrawal Information:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Current wallet balance: <strong>{{ format_currency(current_user.balance) }}</strong></li>
+                            <li>Withdrawals are processed manually within 2-3 business days</li>
+                            <li>Minimum withdrawal amount may apply</li>
+                            <li>You can only withdraw to Nigerian bank accounts</li>
+                        </ul>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.amount.label(class="form-label") }}
+                            {{ form.amount(class="form-control") }}
+                            {% if form.amount.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.amount.errors %}
+                                        <small>{{ error }}</small><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Available balance: {{ format_currency(current_user.balance) }}</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.bank_name.label(class="form-label") }}
+                            {{ form.bank_name(class="form-control", placeholder="e.g., First Bank of Nigeria") }}
+                            {% if form.bank_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.bank_name.errors %}
+                                        <small>{{ error }}</small><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.account_number.label(class="form-label") }}
+                            {{ form.account_number(class="form-control", placeholder="10-digit account number") }}
+                            {% if form.account_number.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.account_number.errors %}
+                                        <small>{{ error }}</small><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.account_name.label(class="form-label") }}
+                            {{ form.account_name(class="form-control", placeholder="Account holder's full name") }}
+                            {% if form.account_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.account_name.errors %}
+                                        <small>{{ error }}</small><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Withdrawal Request
+                            </button>
+                            <a href="{{ url_for('main.wallet') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Wallet
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

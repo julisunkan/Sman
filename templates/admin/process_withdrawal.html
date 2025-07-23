@@ -1,0 +1,153 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Process Withdrawal Request{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-money-bill-transfer me-2"></i>Process Withdrawal Request</h1>
+    <a href="{{ url_for('admin.withdrawals') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Withdrawals
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Withdrawal Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>User:</strong></div>
+                    <div class="col-sm-9">{{ withdrawal.user.username }} ({{ withdrawal.user.email }})</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Amount:</strong></div>
+                    <div class="col-sm-9"><strong class="text-success">{{ format_currency(withdrawal.amount) }}</strong></div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Bank Name:</strong></div>
+                    <div class="col-sm-9">{{ withdrawal.bank_name }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Account Number:</strong></div>
+                    <div class="col-sm-9">{{ withdrawal.account_number }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Account Name:</strong></div>
+                    <div class="col-sm-9">{{ withdrawal.account_name }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Current Status:</strong></div>
+                    <div class="col-sm-9">
+                        {% if withdrawal.status == 'pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% elif withdrawal.status == 'approved' %}
+                            <span class="badge bg-info">Approved</span>
+                        {% elif withdrawal.status == 'paid' %}
+                            <span class="badge bg-success">Paid</span>
+                        {% elif withdrawal.status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Request Date:</strong></div>
+                    <div class="col-sm-9">{{ withdrawal.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                </div>
+                
+                {% if withdrawal.processed_at %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Processed Date:</strong></div>
+                        <div class="col-sm-9">{{ withdrawal.processed_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                    </div>
+                {% endif %}
+                
+                {% if withdrawal.admin_notes %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>Admin Notes:</strong></div>
+                        <div class="col-sm-9">{{ withdrawal.admin_notes }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>User Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Current Balance:</strong><br>
+                    <span class="text-success">{{ format_currency(withdrawal.user.balance) }}</span>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>KYC Status:</strong><br>
+                    {% if withdrawal.user.kyc_status == 'verified' %}
+                        <span class="badge bg-success">Verified</span>
+                    {% elif withdrawal.user.kyc_status == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% else %}
+                        <span class="badge bg-danger">Not Verified</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Total Sales:</strong><br>
+                    {{ withdrawal.user.accounts|selectattr('status', 'equalto', 'sold')|list|length }} accounts sold
+                </div>
+            </div>
+        </div>
+        
+        {% if withdrawal.status == 'pending' or withdrawal.status == 'approved' %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Process Withdrawal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning alert-permanent">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> 
+                        {% if withdrawal.status == 'pending' %}
+                            The withdrawal amount has already been deducted from the user's wallet. 
+                            Approving will allow you to process the bank transfer. 
+                            Rejecting will refund the amount to their wallet.
+                        {% else %}
+                            Mark as "Paid" only after you have successfully transferred the money to the user's bank account.
+                        {% endif %}
+                    </div>
+                    
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.status.label(class="form-label") }}
+                            {{ form.status(class="form-select") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.admin_notes.label(class="form-label") }}
+                            {{ form.admin_notes(class="form-control", rows="3", placeholder="Add notes about this withdrawal...") }}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Update Withdrawal Status
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

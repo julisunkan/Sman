@@ -175,3 +175,27 @@ class SupportMessage(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     user = db.relationship('User', backref='support_messages')
+
+class Withdrawal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    amount = db.Column(db.Float, nullable=False)
+    
+    # Bank details for this withdrawal
+    bank_name = db.Column(db.String(100), nullable=False)
+    account_number = db.Column(db.String(20), nullable=False)
+    account_name = db.Column(db.String(100), nullable=False)
+    
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected, paid
+    
+    # Admin processing
+    admin_notes = db.Column(db.Text)
+    processed_by_admin_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    processed_at = db.Column(db.DateTime)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', foreign_keys=[user_id], backref='withdrawals')
+    processed_by = db.relationship('User', foreign_keys=[processed_by_admin_id])
