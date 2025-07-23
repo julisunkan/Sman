@@ -78,7 +78,7 @@
                             </td>
                             <td>
                                 <span class="badge bg-{% if user.kyc_status == 'verified' %}success{% elif user.kyc_status == 'pending' %}warning{% else %}secondary{% endif %}">
-                                    {{ user.kyc_status.title() }}
+                                    {{ (user.kyc_status or 'pending').title() }}
                                 </span>
                             </td>
                             <td>
