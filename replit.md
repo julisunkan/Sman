@@ -337,6 +337,8 @@ The application is designed to be a complete marketplace solution with built-in 
 - Updated account status display to show "SOLD" badge in account details
 - Enhanced purchase route protection to prevent purchasing sold accounts
 - Changed "View Details (SOLD)" button text to simply "SOLD" for cleaner display
+- Fixed double @@ display issue by implementing conditional @ symbol logic
+- Updated index, browse, and account detail templates to prevent @@ username display
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page

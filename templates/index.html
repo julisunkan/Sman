@@ -122,7 +122,7 @@
                             <i class="fas fa-share-alt text-secondary fs-4 me-2"></i>
                             {% endif %}
                             <div class="flex-grow-1">
-                                <h6 class="card-title mb-0">@{{ account.username }}</h6>
+                                <h6 class="card-title mb-0">{% if account.username.startswith('@') %}{{ account.username }}{% else %}@{{ account.username }}{% endif %}</h6>
                                 <small class="text-muted">{{ account.platform.title() }}</small>
                             </div>
                             {% if account.status == 'sold' %}
