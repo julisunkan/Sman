@@ -363,3 +363,15 @@ The application is designed to be a complete marketplace solution with built-in 
 - Enhanced wallet interface with withdrawal button and improved layout
 - All withdrawal operations use manual bank transfer processing
 - Sales tracking shows detailed transaction history and withdrawal status
+
+### Admin User Creation System (July 23, 2025)
+- Added admin functionality to create user accounts directly from admin panel
+- Created AdminCreateUserForm with comprehensive user configuration options
+- Implemented admin/users/create route with proper validation and error handling
+- Added create_user.html template with professional form design and user guidance
+- Enhanced admin dashboard and users page with "Create New User" buttons
+- Includes options for username, email, password, role (user/admin), verification status
+- Supports initial balance setting, KYC status configuration, and account activation
+- Automatic welcome email sent to new users if email verification is enabled
+- Proper validation prevents duplicate usernames and email addresses
+- Admin can create both regular users and admin accounts with full privileges

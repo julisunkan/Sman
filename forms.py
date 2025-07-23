@@ -208,6 +208,28 @@ class AdminUserManagementForm(FlaskForm):
     ], validators=[DataRequired()])
     balance = FloatField('Wallet Balance (₦)', validators=[Optional(), NumberRange(min=0)])
 
+class AdminCreateUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=50)])
+    email = EmailField('Email', validators=[DataRequired(), Email()])
+    full_name = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(), EqualTo('password', message='Passwords must match')
+    ])
+    role = SelectField('Role', choices=[
+        ('user', 'User'),
+        ('admin', 'Admin')
+    ], validators=[DataRequired()])
+    is_verified = BooleanField('Email Verified', default=True)
+    active = BooleanField('Account Active', default=True)
+    balance = FloatField('Initial Balance (₦)', validators=[Optional(), NumberRange(min=0)], default=0)
+    kyc_status = SelectField('KYC Status', choices=[
+        ('pending', 'Pending'),
+        ('verified', 'Verified'),
+        ('rejected', 'Rejected')
+    ], default='pending')
+    submit = SubmitField('Create User')
+
 class FooterPageForm(FlaskForm):
     title = StringField('Page Title', validators=[DataRequired(), Length(min=2, max=100)])
     slug = StringField('URL Slug', validators=[DataRequired(), Length(min=2, max=100)])

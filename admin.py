@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, Withdrawal, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, AdminWithdrawalForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, AdminCreateUserForm, FooterPageForm, SystemSettingsForm, AdminWithdrawalForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -67,6 +67,61 @@ def users():
         page=page, per_page=20, error_out=False
     )
     return render_template('admin/users.html', users=users)
+
+@admin_bp.route('/users/create', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def create_user():
+    form = AdminCreateUserForm()
+    if form.validate_on_submit():
+        # Check if username or email already exists
+        existing_user = User.query.filter(
+            (User.username == form.username.data) | (User.email == form.email.data)
+        ).first()
+        
+        if existing_user:
+            if existing_user.username == form.username.data:
+                flash('Username already exists. Please choose a different one.', 'danger')
+            else:
+                flash('Email already exists. Please use a different email.', 'danger')
+            return render_template('admin/create_user.html', form=form)
+        
+        # Create new user
+        from werkzeug.security import generate_password_hash
+        password_data = form.password.data or ""
+        user = User(  # type: ignore
+            username=form.username.data,
+            email=form.email.data,
+            full_name=form.full_name.data,
+            password_hash=generate_password_hash(password_data),
+            role=form.role.data,
+            is_verified=form.is_verified.data,
+            active=form.active.data,
+            balance=form.balance.data or 0,
+            kyc_status=form.kyc_status.data,
+            created_at=datetime.utcnow()
+        )
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        # Send welcome email if verified
+        if form.is_verified.data:
+            try:
+                send_email_notification(
+                    to_email=user.email,
+                    subject='Welcome to SocialMarket - Account Created',
+                    body=f'Your account has been created by an administrator. Username: {user.username}',
+                    template_name='welcome',
+                    template_data={'user': user}
+                )
+            except Exception as e:
+                flash(f'User created but welcome email failed: {str(e)}', 'warning')
+        
+        flash(f'User {user.username} created successfully!', 'success')
+        return redirect(url_for('admin.users'))
+    
+    return render_template('admin/create_user.html', form=form)
 
 @admin_bp.route('/users/<int:user_id>/manage', methods=['GET', 'POST'])
 @login_required

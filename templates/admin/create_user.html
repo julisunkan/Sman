@@ -1,0 +1,198 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Create User - Admin Panel{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-user-plus me-2"></i>Create New User</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Users
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>User Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.username.label(class="form-label") }}
+                                {{ form.username(class="form-control") }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.username.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control") }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.email.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.full_name.label(class="form-label") }}
+                        {{ form.full_name(class="form-control") }}
+                        {% if form.full_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.full_name.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.password.label(class="form-label") }}
+                                {{ form.password(class="form-control") }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.confirm_password.label(class="form-label") }}
+                                {{ form.confirm_password(class="form-control") }}
+                                {% if form.confirm_password.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.confirm_password.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.role.label(class="form-label") }}
+                                {{ form.role(class="form-select") }}
+                                {% if form.role.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.role.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.kyc_status.label(class="form-label") }}
+                                {{ form.kyc_status(class="form-select") }}
+                                {% if form.kyc_status.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.kyc_status.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.balance.label(class="form-label") }}
+                                <div class="input-group">
+                                    <span class="input-group-text">₦</span>
+                                    {{ form.balance(class="form-control") }}
+                                </div>
+                                {% if form.balance.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.balance.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                {{ form.is_verified(class="form-check-input") }}
+                                {{ form.is_verified.label(class="form-check-label") }}
+                                <small class="form-text text-muted">User can access all features without email verification</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                {{ form.active(class="form-check-input") }}
+                                {{ form.active.label(class="form-check-label") }}
+                                <small class="form-text text-muted">User can log in and use the platform</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>User Creation Notes</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info alert-permanent">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Tips</h6>
+                    <ul class="mb-0">
+                        <li>Choose a strong password (minimum 6 characters)</li>
+                        <li>Email verification allows full platform access</li>
+                        <li>Admin users have access to this admin panel</li>
+                        <li>Initial balance can be set for immediate use</li>
+                        <li>Welcome email will be sent if email is verified</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-warning alert-permanent">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Security</h6>
+                    <p class="mb-0">Admin accounts have full access to the platform. Only create admin accounts for trusted individuals.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
