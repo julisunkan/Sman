@@ -44,7 +44,7 @@
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <h6>User's Message:</h6>
-                                <div class="border rounded p-3 bg-light">
+                                <div class="border rounded p-3 bg-secondary bg-opacity-10">
                                     {{ message.message|replace('\n', '<br>')|safe }}
                                 </div>
                             </div>
@@ -62,7 +62,7 @@
                         {% if message.admin_response %}
                         <div class="mb-3">
                             <h6>Admin Response:</h6>
-                            <div class="border rounded p-3 bg-success bg-opacity-10">
+                            <div class="border rounded p-3 bg-success bg-opacity-25 text-dark">
                                 {{ message.admin_response|replace('\n', '<br>')|safe }}
                             </div>
                         </div>
