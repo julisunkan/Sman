@@ -480,12 +480,12 @@ def test_email():
 @login_required
 @admin_required
 def respond_to_support(message_id):
-    try:
-        message = SupportMessage.query.get_or_404(message_id)
-        response = request.form.get('response')
-        
-        if response:
-            message.admin_response = response
+    message = SupportMessage.query.get_or_404(message_id)
+    form = AdminSupportResponseForm()
+    
+    if form.validate_on_submit():
+        try:
+            message.admin_response = form.response.data
             message.status = 'closed'
             db.session.commit()
             
@@ -494,15 +494,18 @@ def respond_to_support(message_id):
                 send_email_notification(
                     message.user.email,
                     f'Response to: {message.subject}',
-                    response
+                    form.response.data or ''
                 )
+                flash('Response sent successfully and user notified by email.', 'success')
             except Exception as e:
-                flash(f'Response saved but email failed: {str(e)}', 'warning')
+                flash(f'Response saved but email notification failed: {str(e)}', 'warning')
             
-            flash('Response sent successfully.', 'success')
-        else:
-            flash('Please provide a response.', 'error')
-    except Exception as e:
-        flash(f'Error processing response: {str(e)}', 'danger')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error saving response: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}', 'danger')
     
     return redirect(url_for('admin.support_messages'))
