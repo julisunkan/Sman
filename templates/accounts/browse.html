@@ -164,7 +164,7 @@
         <ul class="pagination justify-content-center">
             {% if accounts.has_prev %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.prev_num, **request.args) }}">
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.prev_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             </li>
@@ -174,7 +174,7 @@
             {% if page_num %}
             {% if page_num != accounts.page %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=page_num, **request.args) }}">{{ page_num }}</a>
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=page_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">{{ page_num }}</a>
             </li>
             {% else %}
             <li class="page-item active">
@@ -190,7 +190,7 @@
             
             {% if accounts.has_next %}
             <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.next_num, **request.args) }}">
+                <a class="page-link" href="{{ url_for('main.browse_accounts', page=accounts.next_num, platform=request.args.get('platform'), category=request.args.get('category'), sort=request.args.get('sort')) }}">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </li>

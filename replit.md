@@ -339,6 +339,8 @@ The application is designed to be a complete marketplace solution with built-in 
 - Changed "View Details (SOLD)" button text to simply "SOLD" for cleaner display
 - Fixed double @@ display issue by implementing conditional @ symbol logic
 - Updated index, browse, and account detail templates to prevent @@ username display
+- Fixed pagination error in browse page causing 500 internal server error
+- Replaced problematic **request.args with explicit parameter passing
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
