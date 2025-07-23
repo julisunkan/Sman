@@ -56,7 +56,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-2"><strong>Current Balance:</strong> ₦{{ "%.2f"|format(transaction.user.balance) }}</div>
+                            <div class="mb-2"><strong>Current Balance:</strong> ₦{{ "%.2f"|format(transaction.user.balance or 0) }}</div>
                             <div class="mb-2"><strong>Total Transactions:</strong> {{ transaction.user.transactions|length }}</div>
                             <div class="mb-2"><strong>Total Purchases:</strong> {{ transaction.user.purchases|length }}</div>
                             <div class="mb-2"><strong>Referral Code:</strong> {{ transaction.user.referral_code }}</div>

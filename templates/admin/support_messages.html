@@ -53,7 +53,7 @@
                                 <ul class="list-unstyled">
                                     <li><strong>Username:</strong> {{ message.user.username }}</li>
                                     <li><strong>Email:</strong> {{ message.user.email }}</li>
-                                    <li><strong>Balance:</strong> ₦{{ "%.2f"|format(message.user.balance) }}</li>
+                                    <li><strong>Balance:</strong> ₦{{ "%.2f"|format(message.user.balance or 0) }}</li>
                                     <li><strong>Member Since:</strong> {{ message.user.created_at.strftime('%Y-%m-%d') }}</li>
                                 </ul>
                             </div>

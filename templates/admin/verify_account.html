@@ -124,7 +124,7 @@
                         <div class="col-md-6">
                             <div class="mb-2"><strong>Member Since:</strong> {{ account.seller.created_at.strftime('%B %d, %Y') }}</div>
                             <div class="mb-2"><strong>Total Listings:</strong> {{ account.seller.accounts|length }}</div>
-                            <div class="mb-2"><strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(account.seller.balance) }}</div>
+                            <div class="mb-2"><strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(account.seller.balance or 0) }}</div>
                             <div class="mb-2"><strong>KYC Status:</strong> 
                                 <span class="badge bg-{% if account.seller.kyc_status == 'verified' %}success{% elif account.seller.kyc_status == 'pending' %}warning{% else %}secondary{% endif %}">
                                     {{ account.seller.kyc_status.title() }}

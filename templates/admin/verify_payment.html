@@ -42,7 +42,7 @@
                             
                             <div class="mb-2"><strong>Member Since:</strong> {{ purchase.buyer.created_at.strftime('%B %d, %Y') }}</div>
                             <div class="mb-2"><strong>Total Purchases:</strong> {{ purchase.buyer.purchases|length }}</div>
-                            <div class="mb-2"><strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(purchase.buyer.balance) }}</div>
+                            <div class="mb-2"><strong>Wallet Balance:</strong> ₦{{ "%.2f"|format(purchase.buyer.balance or 0) }}</div>
                         </div>
                         
                         <div class="col-md-6">

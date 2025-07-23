@@ -48,7 +48,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="walletDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-wallet me-1"></i>
-                            Balance: ₦{{ "%.2f"|format(current_user.balance) }}
+                            Balance: ₦{{ "%.2f"|format(current_user.balance or 0) }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('main.wallet') }}">
