@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, SystemSettings, db
-from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm, AdminSupportResponseForm
+from forms import AdminAccountVerificationForm, AdminPaymentVerificationForm, AdminDepositVerificationForm, AdminUserManagementForm, FooterPageForm, SystemSettingsForm, TestEmailForm, AdminSupportResponseForm, AdminEditAccountForm
 from utils import send_email_notification, calculate_referral_commission
 from sqlalchemy import func
 
@@ -243,6 +243,72 @@ def verify_account(account_id):
         return redirect(url_for('admin.accounts'))
     
     return render_template('admin/verify_account.html', account=account, form=form)
+
+@admin_bp.route('/accounts/<int:account_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_account(account_id):
+    account = SocialMediaAccount.query.get_or_404(account_id)
+    form = AdminEditAccountForm(obj=account)
+    
+    if form.validate_on_submit():
+        # Update account details
+        account.platform = form.platform.data
+        account.username = form.username.data
+        account.followers_count = form.followers_count.data
+        account.engagement_rate = form.engagement_rate.data
+        account.price = form.price.data
+        account.description = form.description.data
+        account.category = form.category.data
+        account.account_url = form.account_url.data
+        account.status = form.status.data
+        account.verification_notes = form.verification_notes.data
+        account.is_verified = (form.status.data == 'approved')
+        account.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        # Notify seller of changes
+        send_email_notification(
+            account.seller.email,
+            'Account Listing Updated',
+            f'Your {account.platform} account (@{account.username}) listing has been updated by an administrator.'
+        )
+        
+        flash(f'Account listing updated successfully.', 'success')
+        return redirect(url_for('admin.accounts'))
+    
+    return render_template('admin/edit_account.html', account=account, form=form)
+
+@admin_bp.route('/accounts/<int:account_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_account(account_id):
+    account = SocialMediaAccount.query.get_or_404(account_id)
+    
+    # Check if account has any active purchases
+    active_purchases = Purchase.query.filter_by(account_id=account_id, status='pending').count()
+    if active_purchases > 0:
+        flash('Cannot delete account with pending purchases. Please complete or cancel them first.', 'danger')
+        return redirect(url_for('admin.accounts'))
+    
+    # Store seller info for notification
+    seller_email = account.seller.email
+    account_info = f'{account.platform} account (@{account.username})'
+    
+    # Delete the account
+    db.session.delete(account)
+    db.session.commit()
+    
+    # Notify seller
+    send_email_notification(
+        seller_email,
+        'Account Listing Deleted',
+        f'Your {account_info} listing has been removed by an administrator.'
+    )
+    
+    flash(f'Account listing deleted successfully.', 'success')
+    return redirect(url_for('admin.accounts'))
 
 @admin_bp.route('/payments')
 @login_required

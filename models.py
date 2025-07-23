@@ -90,6 +90,9 @@ class SocialMediaAccount(db.Model):
     # Additional media/proof
     screenshot_path = db.Column(db.String(200))
     
+    # Account URL for preview
+    account_url = db.Column(db.String(500))  # URL to the actual social media account
+    
     # Relationships
     purchases = db.relationship('Purchase', backref='account', lazy=True)
 

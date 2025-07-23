@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Account - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-edit me-2"></i>Edit Account Listing</h2>
+        <a href="{{ url_for('admin.accounts') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Accounts
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.platform.label(class="form-label") }}
+                                    {{ form.platform(class="form-select") }}
+                                    {% if form.platform.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.platform.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.username.label(class="form-label") }}
+                                    {{ form.username(class="form-control") }}
+                                    {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.username.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.followers_count.label(class="form-label") }}
+                                    {{ form.followers_count(class="form-control") }}
+                                    {% if form.followers_count.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.followers_count.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.engagement_rate.label(class="form-label") }}
+                                    {{ form.engagement_rate(class="form-control") }}
+                                    {% if form.engagement_rate.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.engagement_rate.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.price.label(class="form-label") }}
+                                    {{ form.price(class="form-control") }}
+                                    {% if form.price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.price.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.category.label(class="form-label") }}
+                                    {{ form.category(class="form-select") }}
+                                    {% if form.category.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.category.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.account_url.label(class="form-label") }}
+                            {{ form.account_url(class="form-control", placeholder="https://instagram.com/username") }}
+                            <div class="form-text">Optional: Link to the actual social media account for preview</div>
+                            {% if form.account_url.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.account_url.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows="4") }}
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.description.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.status.label(class="form-label") }}
+                                    {{ form.status(class="form-select") }}
+                                    {% if form.status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.status.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.verification_notes.label(class="form-label") }}
+                            {{ form.verification_notes(class="form-control", rows="3") }}
+                            <div class="form-text">Internal notes visible to admin only</div>
+                            {% if form.verification_notes.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.verification_notes.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{{ url_for('admin.accounts') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Account Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Seller Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">{{ account.seller.username }}</h6>
+                            <small class="text-muted">{{ account.seller.email }}</small>
+                        </div>
+                    </div>
+                    <div class="mb-2"><strong>Member Since:</strong> {{ account.seller.created_at.strftime('%B %d, %Y') }}</div>
+                    <div class="mb-2"><strong>Total Listings:</strong> {{ account.seller.accounts|length }}</div>
+                    <div class="mb-2">
+                        <strong>KYC Status:</strong>
+                        {% if account.seller.kyc_status == 'verified' %}
+                        <span class="badge bg-success">Verified</span>
+                        {% elif account.seller.kyc_status == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Not Submitted</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Screenshot -->
+            {% if account.screenshot_path %}
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-image me-2"></i>Account Screenshot</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <img src="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
+                             class="img-fluid rounded border" style="max-width: 100%; max-height: 300px;" alt="Account Screenshot">
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
+                           target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>View Full Size
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

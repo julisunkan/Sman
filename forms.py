@@ -61,6 +61,7 @@ class SocialMediaAccountForm(FlaskForm):
     ], validators=[DataRequired()])
     login_email = EmailField('Account Login Email', validators=[DataRequired(), Email()])
     login_password = PasswordField('Account Login Password', validators=[DataRequired(), Length(min=6)])
+    account_url = URLField('Account URL (for preview)', validators=[Optional(), URL()])
     screenshot = FileField('Account Screenshot', validators=[
         DataRequired(),
         FileAllowed(['jpg', 'jpeg', 'png'], 'Only JPG and PNG files are allowed!')
@@ -72,6 +73,45 @@ class DepositForm(FlaskForm):
         DataRequired(),
         FileAllowed(['jpg', 'jpeg', 'png', 'pdf'], 'Only JPG, PNG and PDF files are allowed!')
     ])
+
+# Admin Forms
+class AdminEditAccountForm(FlaskForm):
+    platform = SelectField('Platform', choices=[
+        ('instagram', 'Instagram'),
+        ('tiktok', 'TikTok'),
+        ('youtube', 'YouTube'),
+        ('twitter', 'Twitter'),
+        ('facebook', 'Facebook'),
+        ('linkedin', 'LinkedIn'),
+        ('snapchat', 'Snapchat'),
+        ('telegram', 'Telegram')
+    ], validators=[DataRequired()])
+    username = StringField('Username (without @)', validators=[DataRequired(), Length(min=1, max=100)])
+    followers_count = IntegerField('Followers Count', validators=[DataRequired(), NumberRange(min=1)])
+    engagement_rate = FloatField('Engagement Rate (%)', validators=[Optional(), NumberRange(min=0, max=100)])
+    price = FloatField('Price (₦)', validators=[DataRequired(), NumberRange(min=1)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=500)])
+    category = SelectField('Category', choices=[
+        ('lifestyle', 'Lifestyle'),
+        ('business', 'Business'),
+        ('entertainment', 'Entertainment'),
+        ('sports', 'Sports'),
+        ('technology', 'Technology'),
+        ('fashion', 'Fashion'),
+        ('food', 'Food'),
+        ('travel', 'Travel'),
+        ('fitness', 'Fitness'),
+        ('education', 'Education'),
+        ('other', 'Other')
+    ], validators=[DataRequired()])
+    account_url = URLField('Account URL (for preview)', validators=[Optional(), URL()])
+    status = SelectField('Status', choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('sold', 'Sold')
+    ], validators=[DataRequired()])
+    verification_notes = TextAreaField('Verification Notes', validators=[Optional(), Length(max=1000)])
 
 class PurchaseForm(FlaskForm):
     account_id = IntegerField('Account ID', validators=[DataRequired()])

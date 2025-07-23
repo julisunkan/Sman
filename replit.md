@@ -297,3 +297,16 @@ The application is designed to be a complete marketplace solution with built-in 
 - All core functionalities verified: authentication, account browsing, admin panel, user dashboard
 - Admin credentials: admin@marketplace.com / admin123
 - Migration completed with comprehensive route and error fixing
+
+### Admin Listing Management & Account URL Preview (July 23, 2025)
+- Added admin edit and delete functionality for social media account listings
+- Enhanced AdminEditAccountForm with comprehensive editing capabilities including status updates
+- Created admin edit account template with full account management interface
+- Implemented account deletion with safety checks for pending purchases
+- Added account_url field to SocialMediaAccount model for account previews
+- Enhanced user listing creation form to include optional account URL field
+- Updated account browse and detail templates with preview buttons
+- Added live account preview functionality accessible to buyers and admins
+- Account URLs display as external link buttons in admin dashboard and user browsing
+- Email notifications sent to sellers when accounts are edited or deleted by admins
+- CSRF token visibility issue fixed in KYC verification forms

@@ -68,6 +68,17 @@
                         </div>
                     </div>
                     
+                    <!-- Account Preview Link -->
+                    {% if account.account_url %}
+                    <div class="mb-4">
+                        <h5><i class="fas fa-external-link-alt me-2"></i>Account Preview</h5>
+                        <a href="{{ account.account_url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>View Live Account
+                        </a>
+                        <small class="text-muted ms-2">Preview the account before purchasing</small>
+                    </div>
+                    {% endif %}
+                    
                     <!-- Description -->
                     {% if account.description %}
                     <div class="mb-4">

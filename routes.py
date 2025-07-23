@@ -305,6 +305,7 @@ def create_listing():
                 price=form.price.data,
                 description=form.description.data,
                 category=form.category.data,
+                account_url=form.account_url.data,
                 login_email=form.login_email.data,
                 login_password=form.login_password.data,
                 screenshot_path=screenshot_path,

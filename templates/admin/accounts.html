@@ -144,23 +144,40 @@
                                 <br><small class="text-muted">{{ account.created_at.strftime('%I:%M %p') }}</small>
                             </td>
                             <td>
-                                <div class="d-flex gap-1">
+                                <div class="d-flex gap-1 flex-wrap">
                                     <a href="{{ url_for('main.account_detail', account_id=account.id) }}" 
-                                       class="btn btn-outline-info btn-sm" target="_blank">
+                                       class="btn btn-outline-info btn-sm" target="_blank" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     {% if account.status == 'pending' %}
                                     <a href="{{ url_for('admin.verify_account', account_id=account.id) }}" 
-                                       class="btn btn-outline-warning btn-sm">
+                                       class="btn btn-outline-warning btn-sm" title="Verify Account">
                                         <i class="fas fa-gavel"></i>
                                     </a>
                                     {% endif %}
                                     {% if account.screenshot_path %}
                                     <a href="{{ url_for('main.uploaded_file', filename=account.screenshot_path) }}" 
-                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                       target="_blank" class="btn btn-outline-primary btn-sm" title="View Screenshot">
                                         <i class="fas fa-image"></i>
                                     </a>
                                     {% endif %}
+                                    {% if account.account_url %}
+                                    <a href="{{ account.account_url }}" 
+                                       target="_blank" class="btn btn-outline-secondary btn-sm" title="View Live Account">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a href="{{ url_for('admin.edit_account', account_id=account.id) }}" 
+                                       class="btn btn-outline-primary btn-sm" title="Edit Account">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('admin.delete_account', account_id=account.id) }}" style="display: inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Account"
+                                                onclick="return confirm('Are you sure you want to delete this account listing? This action cannot be undone.')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
