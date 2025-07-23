@@ -133,7 +133,7 @@
                                     <i class="fas fa-eye me-2"></i>Preview
                                 </a>
                                 {% endif %}
-                                <button type="submit" class="btn btn-success">
+                                <button type="submit" class="btn btn-success" id="submit-btn">
                                     <i class="fas fa-save me-2"></i>{% if page %}Update{% else %}Create{% endif %} Page
                                 </button>
                             </div>
@@ -413,5 +413,27 @@ function insertTemplate(templateType) {
         editor.setData(content);
     }
 }
+
+// Handle form submission to sync CKEditor content
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            // Sync CKEditor content to the textarea before submitting
+            if (editor) {
+                const contentTextarea = document.querySelector('#content-editor');
+                if (contentTextarea) {
+                    contentTextarea.value = editor.getData();
+                }
+            }
+            
+            // Disable submit button to prevent double submission
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        });
+    }
+});
 </script>
 {% endblock %}
