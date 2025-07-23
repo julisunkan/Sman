@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -16,7 +17,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         
-        if user and check_password_hash(user.password_hash, form.password.data):
+        if user and user.password_hash and check_password_hash(user.password_hash, form.password.data or ''):
             if not user.active:
                 flash('Your account has been deactivated. Please contact support.', 'danger')
                 return render_template('auth/login.html', form=form)
@@ -51,7 +52,7 @@ def register():
         user = User(
             username=form.username.data,
             email=form.email.data,
-            password_hash=generate_password_hash(form.password.data),
+            password_hash=generate_password_hash(form.password.data or ''),
             referred_by_id=referrer.id if referrer else None
         )
         

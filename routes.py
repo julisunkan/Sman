@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from models import User, SocialMediaAccount, Purchase, Transaction, FooterPage, SupportMessage, db
 from forms import ProfileForm, KYCForm, SocialMediaAccountForm, DepositForm, PurchaseForm, SupportMessageForm, SearchForm
 from utils import save_file, format_currency, format_number, send_email_notification
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 from datetime import datetime
 import os
 
