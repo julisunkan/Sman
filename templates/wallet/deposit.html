@@ -17,10 +17,25 @@
                             <div class="alert alert-info alert-permanent">
                                 <h6><i class="fas fa-university me-2"></i>Bank Details</h6>
                                 <div class="mb-2">
-                                    <strong>Bank Name:</strong> SocialMarket Bank<br>
-                                    <strong>Account Number:</strong> 1234567890<br>
-                                    <strong>Routing Number:</strong> 123456789<br>
-                                    <strong>Account Holder:</strong> SocialMarket LLC
+                                    {% if bank_settings.get('bank_name') %}
+                                        <strong>Bank Name:</strong> {{ bank_settings.get('bank_name') }}<br>
+                                    {% endif %}
+                                    {% if bank_settings.get('account_number') %}
+                                        <strong>Account Number:</strong> {{ bank_settings.get('account_number') }}<br>
+                                    {% endif %}
+                                    {% if bank_settings.get('routing_number') %}
+                                        <strong>Routing Number:</strong> {{ bank_settings.get('routing_number') }}<br>
+                                    {% endif %}
+                                    {% if bank_settings.get('account_name') %}
+                                        <strong>Account Holder:</strong> {{ bank_settings.get('account_name') }}
+                                    {% endif %}
+                                    
+                                    {% if not (bank_settings.get('bank_name') or bank_settings.get('account_number') or bank_settings.get('account_name')) %}
+                                        <div class="text-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Bank details not configured yet. Please contact admin.
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             

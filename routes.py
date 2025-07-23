@@ -116,6 +116,11 @@ def wallet():
 def deposit():
     form = DepositForm()
     
+    # Get bank details from system settings
+    from models import SystemSettings
+    settings = SystemSettings.query.all()
+    bank_settings = {s.setting_key: s.setting_value for s in settings}
+    
     if form.validate_on_submit():
         payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
         if payment_proof_path:
@@ -135,7 +140,7 @@ def deposit():
         else:
             flash('Failed to upload payment proof. Please ensure file is under 15KB.', 'danger')
     
-    return render_template('wallet/deposit.html', form=form)
+    return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings)
 
 @main_bp.route('/accounts')
 def browse_accounts():

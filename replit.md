@@ -232,3 +232,11 @@ The application is designed to be a complete marketplace solution with built-in 
 - Added force_password_change database field and change password workflow
 - Created change password template and form for forced password changes
 - All admin actions now provide user feedback and appropriate notifications
+
+### Dynamic Bank Details Integration (July 23, 2025)
+- Updated deposit page to dynamically display bank details from admin system settings
+- Modified deposit route to fetch bank details from SystemSettings model
+- Enhanced deposit template with conditional display of bank information
+- Added fallback message when bank details are not configured
+- Fixed footer page form template error with is_active field
+- Bank details now automatically sync between admin settings and user deposit page
