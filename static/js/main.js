@@ -272,12 +272,14 @@ function animateCopyButton(button) {
     }, 1500);
 }
 
-// Auto-dismiss alerts
+// Auto-dismiss alerts (but exclude permanent alerts)
 function initializeAutoAlerts() {
     const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
     
     alerts.forEach(alert => {
-        if (alert.classList.contains('alert-success') || alert.classList.contains('alert-info')) {
+        // Only dismiss flash messages, not content alerts
+        if ((alert.classList.contains('alert-success') || alert.classList.contains('alert-info')) && 
+            (alert.hasAttribute('data-flash') || alert.closest('.flash-messages'))) {
             setTimeout(() => {
                 const bsAlert = new bootstrap.Alert(alert);
                 bsAlert.close();
