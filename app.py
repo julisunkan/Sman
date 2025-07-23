@@ -19,8 +19,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///instance/marketplace.db")
+# configure the database - use absolute path for SQLite
+database_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'instance', 'marketplace.db'))
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{database_path}"
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -71,7 +72,50 @@ os.makedirs('uploads/kyc_documents', exist_ok=True)
 with app.app_context():
     # Import models to ensure they're registered
     import models
+    
+    # Only create tables if they don't exist
     db.create_all()
+    
+    # Create default admin user if it doesn't exist
+    from models import User, FooterPage
+    from werkzeug.security import generate_password_hash
+    
+    admin_user = User.query.filter_by(email='admin@marketplace.com').first()
+    if not admin_user:
+        admin_user = User(
+            username='admin',
+            email='admin@marketplace.com',
+            password_hash=generate_password_hash('admin123'),
+            role='admin',
+            is_verified=True,
+            active=True,
+            full_name='System Administrator'
+        )
+        db.session.add(admin_user)
+    
+    # Create default footer pages if they don't exist
+    pages_to_create = [
+        {'slug': 'privacy-policy', 'title': 'Privacy Policy', 'content': '<h2>Privacy Policy</h2><p>This is the privacy policy page. Content will be added soon.</p>'},
+        {'slug': 'terms-of-service', 'title': 'Terms of Service', 'content': '<h2>Terms of Service</h2><p>This is the terms of service page. Content will be added soon.</p>'},
+        {'slug': 'cookie-policy', 'title': 'Cookie Policy', 'content': '<h2>Cookie Policy</h2><p>This is the cookie policy page. Content will be added soon.</p>'}
+    ]
+    
+    for page_data in pages_to_create:
+        existing_page = FooterPage.query.filter_by(slug=page_data['slug']).first()
+        if not existing_page:
+            page = FooterPage(
+                slug=page_data['slug'],
+                title=page_data['title'],
+                content=page_data['content']
+            )
+            db.session.add(page)
+    
+    try:
+        db.session.commit()
+        print("Default footer pages created")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating defaults: {e}")
     
     # Create admin user if it doesn't exist
     from models import User, FooterPage
