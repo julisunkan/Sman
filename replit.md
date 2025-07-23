@@ -312,6 +312,15 @@ The application is designed to be a complete marketplace solution with built-in 
 - Admin credentials: admin@marketplace.com / admin123
 - Migration completed with comprehensive route and error fixing
 
+### Bulk Account Creation and Market Simulation (July 23, 2025)
+- Created 118 social media accounts across all 8 supported platforms
+- Generated realistic Nigerian-themed usernames, follower counts, and engagement rates
+- Added proper pricing structure based on platform and follower count
+- Included login credentials and account URLs for each listing
+- Platform distribution: Instagram (19), TikTok (15), YouTube (15), Facebook (16), LinkedIn (15), Twitter (10), Snapchat (13), Telegram (15)
+- All accounts marked as "sold" to simulate active marketplace activity
+- Accounts span 10 different categories: lifestyle, entertainment, technology, business, health, finance, education, travel, food, fashion
+
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
 - Replaced Bootstrap modal with collapsible row that expands below the transaction
