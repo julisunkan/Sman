@@ -314,6 +314,7 @@ def purchase_account(account_id):
             db.session.add(seller_transaction)
             
             # Handle referral commission
+            referral_commission = None
             if current_user.referred_by_id:
                 referrer = User.query.get(current_user.referred_by_id)
                 if referrer:
@@ -335,18 +336,54 @@ def purchase_account(account_id):
             
             db.session.commit()
             
-            # Notify seller
+            # Get commission rate for display
+            commission_setting = SystemSettings.query.filter_by(setting_key='commission_rate').first()
+            commission_rate = f"{commission_setting.setting_value}%" if commission_setting else "5%"
+            
+            # Notify seller with beautiful template
             send_email_notification(
                 account.seller.email,
-                'Account Sold Successfully',
-                f'Your {account.platform} account (@{account.username}) has been sold for ₦{account.price:.2f}. You received ₦{seller_amount:.2f} (₦{commission:.2f} platform fee deducted). The buyer can now access the account details.'
+                'Account Sold Successfully!',
+                f'Your {account.platform} account has been sold successfully.',
+                template_name='sale_notification.html',
+                template_data={
+                    'seller_name': account.seller.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'sale_amount': account.price,
+                    'seller_earnings': seller_amount,
+                    'platform_fee': commission,
+                    'commission_rate': commission_rate,
+                    'buyer_name': current_user.username,
+                    'new_balance': account.seller.balance,
+                    'sale_date': datetime.now().strftime('%B %d, %Y'),
+                    'transaction_id': f'TXN{purchase.id}',
+                    'dashboard_url': url_for('main.dashboard', _external=True)
+                }
             )
             
-            # Notify buyer with account details
+            # Notify buyer with beautiful template and account details
             send_email_notification(
                 current_user.email,
-                'Account Purchase Successful',
-                f'You have successfully purchased the {account.platform} account (@{account.username}) for ₦{account.price:.2f}.\n\nAccount Details:\nEmail: {account.login_email}\nPassword: {account.login_password}\n\nPlease change the password immediately after logging in.'
+                'Purchase Successful - Account Details Included',
+                f'Your purchase has been completed successfully.',
+                template_name='purchase_confirmation.html',
+                template_data={
+                    'buyer_name': current_user.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'purchase_amount': account.price,
+                    'account_email': account.login_email,
+                    'account_password': account.login_password,
+                    'account_url': account.account_url,
+                    'platform_commission': commission,
+                    'seller_payment': seller_amount,
+                    'referral_commission': referral_commission if current_user.referred_by_id else None,
+                    'purchase_id': f'PUR{purchase.id}',
+                    'dashboard_url': url_for('main.dashboard', _external=True)
+                }
             )
             
             flash('Purchase successful! Account details have been sent to your email. Please change the password immediately.', 'success')

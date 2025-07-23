@@ -1,0 +1,45 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Account Sold! 💰</h2>
+
+<p>Hello <strong>{{ seller_name }}</strong>,</p>
+
+<p>Great news! Your social media account has been sold successfully.</p>
+
+<div class="alert alert-success">
+    <h4>🎉 Sale Details</h4>
+    <p><strong>Account:</strong> @{{ account_username }} ({{ account_platform.title() }})</p>
+    <p><strong>Followers:</strong> {{ account_followers | format_number }}</p>
+    <p><strong>Sale Price:</strong> {{ sale_amount | format_currency }}</p>
+    <p><strong>Your Earnings:</strong> {{ seller_earnings | format_currency }}</p>
+</div>
+
+<div class="info-box">
+    <h4>💳 Payment Information</h4>
+    <p>Your earnings have been added to your wallet balance.</p>
+    <p><strong>Platform Fee:</strong> {{ platform_fee | format_currency }} ({{ commission_rate }}%)</p>
+    <p><strong>New Wallet Balance:</strong> {{ new_balance | format_currency }}</p>
+</div>
+
+<h3>📊 Transaction Summary</h3>
+<ul>
+    <li>Buyer: {{ buyer_name }}</li>
+    <li>Sale Date: {{ sale_date }}</li>
+    <li>Transaction ID: #{{ transaction_id }}</li>
+</ul>
+
+<div class="alert alert-info">
+    <h4>🔄 Next Steps</h4>
+    <p>The account credentials have been securely transferred to the buyer. You no longer have access to this account.</p>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ dashboard_url }}" class="btn">View Dashboard</a>
+</div>
+
+<p>Thank you for using {{ site_name }} to sell your account!</p>
+
+<p>Best regards,<br>
+The {{ site_name }} Team</p>
+{% endblock %}

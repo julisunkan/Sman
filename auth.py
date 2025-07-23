@@ -69,12 +69,25 @@ def register():
         token = user.generate_verification_token()
         db.session.commit()
         
-        # Send verification email (placeholder)
+        # Send verification email with beautiful template
         verification_url = url_for('auth.verify_email', token=token, _external=True)
+        
+        # Get referral rate for welcome email
+        from models import SystemSettings
+        referral_setting = SystemSettings.query.filter_by(setting_key='referral_rate').first()
+        referral_rate = f"{referral_setting.setting_value}%" if referral_setting and referral_setting.setting_value else "5%"
+        
         send_email_notification(
             user.email, 
-            'Verify Your Account',
-            f'Please click this link to verify your account: {verification_url}'
+            'Welcome to SocialMarket - Verify Your Account',
+            f'Please click this link to verify your account: {verification_url}',
+            template_name='welcome.html',
+            template_data={
+                'user_name': user.username,
+                'verification_url': verification_url,
+                'referral_code': user.referral_code,
+                'referral_rate': referral_rate
+            }
         )
         
         flash('Registration successful! Please check your email to verify your account.', 'success')
@@ -159,12 +172,17 @@ def forgot_password():
             token = user.generate_password_reset_token()
             db.session.commit()
             
-            # Send password reset email
+            # Send password reset email with beautiful template
             reset_url = url_for('auth.reset_password', token=token, _external=True)
             send_email_notification(
                 user.email,
-                'Password Reset Request',
-                f'Click this link to reset your password: {reset_url}\n\nThis link will expire in 1 hour.\n\nIf you did not request a password reset, please ignore this email.'
+                'Password Reset Request - Secure Your Account',
+                f'Click this link to reset your password: {reset_url}',
+                template_name='password_reset.html',
+                template_data={
+                    'user_name': user.username,
+                    'reset_url': reset_url
+                }
             )
         
         # Always show the same message for security

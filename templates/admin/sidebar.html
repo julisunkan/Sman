@@ -1,0 +1,49 @@
+<div class="position-sticky pt-3">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}" href="{{ url_for('admin.users') }}">
+                <i class="fas fa-users me-2"></i>Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.accounts' %}active{% endif %}" href="{{ url_for('admin.accounts') }}">
+                <i class="fas fa-list me-2"></i>Accounts
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.payments' %}active{% endif %}" href="{{ url_for('admin.payments') }}">
+                <i class="fas fa-credit-card me-2"></i>Payments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.kyc_reviews' %}active{% endif %}" href="{{ url_for('admin.kyc_reviews') }}">
+                <i class="fas fa-id-card me-2"></i>KYC Reviews
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.support_messages' %}active{% endif %}" href="{{ url_for('admin.support_messages') }}">
+                <i class="fas fa-headset me-2"></i>Support
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.footer_pages' %}active{% endif %}" href="{{ url_for('admin.footer_pages') }}">
+                <i class="fas fa-file-alt me-2"></i>Footer Pages
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'email' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.email_templates') }}">
+                <i class="fas fa-envelope me-2"></i>Email Templates
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin.system_settings' %}active{% endif %}" href="{{ url_for('admin.system_settings') }}">
+                <i class="fas fa-cog me-2"></i>System Settings
+            </a>
+        </li>
+    </ul>
+</div>

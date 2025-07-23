@@ -1,0 +1,50 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Account Listing Approved! ✅</h2>
+
+<p>Hello <strong>{{ seller_name }}</strong>,</p>
+
+<p>Your social media account listing has been approved and is now live on our marketplace!</p>
+
+<div class="alert alert-success">
+    <h4>📱 Approved Account</h4>
+    <p><strong>Account:</strong> @{{ account_username }} ({{ account_platform.title() }})</p>
+    <p><strong>Followers:</strong> {{ account_followers | format_number }}</p>
+    <p><strong>Listed Price:</strong> {{ account_price | format_currency }}</p>
+    <p><strong>Category:</strong> {{ account_category.title() }}</p>
+</div>
+
+{% if admin_notes %}
+<div class="info-box">
+    <h4>📝 Admin Notes</h4>
+    <p>{{ admin_notes }}</p>
+</div>
+{% endif %}
+
+<h3>🚀 What Happens Next?</h3>
+<ul>
+    <li>Your account is now visible to potential buyers</li>
+    <li>Buyers can browse and purchase your account instantly</li>
+    <li>You'll receive an email notification when sold</li>
+    <li>Earnings will be added to your wallet automatically</li>
+</ul>
+
+<div class="alert alert-info">
+    <h4>💡 Tips for Better Sales</h4>
+    <ul>
+        <li>Ensure your account description is detailed and accurate</li>
+        <li>Keep your account active and maintain engagement</li>
+        <li>Respond promptly to any admin questions</li>
+    </ul>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ account_url }}" class="btn">View Your Listing</a>
+</div>
+
+<p>Thank you for choosing {{ site_name }} to sell your account!</p>
+
+<p>Best regards,<br>
+The {{ site_name }} Team</p>
+{% endblock %}

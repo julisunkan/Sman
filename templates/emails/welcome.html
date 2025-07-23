@@ -1,0 +1,39 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Welcome to {{ site_name }}! 🎉</h2>
+
+<p>Hello <strong>{{ user_name }}</strong>,</p>
+
+<p>Welcome to {{ site_name }}! We're excited to have you join our community of social media enthusiasts.</p>
+
+<div class="info-box">
+    <h4>🚀 Get Started</h4>
+    <p>Your account has been successfully created. To get the most out of our platform, please verify your email address.</p>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ verification_url }}" class="btn">Verify Your Email Address</a>
+</div>
+
+<h3>What You Can Do:</h3>
+<ul>
+    <li><strong>Buy Accounts:</strong> Browse and purchase established social media accounts</li>
+    <li><strong>Sell Accounts:</strong> List your own accounts for sale</li>
+    <li><strong>Earn Commissions:</strong> Refer friends and earn {{ referral_rate }}% commission</li>
+    <li><strong>Secure Transactions:</strong> All purchases are protected through our escrow system</li>
+</ul>
+
+{% if referral_code %}
+<div class="alert alert-info">
+    <h4>🎁 Your Referral Code</h4>
+    <p>Share your unique referral code with friends: <strong>{{ referral_code }}</strong></p>
+    <p>You'll earn {{ referral_rate }}% commission on their transactions!</p>
+</div>
+{% endif %}
+
+<p>If you have any questions, our support team is here to help. Simply contact us through the platform.</p>
+
+<p>Welcome aboard!</p>
+<p>The {{ site_name }} Team</p>
+{% endblock %}

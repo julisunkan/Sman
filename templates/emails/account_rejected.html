@@ -1,0 +1,50 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Account Listing Update ⚠️</h2>
+
+<p>Hello <strong>{{ seller_name }}</strong>,</p>
+
+<p>We've reviewed your social media account listing and have some feedback for you.</p>
+
+<div class="alert alert-warning">
+    <h4>📱 Account Under Review</h4>
+    <p><strong>Account:</strong> @{{ account_username }} ({{ account_platform.title() }})</p>
+    <p><strong>Followers:</strong> {{ account_followers | format_number }}</p>
+    <p><strong>Status:</strong> Requires Changes</p>
+</div>
+
+{% if admin_notes %}
+<div class="info-box">
+    <h4>📝 Feedback from Our Team</h4>
+    <p>{{ admin_notes }}</p>
+</div>
+{% endif %}
+
+<h3>🔄 What You Can Do</h3>
+<ul>
+    <li>Review the feedback provided above</li>
+    <li>Make necessary changes to your account or listing</li>
+    <li>Contact our support team if you need clarification</li>
+    <li>Resubmit your listing when ready</li>
+</ul>
+
+<div class="alert alert-info">
+    <h4>💡 Common Requirements</h4>
+    <ul>
+        <li>Account must be genuine with real followers</li>
+        <li>Provide accurate follower counts and engagement rates</li>
+        <li>Include clear screenshots and descriptions</li>
+        <li>Ensure account credentials are correct</li>
+    </ul>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ account_edit_url }}" class="btn">Edit Your Listing</a>
+</div>
+
+<p>We're here to help you succeed on our platform. Don't hesitate to reach out if you have questions!</p>
+
+<p>Best regards,<br>
+The {{ site_name }} Team</p>
+{% endblock %}

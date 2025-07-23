@@ -231,13 +231,39 @@ def verify_account(account_id):
         account.verification_notes = form.verification_notes.data
         db.session.commit()
         
-        # Notify seller
-        status_message = 'approved and is now available for sale' if account.is_verified else 'rejected'
-        send_email_notification(
-            account.seller.email,
-            'Account Verification Update',
-            f'Your {account.platform} account (@{account.username}) has been {status_message}.'
-        )
+        # Notify seller with beautiful email template
+        if account.is_verified:
+            send_email_notification(
+                account.seller.email,
+                'Account Listing Approved!',
+                f'Your account listing has been approved.',
+                template_name='account_approved.html',
+                template_data={
+                    'seller_name': account.seller.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'account_price': account.price,
+                    'account_category': account.category,
+                    'admin_notes': form.verification_notes.data,
+                    'account_url': url_for('main.account_detail', account_id=account.id, _external=True)
+                }
+            )
+        else:
+            send_email_notification(
+                account.seller.email,
+                'Account Listing Update Required',
+                f'Your account listing needs some changes.',
+                template_name='account_rejected.html',
+                template_data={
+                    'seller_name': account.seller.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'admin_notes': form.verification_notes.data,
+                    'account_edit_url': url_for('main.edit_listing', account_id=account.id, _external=True)
+                }
+            )
         
         flash(f'Account verification updated.', 'success')
         return redirect(url_for('admin.accounts'))
@@ -270,12 +296,39 @@ def edit_account(account_id):
         
         db.session.commit()
         
-        # Notify seller of changes
-        send_email_notification(
-            account.seller.email,
-            'Account Listing Updated',
-            f'Your {account.platform} account (@{account.username}) listing has been updated by an administrator.'
-        )
+        # Notify seller of changes with beautiful template
+        if account.is_verified:
+            send_email_notification(
+                account.seller.email,
+                'Account Listing Updated and Approved',
+                f'Your account listing has been updated and approved.',
+                template_name='account_approved.html',
+                template_data={
+                    'seller_name': account.seller.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'account_price': account.price,
+                    'account_category': account.category,
+                    'admin_notes': form.verification_notes.data or 'Listing updated by administrator.',
+                    'account_url': url_for('main.account_detail', account_id=account.id, _external=True)
+                }
+            )
+        else:
+            send_email_notification(
+                account.seller.email,
+                'Account Listing Updated',
+                f'Your account listing has been updated.',
+                template_name='account_rejected.html',
+                template_data={
+                    'seller_name': account.seller.username,
+                    'account_username': account.username,
+                    'account_platform': account.platform,
+                    'account_followers': account.followers_count,
+                    'admin_notes': form.verification_notes.data or 'Listing updated by administrator.',
+                    'account_edit_url': url_for('main.edit_listing', account_id=account.id, _external=True)
+                }
+            )
         
         flash(f'Account listing updated successfully.', 'success')
         return redirect(url_for('admin.accounts'))
@@ -630,6 +683,138 @@ def test_email():
         return redirect(url_for('admin.test_email'))
     
     return render_template('admin/test_email.html', form=form)
+
+# Email Template Management Routes
+@admin_bp.route('/email-templates')
+@login_required
+@admin_required
+def email_templates():
+    """Display email template management page"""
+    return render_template('admin/email_templates.html')
+
+@admin_bp.route('/email-templates/preview/<template>')
+@login_required
+@admin_required
+def preview_email_template(template):
+    """Preview an email template with sample data"""
+    from flask import render_template
+    
+    # Sample data for different templates
+    sample_data = {
+        'welcome': {
+            'user_name': 'John Doe',
+            'verification_url': url_for('auth.verify_email', token='sample-token', _external=True),
+            'referral_code': 'SAMPLE123',
+            'referral_rate': '5%'
+        },
+        'password_reset': {
+            'user_name': 'John Doe',
+            'reset_url': url_for('auth.reset_password', token='sample-token', _external=True)
+        },
+        'purchase_confirmation': {
+            'buyer_name': 'John Doe',
+            'account_username': 'sample_account',
+            'account_platform': 'instagram',
+            'account_followers': 10000,
+            'purchase_amount': 50000.0,
+            'account_email': 'account@example.com',
+            'account_password': 'sample_password',
+            'account_url': 'https://instagram.com/sample_account',
+            'platform_commission': 2500.0,
+            'seller_payment': 47500.0,
+            'referral_commission': 1250.0,
+            'purchase_id': 'PUR123',
+            'dashboard_url': url_for('main.dashboard', _external=True)
+        },
+        'sale_notification': {
+            'seller_name': 'Jane Doe',
+            'account_username': 'sample_account',
+            'account_platform': 'instagram',
+            'account_followers': 10000,
+            'sale_amount': 50000.0,
+            'seller_earnings': 47500.0,
+            'platform_fee': 2500.0,
+            'commission_rate': '5%',
+            'buyer_name': 'John Doe',
+            'new_balance': 75000.0,
+            'sale_date': datetime.now().strftime('%B %d, %Y'),
+            'transaction_id': 'TXN123',
+            'dashboard_url': url_for('main.dashboard', _external=True)
+        },
+        'account_approved': {
+            'seller_name': 'Jane Doe',
+            'account_username': 'sample_account',
+            'account_platform': 'instagram',
+            'account_followers': 10000,
+            'account_price': 50000.0,
+            'account_category': 'lifestyle',
+            'admin_notes': 'Account verified successfully. Good engagement rate and authentic followers.',
+            'account_url': url_for('main.account_detail', account_id=1, _external=True)
+        },
+        'account_rejected': {
+            'seller_name': 'Jane Doe',
+            'account_username': 'sample_account',
+            'account_platform': 'instagram',
+            'account_followers': 10000,
+            'admin_notes': 'Please provide clearer screenshots and verify follower authenticity.',
+            'account_edit_url': url_for('main.edit_listing', account_id=1, _external=True)
+        }
+    }
+    
+    if template not in sample_data:
+        flash('Template not found.', 'danger')
+        return redirect(url_for('admin.email_templates'))
+    
+    try:
+        # Get site settings for template
+        site_settings = SystemSettings.query.filter(
+            SystemSettings.setting_key.in_(['site_name', 'site_description'])
+        ).all()
+        
+        template_context = {
+            'subject': f'Sample {template.replace("_", " ").title()} Email',
+            'site_name': next((s.setting_value for s in site_settings if s.setting_key == 'site_name'), 'SocialMarket'),
+            'site_description': next((s.setting_value for s in site_settings if s.setting_key == 'site_description'), 'Your trusted social media marketplace'),
+            **sample_data[template]
+        }
+        
+        # Render the template
+        html_content = render_template(f'emails/{template}.html', **template_context)
+        return html_content
+        
+    except Exception as e:
+        flash(f'Error previewing template: {str(e)}', 'danger')
+        return redirect(url_for('admin.email_templates'))
+
+@admin_bp.route('/email-templates/test/<template>')
+@login_required
+@admin_required  
+def test_email_template(template):
+    """Send a test email using the specified template"""
+    try:
+        # Send test email to admin
+        sample_data = {
+            'user_name': current_user.username,
+            'verification_url': url_for('auth.verify_email', token='test-token', _external=True),
+            'reset_url': url_for('auth.reset_password', token='test-token', _external=True),
+            'referral_code': 'TEST123',
+            'referral_rate': '5%'
+        }
+        
+        send_email_notification(
+            current_user.email,
+            f'Test Email - {template.replace("_", " ").title()}',
+            f'This is a test email for the {template} template.',
+            template_name=f'{template}.html',
+            template_data=sample_data
+        )
+        
+        flash(f'Test email sent successfully to {current_user.email}', 'success')
+        
+    except Exception as e:
+        flash(f'Error sending test email: {str(e)}', 'danger')
+        
+    return redirect(url_for('admin.email_templates'))
 
 @admin_bp.route('/support-messages/<int:message_id>/respond', methods=['POST'])
 @login_required

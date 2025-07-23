@@ -1,0 +1,58 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Purchase Successful! 🎉</h2>
+
+<p>Hello <strong>{{ buyer_name }}</strong>,</p>
+
+<p>Congratulations! Your purchase has been completed successfully.</p>
+
+<div class="alert alert-success">
+    <h4>✅ Purchase Details</h4>
+    <p><strong>Account:</strong> @{{ account_username }} ({{ account_platform.title() }})</p>
+    <p><strong>Followers:</strong> {{ account_followers | format_number }}</p>
+    <p><strong>Amount Paid:</strong> {{ purchase_amount | format_currency }}</p>
+    <p><strong>Transaction ID:</strong> #{{ purchase_id }}</p>
+</div>
+
+<h3>🔑 Account Access Information</h3>
+<div class="info-box">
+    <h4>Login Details</h4>
+    <p><strong>Email:</strong> {{ account_email }}</p>
+    <p><strong>Password:</strong> {{ account_password }}</p>
+    {% if account_url %}
+    <p><strong>Account URL:</strong> <a href="{{ account_url }}">{{ account_url }}</a></p>
+    {% endif %}
+</div>
+
+<div class="alert alert-warning">
+    <h4>🛡️ Important Security Steps</h4>
+    <p>For your security, please complete these steps immediately:</p>
+    <ul>
+        <li>Log into the account and change the password</li>
+        <li>Update the recovery email to your own</li>
+        <li>Enable two-factor authentication if available</li>
+        <li>Review and update privacy settings</li>
+    </ul>
+</div>
+
+<h3>📋 Transaction Summary</h3>
+<ul>
+    <li>Platform Commission: {{ platform_commission | format_currency }}</li>
+    <li>Seller Payment: {{ seller_payment | format_currency }}</li>
+    {% if referral_commission %}
+    <li>Referral Commission: {{ referral_commission | format_currency }}</li>
+    {% endif %}
+</ul>
+
+<p>You can view your purchase history and access these details anytime from your dashboard.</p>
+
+<div style="text-align: center;">
+    <a href="{{ dashboard_url }}" class="btn">View Dashboard</a>
+</div>
+
+<p>Thank you for choosing {{ site_name }}!</p>
+
+<p>Best regards,<br>
+The {{ site_name }} Team</p>
+{% endblock %}

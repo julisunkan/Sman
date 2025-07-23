@@ -128,12 +128,107 @@ def format_number(number):
     else:
         return str(number)
 
-def send_email_notification(to_email, subject, body):
-    """Send email notification - placeholder for actual email service"""
-    # In production, integrate with email service like SendGrid, Mailgun, etc.
-    print(f"Email to {to_email}: {subject}")
-    print(f"Body: {body}")
-    return True
+def send_email_notification(to_email, subject, body, template_name=None, template_data=None):
+    """Send email notification with beautiful HTML templates"""
+    from flask import render_template, current_app
+    from models import SystemSettings
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    try:
+        # Get email settings from admin configuration
+        settings = {}
+        email_settings = SystemSettings.query.filter(
+            SystemSettings.setting_key.in_([
+                'smtp_server', 'smtp_port', 'smtp_username', 'smtp_password', 
+                'smtp_use_tls', 'from_email', 'from_name', 'site_name', 'site_description'
+            ])
+        ).all()
+        
+        for setting in email_settings:
+            settings[setting.setting_key] = setting.setting_value
+        
+        # Get social links for email footer
+        social_settings = SystemSettings.query.filter(
+            SystemSettings.setting_key.in_([
+                'facebook_url', 'twitter_url', 'instagram_url', 
+                'telegram_url', 'linkedin_url', 'youtube_url'
+            ])
+        ).all()
+        
+        social_links = {}
+        for setting in social_settings:
+            if setting.setting_value:
+                social_links[setting.setting_key] = setting.setting_value
+        
+        # Prepare template context
+        template_context = {
+            'subject': subject,
+            'site_name': settings.get('site_name', 'SocialMarket'),
+            'site_description': settings.get('site_description', 'Your trusted social media marketplace'),
+            'social_links': social_links,
+            'email_content': body
+        }
+        
+        if template_data:
+            template_context.update(template_data)
+        
+        # Render email template
+        if template_name and template_name.endswith('.html'):
+            try:
+                html_body = render_template(f'emails/{template_name}', **template_context)
+            except:
+                # Fallback to base template
+                html_body = render_template('emails/base_email.html', **template_context)
+        else:
+            # Use base template for simple emails
+            html_body = render_template('emails/base_email.html', **template_context)
+        
+        # Check if SMTP is configured
+        if not all([settings.get('smtp_server'), settings.get('smtp_username'), settings.get('smtp_password')]):
+            print(f"Email to {to_email}: {subject}")
+            print(f"HTML Body: {html_body[:200]}...")
+            return True
+        
+        # Send actual email
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{settings.get('from_name', 'SocialMarket')} <{settings.get('from_email', settings.get('smtp_username'))}>"
+        msg['To'] = to_email
+        
+        # Add plain text version
+        text_part = MIMEText(body, 'plain')
+        html_part = MIMEText(html_body, 'html')
+        
+        msg.attach(text_part)
+        msg.attach(html_part)
+        
+        # Send email
+        smtp_server = settings.get('smtp_server')
+        smtp_port = int(settings.get('smtp_port', 587))
+        smtp_username = settings.get('smtp_username')
+        smtp_password = settings.get('smtp_password')
+        
+        if not smtp_server or not smtp_username or not smtp_password:
+            raise Exception("Missing SMTP configuration")
+            
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        if settings.get('smtp_use_tls', 'true').lower() == 'true':
+            server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.send_message(msg)
+        server.quit()
+        
+        print(f"Email sent successfully to {to_email}")
+        return True
+        
+    except Exception as e:
+        print(f"Error sending email to {to_email}: {str(e)}")
+        # Still log the email for debugging
+        print(f"Subject: {subject}")
+        print(f"Body: {body}")
+        return False
 
 def calculate_referral_commission(amount, commission_rate=None):
     """Calculate referral commission using dynamic rate from settings"""

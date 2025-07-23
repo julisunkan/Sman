@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Email Templates - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'admin/sidebar.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-envelope me-3"></i>Email Templates</h1>
+            </div>
+
+            <!-- Email Template Cards -->
+            <div class="row">
+                <!-- Welcome Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-plus me-2"></i>Welcome Email
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent to new users when they register</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ user_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ verification_url }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ referral_code }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ referral_rate }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ site_name }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='welcome') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='welcome') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Reset Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-key me-2"></i>Password Reset
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent when users request password reset</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ user_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ reset_url }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ site_name }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='password_reset') }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='password_reset') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Confirmation Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shopping-cart me-2"></i>Purchase Confirmation
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent to buyers after successful purchase</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ buyer_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_username }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_email }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_password }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ purchase_amount }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='purchase_confirmation') }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='purchase_confirmation') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sale Notification Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-dollar-sign me-2"></i>Sale Notification
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent to sellers when their account is sold</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ seller_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_username }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ sale_amount }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ seller_earnings }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ buyer_name }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='sale_notification') }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='sale_notification') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Approved Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Account Approved
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent when account listing is approved</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ seller_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_username }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_price }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ admin_notes }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='account_approved') }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='account_approved') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Rejected Email Template -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-times-circle me-2"></i>Account Rejected
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">Sent when account listing needs changes</p>
+                            <div class="mb-3">
+                                <strong>Template Variables:</strong>
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ seller_name }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_username }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ admin_notes }}</span>
+                                    <span class="badge bg-light text-dark me-1">{{ '{' }}{ account_edit_url }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('admin.preview_email_template', template='account_rejected') }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </a>
+                                <a href="{{ url_for('admin.test_email_template', template='account_rejected') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-paper-plane me-1"></i>Send Test
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Customization Instructions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Email Template Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info alert-permanent">
+                        <h6>📧 Email Template System</h6>
+                        <ul class="mb-0">
+                            <li>All emails use beautiful HTML templates with your site branding</li>
+                            <li>Templates automatically include your site name, description, and social links</li>
+                            <li>SMTP settings from System Settings are used for sending</li>
+                            <li>Template variables are automatically populated based on context</li>
+                            <li>Use the preview function to see how emails will look</li>
+                            <li>Send test emails to verify SMTP configuration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>🎨 Styling Features</h6>
+                            <ul>
+                                <li>Responsive design for all devices</li>
+                                <li>Professional gradient headers</li>
+                                <li>Branded colors and fonts</li>
+                                <li>Social media links in footer</li>
+                                <li>Call-to-action buttons</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>🔧 Configuration</h6>
+                            <ul>
+                                <li>Configure SMTP in System Settings</li>
+                                <li>Set your site name and description</li>
+                                <li>Add social media links</li>
+                                <li>Test email delivery</li>
+                                <li>Monitor email logs</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
