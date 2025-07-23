@@ -279,7 +279,7 @@ def purchase_account(account_id):
         else:
             flash('Failed to upload payment proof. Please ensure file is under 15KB.', 'danger')
     
-    return render_template('accounts/purchase.html', account=account, form=form, format_currency=format_currency)
+    return render_template('accounts/purchase.html', account=account, form=form)
 
 @main_bp.route('/accounts/create', methods=['GET', 'POST'])
 @login_required

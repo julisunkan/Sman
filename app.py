@@ -83,14 +83,15 @@ def inject_site_data():
         'min_deposit': float(settings_dict.get('min_deposit', 1000.0)) if settings_dict.get('min_deposit') else 1000.0
     }
     
-    # Import format_currency function
-    from utils import format_currency
+    # Import utility functions
+    from utils import format_currency, format_number
     
     return {
         'footer_pages': footer_pages,
         'social_links': social_links,
         'site_config': site_config,
-        'format_currency': format_currency
+        'format_currency': format_currency,
+        'format_number': format_number
     }
 
 # Import blueprints
