@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}KYC Reviews - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-id-card me-2"></i>KYC Document Reviews</h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filter Tabs -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="btn-group" role="group" aria-label="Status filter">
+                <a href="{{ url_for('admin.kyc_reviews', status='pending') }}" 
+                   class="btn {{ 'btn-warning' if status_filter == 'pending' else 'btn-outline-warning' }}">
+                    <i class="fas fa-clock me-1"></i>Pending
+                </a>
+                <a href="{{ url_for('admin.kyc_reviews', status='verified') }}" 
+                   class="btn {{ 'btn-success' if status_filter == 'verified' else 'btn-outline-success' }}">
+                    <i class="fas fa-check me-1"></i>Verified
+                </a>
+                <a href="{{ url_for('admin.kyc_reviews', status='rejected') }}" 
+                   class="btn {{ 'btn-danger' if status_filter == 'rejected' else 'btn-outline-danger' }}">
+                    <i class="fas fa-times me-1"></i>Rejected
+                </a>
+                <a href="{{ url_for('admin.kyc_reviews', status='all') }}" 
+                   class="btn {{ 'btn-primary' if status_filter == 'all' else 'btn-outline-primary' }}">
+                    <i class="fas fa-list me-1"></i>All
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- KYC Documents List -->
+    <div class="row">
+        {% if users.items %}
+            {% for user in users.items %}
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-user me-2"></i>{{ user.username }}
+                            {% if user.kyc_status == 'pending' %}
+                                <span class="badge bg-warning text-dark ms-2">Pending</span>
+                            {% elif user.kyc_status == 'verified' %}
+                                <span class="badge bg-success ms-2">Verified</span>
+                            {% elif user.kyc_status == 'rejected' %}
+                                <span class="badge bg-danger ms-2">Rejected</span>
+                            {% endif %}
+                        </h6>
+                        <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Email:</strong> {{ user.email }}</p>
+                                <p class="mb-2"><strong>Full Name:</strong> {{ user.full_name or 'Not provided' }}</p>
+                                <p class="mb-2"><strong>Phone:</strong> {{ user.phone or 'Not provided' }}</p>
+                                <p class="mb-2"><strong>Country:</strong> {{ user.country or 'Not provided' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                {% if user.kyc_document_path %}
+                                    <div class="text-center">
+                                        <p class="mb-2"><strong>KYC Document:</strong></p>
+                                        <img src="{{ url_for('main.uploaded_file', filename=user.kyc_document_path) }}" 
+                                             class="img-fluid rounded" style="max-height: 150px;" alt="KYC Document">
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">No document uploaded</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if user.kyc_status == 'pending' %}
+                        <div class="mt-3">
+                            <a href="{{ url_for('admin.verify_kyc', user_id=user.id) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>Review Document
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No KYC documents found</h5>
+                        <p class="text-muted">
+                            {% if status_filter == 'pending' %}
+                                No pending KYC documents to review.
+                            {% else %}
+                                No KYC documents match the current filter.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if users.pages > 1 %}
+    <nav aria-label="KYC reviews pagination">
+        <ul class="pagination justify-content-center">
+            {% if users.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.kyc_reviews', page=users.prev_num, status=status_filter) }}">Previous</a>
+                </li>
+            {% endif %}
+            
+            {% for page_num in users.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != users.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.kyc_reviews', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">…</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if users.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.kyc_reviews', page=users.next_num, status=status_filter) }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

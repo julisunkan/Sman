@@ -96,7 +96,10 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('admin.accounts', status='pending') }}" class="btn btn-warning">
+                        <a href="{{ url_for('admin.kyc_reviews', status='pending') }}" class="btn btn-warning">
+                            <i class="fas fa-id-card me-2"></i>Review KYC Documents ({{ stats.pending_kyc }})
+                        </a>
+                        <a href="{{ url_for('admin.accounts', status='pending') }}" class="btn btn-outline-warning">
                             <i class="fas fa-clock me-2"></i>Review Pending Accounts ({{ stats.pending_accounts }})
                         </a>
                         <a href="{{ url_for('admin.payments', type='purchases') }}" class="btn btn-info">

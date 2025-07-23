@@ -34,6 +34,7 @@ def dashboard():
         'total_users': User.query.count(),
         'active_users': User.query.filter_by(active=True).count(),
         'verified_users': User.query.filter_by(is_verified=True).count(),
+        'pending_kyc': User.query.filter_by(kyc_status='pending').count(),
         'total_accounts': SocialMediaAccount.query.count(),
         'pending_accounts': SocialMediaAccount.query.filter_by(status='pending').count(),
         'approved_accounts': SocialMediaAccount.query.filter_by(status='approved').count(),
@@ -90,6 +91,58 @@ def manage_user(user_id):
         return redirect(url_for('admin.users'))
     
     return render_template('admin/manage_user.html', user=user, form=form)
+
+@admin_bp.route('/kyc-reviews')
+@login_required
+@admin_required
+def kyc_reviews():
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', 'pending')
+    
+    # Filter users based on KYC status
+    query = User.query.filter(User.kyc_document_path.isnot(None))
+    if status_filter and status_filter != 'all':
+        query = query.filter_by(kyc_status=status_filter)
+    
+    users = query.order_by(User.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('admin/kyc_reviews.html', users=users, status_filter=status_filter)
+
+@admin_bp.route('/kyc-reviews/<int:user_id>/verify', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def verify_kyc(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        notes = request.form.get('notes', '')
+        
+        if action == 'approve':
+            user.kyc_status = 'verified'
+            message = 'KYC document approved successfully.'
+            email_subject = 'KYC Verification Approved'
+            email_body = f'Your KYC document has been verified. You can now create account listings.'
+        elif action == 'reject':
+            user.kyc_status = 'rejected'
+            message = 'KYC document rejected.'
+            email_subject = 'KYC Verification Rejected'
+            email_body = f'Your KYC document has been rejected. Reason: {notes}. Please submit a new document.'
+        else:
+            flash('Invalid action.', 'danger')
+            return redirect(url_for('admin.kyc_reviews'))
+        
+        db.session.commit()
+        
+        # Send notification to user
+        send_email_notification(user.email, email_subject, email_body)
+        
+        flash(message, 'success')
+        return redirect(url_for('admin.kyc_reviews'))
+    
+    return render_template('admin/verify_kyc.html', user=user)
 
 @admin_bp.route('/users/<int:user_id>/toggle-status', methods=['POST'])
 @login_required
