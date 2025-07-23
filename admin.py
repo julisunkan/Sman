@@ -289,7 +289,7 @@ def delete_footer_page(page_id):
     flash('Footer page deleted successfully.', 'success')
     return redirect(url_for('admin.footer_pages'))
 
-@admin_bp.route('/support')
+@admin_bp.route('/support-messages')
 @login_required
 @admin_required
 def support_messages():
@@ -417,25 +417,33 @@ def test_email():
     
     return render_template('admin/test_email.html', form=form)
 
-@admin_bp.route('/support/<int:message_id>/respond', methods=['POST'])
+@admin_bp.route('/support-messages/<int:message_id>/respond', methods=['POST'])
 @login_required
 @admin_required
 def respond_to_support(message_id):
-    message = SupportMessage.query.get_or_404(message_id)
-    response = request.form.get('response')
-    
-    if response:
-        message.admin_response = response
-        message.status = 'closed'
-        db.session.commit()
+    try:
+        message = SupportMessage.query.get_or_404(message_id)
+        response = request.form.get('response')
         
-        # Send email to user
-        send_email_notification(
-            message.user.email,
-            f'Response to: {message.subject}',
-            response
-        )
-        
-        flash('Response sent successfully.', 'success')
+        if response:
+            message.admin_response = response
+            message.status = 'closed'
+            db.session.commit()
+            
+            # Send email to user
+            try:
+                send_email_notification(
+                    message.user.email,
+                    f'Response to: {message.subject}',
+                    response
+                )
+            except Exception as e:
+                flash(f'Response saved but email failed: {str(e)}', 'warning')
+            
+            flash('Response sent successfully.', 'success')
+        else:
+            flash('Please provide a response.', 'error')
+    except Exception as e:
+        flash(f'Error processing response: {str(e)}', 'danger')
     
     return redirect(url_for('admin.support_messages'))
