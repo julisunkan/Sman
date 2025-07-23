@@ -18,6 +18,13 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@admin_bp.route('/')
+@login_required
+@admin_required
+def index():
+    """Redirect admin root to dashboard"""
+    return redirect(url_for('admin.dashboard'))
+
 @admin_bp.route('/dashboard')
 @login_required
 @admin_required
