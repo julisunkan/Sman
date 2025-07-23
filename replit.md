@@ -330,6 +330,8 @@ The application is designed to be a complete marketplace solution with built-in 
 - Disabled "View Live Account" buttons for sold accounts to prevent access to unavailable accounts
 - Added clear status indicators and disabled preview functionality for sold accounts
 - Enhanced user experience with appropriate messaging for sold account limitations
+- Fixed username formatting consistency - ensured all social media usernames use single @ symbol
+- Standardized username format across all platforms with proper @ prefixes where appropriate
 
 ### Transaction Login Details UI Enhancement (July 23, 2025)
 - Converted Account Login Details from popup modal to inline dropdown in transactions page
