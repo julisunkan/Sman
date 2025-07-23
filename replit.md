@@ -298,6 +298,14 @@ The application is designed to be a complete marketplace solution with built-in 
 - Admin credentials: admin@marketplace.com / admin123
 - Migration completed with comprehensive route and error fixing
 
+### Transaction Login Details UI Enhancement (July 23, 2025)
+- Converted Account Login Details from popup modal to inline dropdown in transactions page
+- Replaced Bootstrap modal with collapsible row that expands below the transaction
+- Enhanced user experience with inline display of account credentials
+- Maintained all security features: password visibility toggle, copy-to-clipboard functionality
+- Improved responsive layout with two-column grid for credentials display
+- Added close button within dropdown for better user control
+
 ### Admin Listing Management & Account URL Preview (July 23, 2025)
 - Added admin edit and delete functionality for social media account listings
 - Enhanced AdminEditAccountForm with comprehensive editing capabilities including status updates

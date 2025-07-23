@@ -83,7 +83,7 @@
                                     </td>
                                     <td>
                                         {% if purchase.status == 'completed' and purchase.details_released %}
-                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal{{ purchase.id }}">
+                                        <button class="btn btn-success btn-sm" data-bs-toggle="collapse" data-bs-target="#loginDetails{{ purchase.id }}" aria-expanded="false">
                                             <i class="fas fa-key me-1"></i>View Login
                                         </button>
                                         {% elif purchase.status == 'pending' %}
@@ -96,56 +96,58 @@
                                     </td>
                                 </tr>
                                 
-                                <!-- Login Details Modal -->
+                                <!-- Login Details Dropdown -->
                                 {% if purchase.status == 'completed' and purchase.details_released %}
-                                <div class="modal fade" id="loginModal{{ purchase.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Account Login Details</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-warning alert-permanent">
+                                <tr>
+                                    <td colspan="5" class="p-0">
+                                        <div class="collapse" id="loginDetails{{ purchase.id }}">
+                                            <div class="card card-body border-0 bg-light">
+                                                <h6 class="fw-bold mb-3">
+                                                    <i class="fas fa-key me-2"></i>Account Login Details
+                                                </h6>
+                                                
+                                                <div class="alert alert-warning alert-permanent mb-3">
                                                     <i class="fas fa-shield-alt me-2"></i>
                                                     <strong>Security Notice:</strong> Change the password immediately after logging in for security.
                                                 </div>
                                                 
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Platform:</label>
-                                                    <div>{{ purchase.account.platform.title() }}</div>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Username:</label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" value="@{{ purchase.account.username }}" readonly>
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('@{{ purchase.account.username }}')">
-                                                            <i class="fas fa-copy"></i>
-                                                        </button>
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Platform:</label>
+                                                        <div class="form-control-plaintext">{{ purchase.account.platform.title() }}</div>
                                                     </div>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Email:</label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" value="{{ purchase.account.login_email }}" readonly>
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_email }}')">
-                                                            <i class="fas fa-copy"></i>
-                                                        </button>
+                                                    
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Username:</label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" value="@{{ purchase.account.username }}" readonly>
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('@{{ purchase.account.username }}')">
+                                                                <i class="fas fa-copy"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Password:</label>
-                                                    <div class="input-group">
-                                                        <input type="password" class="form-control" value="{{ purchase.account.login_password }}" readonly id="password{{ purchase.id }}">
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password{{ purchase.id }}')">
-                                                            <i class="fas fa-eye"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_password }}')">
-                                                            <i class="fas fa-copy"></i>
-                                                        </button>
+                                                    
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Email:</label>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" value="{{ purchase.account.login_email }}" readonly>
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_email }}')">
+                                                                <i class="fas fa-copy"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Password:</label>
+                                                        <div class="input-group">
+                                                            <input type="password" class="form-control" value="{{ purchase.account.login_password }}" readonly id="password{{ purchase.id }}">
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password{{ purchase.id }}')">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ purchase.account.login_password }}')">
+                                                                <i class="fas fa-copy"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 
@@ -159,13 +161,16 @@
                                                         <li>Enable two-factor authentication if available</li>
                                                     </ol>
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                
+                                                <div class="text-end">
+                                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#loginDetails{{ purchase.id }}">
+                                                        <i class="fas fa-times me-1"></i>Close
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    </td>
+                                </tr>
                                 {% endif %}
                                 {% endfor %}
                             </tbody>
