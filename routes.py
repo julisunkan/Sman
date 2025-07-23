@@ -121,7 +121,15 @@ def deposit():
     settings = SystemSettings.query.all()
     bank_settings = {s.setting_key: s.setting_value for s in settings}
     
+    # Get minimum deposit amount for validation
+    min_deposit_setting = SystemSettings.query.filter_by(setting_key='min_deposit').first()
+    min_deposit = float(min_deposit_setting.setting_value) if min_deposit_setting and min_deposit_setting.setting_value else 1.0
+    
     if form.validate_on_submit():
+        # Validate minimum deposit amount
+        if form.amount.data and form.amount.data < min_deposit:
+            flash(f'Minimum deposit amount is {format_currency(min_deposit)}', 'danger')
+            return render_template('wallet/deposit.html', form=form, bank_settings=bank_settings)
         payment_proof_path = save_file(form.payment_proof.data, 'payment_proofs')
         if payment_proof_path:
             transaction = Transaction(  # type: ignore

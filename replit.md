@@ -268,3 +268,13 @@ The application is designed to be a complete marketplace solution with built-in 
 - Site name and description changes in admin settings now reflect instantly across all pages
 - Updated copyright notice to use dynamic site name
 - Comprehensive branding system allows complete site rebranding from admin panel
+
+### Dynamic Financial Settings System (July 23, 2025)
+- Implemented dynamic commission rates, referral rates, and minimum deposit amounts
+- Enhanced Flask context processor to inject financial configuration globally
+- Updated referral page to display dynamic commission rates instead of hardcoded 5%
+- Modified deposit page to use dynamic minimum deposit amount and validation
+- Enhanced utils.py calculate_referral_commission function to use dynamic rates
+- Added backend validation for minimum deposit amounts using system settings
+- All financial settings in admin panel now reflect instantly throughout website
+- Commission rates, referral rates, and minimum deposits are now fully configurable

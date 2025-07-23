@@ -77,7 +77,10 @@ def inject_site_data():
     # Site configuration
     site_config = {
         'site_name': settings_dict.get('site_name', 'SocialMarket'),
-        'site_description': settings_dict.get('site_description', 'The trusted marketplace for buying and selling social media accounts safely and securely.')
+        'site_description': settings_dict.get('site_description', 'The trusted marketplace for buying and selling social media accounts safely and securely.'),
+        'commission_rate': float(settings_dict.get('commission_rate', 5.0)) if settings_dict.get('commission_rate') else 5.0,
+        'referral_rate': float(settings_dict.get('referral_rate', 5.0)) if settings_dict.get('referral_rate') else 5.0,
+        'min_deposit': float(settings_dict.get('min_deposit', 1000.0)) if settings_dict.get('min_deposit') else 1000.0
     }
     
     return {

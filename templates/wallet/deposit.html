@@ -59,7 +59,7 @@
                                     {{ form.amount.label(class="form-label fw-bold") }}
                                     <div class="input-group">
                                         <span class="input-group-text">₦</span>
-                                        {{ form.amount(class="form-control form-control-lg", placeholder="0.00", min="10", step="0.01") }}
+                                        {{ form.amount(class="form-control form-control-lg", placeholder="0.00", min=site_config.min_deposit, step="0.01") }}
                                     </div>
                                     {% if form.amount.errors %}
                                     <div class="text-danger mt-2">
@@ -68,7 +68,7 @@
                                         {% endfor %}
                                     </div>
                                     {% endif %}
-                                    <div class="form-text">Minimum deposit: ₦10.00</div>
+                                    <div class="form-text">Minimum deposit: {{ format_currency(site_config.min_deposit) }}</div>
                                 </div>
                                 
                                 <div class="mb-4">

@@ -135,6 +135,15 @@ def send_email_notification(to_email, subject, body):
     print(f"Body: {body}")
     return True
 
-def calculate_referral_commission(amount, commission_rate=0.05):
-    """Calculate referral commission"""
+def calculate_referral_commission(amount, commission_rate=None):
+    """Calculate referral commission using dynamic rate from settings"""
+    if commission_rate is None:
+        # Get rate from system settings
+        from models import SystemSettings
+        setting = SystemSettings.query.filter_by(setting_key='referral_rate').first()
+        commission_rate = float(setting.setting_value) / 100 if setting and setting.setting_value else 0.05
+    else:
+        # If rate is passed as percentage, convert to decimal
+        if commission_rate > 1:
+            commission_rate = commission_rate / 100
     return amount * commission_rate
