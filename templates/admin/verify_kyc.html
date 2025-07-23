@@ -95,7 +95,7 @@
                         <h6><i class="fas fa-check-circle me-2"></i>Verification Actions</h6>
                         
                         <form method="POST" class="mt-3">
-                            {{ csrf_token() }}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             
                             <div class="mb-3">
                                 <label for="notes" class="form-label">Notes (optional for approval, required for rejection):</label>
